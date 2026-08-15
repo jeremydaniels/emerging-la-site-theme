@@ -85,6 +85,13 @@
   --ela-accent-tint-hover: var(--palette-accent-tint-hover);
 
   --ela-crop: var(--palette-crop);
+  /* The showcase card's well. A fill of real area, so it counts as an anchor. */
+  --ela-well-accent: linear-gradient(
+    155deg,
+    var(--palette-accent-light) 0%,
+    var(--palette-accent) 45%,
+    var(--palette-accent-dark) 100%
+  );
   --ela-slot-line: var(--palette-slot-line);
   --ela-slot-ink: var(--palette-slot-ink);
   --ela-slot-ink-faint: var(--palette-slot-ink-faint);

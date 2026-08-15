@@ -1,22 +1,165 @@
 ---
+/**
+ * Archive page.
+ *
+ * Same document as home, about and events: numbering restarts at 01, same
+ * eyebrow, same frames, same rhythm.
+ *
+ * Everything on this page comes from src/data/issues.ts through `getIssues()`.
+ * There is no issue content in this template, and nothing here reads a field
+ * outside the six-field `Issue` shape, so moving to the Beehiiv API is a change
+ * to that one function.
+ *
+ * The accent card is a VIEW decision, not a data flag. It is the first card of
+ * whatever the current filter is showing, so it recalculates on every filter
+ * change instead of vanishing when the newest issue is filtered out. The server
+ * renders it on the first card and the script moves it from there.
+ *
+ * The subscribe band is the only anchor-orange element below the grid.
+ */
 import SiteLayout from '../layouts/SiteLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
-import Stub from '../components/Stub.astro';
-import { sortedIssues, usedCategories } from '../data/issues';
+import IssueCard from '../components/IssueCard.astro';
+import SubscribeBand from '../components/SubscribeBand.astro';
 
-const issues = sortedIssues();
-const categories = usedCategories();
+import { getIssues, categoriesOf } from '../data/issues';
+
+const issues = await getIssues();
+const categories = categoriesOf(issues);
 ---
 
-<SiteLayout title="Archive">
+<SiteLayout
+  title="Archive"
+  description="Every issue of the Emerging LA newsletter, and what was in it."
+>
   <span slot="strip-end">Archive</span>
 
-  <div class="mx-auto max-w-page px-gutter-sm py-section-sm wide:px-gutter wide:py-section">
-    <SectionHeader number="01" eyebrow="Newsletter" title="Archive" as="h1" />
+  {/* ------------------------------------------------------------------ 01 */}
+  <section class="mx-auto max-w-page px-gutter-sm pt-10 pb-9 wide:px-gutter wide:pt-[52px]">
+    <div class="t-mono mb-[22px] flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
+      <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
+      <span>01 · Newsletter</span>
+    </div>
 
-    {/* Interactive: the category filters. Scoped script, no framework island. */}
-    <Stub
-      note={`Card grid of every issue, newest first, with the category filter row above it. ${issues.length} issue(s) and ${categories.length} category(ies) in src/data/issues.ts so far.`}
-    />
-  </div>
+    <h1 class="t-display m-0 max-w-[22ch] text-display-3 text-ink">
+      Every issue we have sent, start to finish
+    </h1>
+
+    <p class="mt-7 max-w-[52ch] text-lead font-medium text-ink-muted-aa">
+      Who raised, who is hiring, what shipped, and the rooms it happened in. Read any of
+      it without signing up.
+    </p>
+  </section>
+
+  {/* ------------------------------------------------------------------ 02 */}
+  <section
+    id="issues"
+    class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
+  >
+    <SectionHeader number="02" eyebrow="Filter" title="Browse by category" class="mb-[26px]" />
+
+    {/*
+      Real buttons in a group, so tab and Enter and Space all work without any
+      of it being written here. Single select, aria-pressed carries the state,
+      and the whole thing degrades to every issue showing if the script never
+      runs.
+    */}
+    <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by category">
+      <button type="button" class="pick flex-none!" aria-pressed="true" data-filter="all">
+        All issues
+      </button>
+      {
+        categories.map((category) => (
+          <button type="button" class="pick flex-none!" aria-pressed="false" data-filter={category}>
+            {category}
+          </button>
+        ))
+      }
+    </div>
+
+    <p
+      class="t-mono mt-5 mb-[26px] text-mono-meta text-ink-muted"
+      data-issue-count
+      aria-live="polite"
+    >
+      Showing {issues.length} of {issues.length}
+    </p>
+
+    {/*
+      grid-showcase is what gives the accent card its gradient well. See
+      global.css: the archive is a page of nothing but issues and wants one card
+      to carry the section, where on home the chip alone is enough.
+    */}
+    <div
+      class="grid-showcase grid grid-cols-1 gap-4 wide:grid-cols-3 wide:gap-[26px]"
+      data-issue-grid
+    >
+      {issues.map((issue, i) => <IssueCard issue={issue} accent={i === 0} />)}
+    </div>
+
+    {/*
+      A filter with no matches gets a real empty state, not the site's
+      disappearing-section rule. A section that vanishes is right when there is
+      simply nothing to show; here the visitor did something and needs to be
+      told what happened and how to get back.
+    */}
+    <div
+      hidden
+      data-issue-empty
+      class="border border-dashed border-edge px-6 py-12 text-center"
+    >
+      <p class="t-title m-0 text-title-1 text-ink">Nothing filed under that yet</p>
+      <p class="mx-auto mt-3 mb-0 max-w-[44ch] text-body-sm text-ink-muted-aa">
+        That category has no issues in it so far. Every issue is still there under all
+        issues.
+      </p>
+      <button type="button" class="btn btn-secondary mt-7" data-filter-reset>
+        Show all issues
+      </button>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------------ 03 */}
+  <SubscribeBand number="03" />
 </SiteLayout>
+
+<script>
+  const grid = document.querySelector<HTMLElement>('[data-issue-grid]');
+  const empty = document.querySelector<HTMLElement>('[data-issue-empty]');
+  const count = document.querySelector<HTMLElement>('[data-issue-count]');
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+
+  if (grid) {
+    const cards = [...grid.querySelectorAll<HTMLElement>('.issue-card')];
+    const total = cards.length;
+
+    function apply(filter: string) {
+      const shown = cards.filter((card) => {
+        const match = filter === 'all' || card.dataset.category === filter;
+        card.hidden = !match;
+        return match;
+      });
+
+      // The accent is the first card of the CURRENT view, so it is recomputed
+      // here rather than fixed to one issue. Clear every card first: leaving a
+      // stale one behind is how you end up with two accent cards.
+      cards.forEach((card) => card.removeAttribute('data-accent'));
+      shown[0]?.setAttribute('data-accent', '');
+
+      if (empty) empty.hidden = shown.length > 0;
+      if (count) count.textContent = `Showing ${shown.length} of ${total}`;
+
+      buttons.forEach((button) => {
+        button.setAttribute('aria-pressed', String(button.dataset.filter === filter));
+      });
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => apply(button.dataset.filter ?? 'all'));
+    });
+
+    document
+      .querySelector<HTMLButtonElement>('[data-filter-reset]')
+      ?.addEventListener('click', () => apply('all'));
+  }
+</script>

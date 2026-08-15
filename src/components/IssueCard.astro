@@ -5,8 +5,16 @@
  * The photo frame with a body bolted on: 4/3 well, two crop marks, category
  * chip bottom-left, then title and a mono row of date plus "Read".
  *
- * The whole card is one link. Only the featured issue gets the orange chip,
- * and only one issue may be featured, because the chip is an anchor.
+ * `accent` sets `data-accent` on the card and nothing else. Everything the
+ * accent state looks like is CSS keyed on that attribute, so a script can move
+ * the accent from one card to another by moving one attribute. See the archive
+ * filters. The gradient well is scoped to `.grid-showcase` in global.css,
+ * because on the home page the issues are one section of five and the chip
+ * alone is enough.
+ *
+ * Reads only the six fields of `Issue`. Do not reach for anything else here:
+ * the record is shaped for the Beehiiv swap. The image is decorative, because
+ * the title beside it already says where the link goes, so alt is empty.
  */
 import PhotoFrame from './PhotoFrame.astro';
 import { longDate, machineDate } from '../lib/format';
@@ -15,9 +23,11 @@ import type { Issue } from '../data/issues';
 
 interface Props {
   issue: Issue;
+  /** The one card carrying the accent in the current view. */
+  accent?: boolean;
 }
 
-const { issue }: Props = Astro.props;
+const { issue, accent = false }: Props = Astro.props;
 
 const href = issue.url ?? routes.archive;
 const external = Boolean(issue.url);
@@ -25,17 +35,19 @@ const external = Boolean(issue.url);
 
 <a
   href={href}
-  class="card group"
+  class="card issue-card"
+  data-accent={accent ? '' : undefined}
+  data-category={issue.category}
   rel={external ? 'noopener' : undefined}
   target={external ? '_blank' : undefined}
 >
   <PhotoFrame
     variant="card"
     src={issue.image}
-    alt={issue.imageAlt ?? ''}
-    path={`issues.ts → ${issue.slug}.image`}
+    alt=""
+    path={`issues.ts → ${issue.id}.image`}
     chip={issue.category}
-    chipTone={issue.featured ? 'accent' : 'ink'}
+    chipTone="issue"
     mat={false}
   />
 

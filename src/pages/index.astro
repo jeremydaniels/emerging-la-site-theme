@@ -18,11 +18,11 @@ import SubscribeBand from '../components/SubscribeBand.astro';
 
 import { site } from '../lib/site';
 import { routes } from '../lib/links';
-import { latestIssues } from '../data/issues';
+import { getLatestIssues } from '../data/issues';
 import { upcomingEvents } from '../data/events';
 import { photos, photoPaths } from '../data/photos';
 
-const issues = latestIssues(3);
+const issues = await getLatestIssues(3);
 const upcoming = upcomingEvents();
 
 /**
@@ -171,7 +171,7 @@ const proof = [
     </SectionHeader>
 
     <div class="grid grid-cols-1 gap-4 wide:grid-cols-3 wide:gap-[26px]">
-      {issues.map((issue) => <IssueCard issue={issue} />)}
+      {issues.map((issue, i) => <IssueCard issue={issue} accent={i === 0} />)}
     </div>
 
     <div class="mt-9 flex justify-center">

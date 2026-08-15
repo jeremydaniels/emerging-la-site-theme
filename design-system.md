@@ -725,3 +725,62 @@ where Upcoming used to be. Any page with a conditional section does this.
 does not render. `EventsTable` returns nothing for an empty list, and the caller
 wraps the whole section in the same length check. Do not add an "assign an empty
 state" component; the absence is the design.
+
+---
+
+## 18. The showcase card
+
+A grid of issue cards can promote one of them. The promoted card gets an orange
+gradient well:
+
+```css
+--ela-well-accent: linear-gradient(155deg,
+  var(--palette-accent-light) 0%, var(--palette-accent) 45%, var(--palette-accent-dark) 100%);
+```
+
+Three rules go with it.
+
+**One orange element per accent card.** Where there is no gradient well, the
+category chip carries the accent (the home page). Where there is one, the well
+carries it and the chip inverts to near-black, because orange on orange is
+invisible and cream on this orange is 3.32:1. Same inversion as `.on-accent`.
+The empty slot's text and dashed box invert with it, and the warm multiply is
+switched off: that overlay is for photographs, and over a flat gradient it only
+muddies.
+
+**Opt in per grid, not per card.** The gradient is scoped to
+`.grid-showcase [data-accent]`. The archive is a page of nothing but issues and
+wants one card to carry the section; on the home page the issues are one section
+of five, where the chip alone is enough. One attribute drives both.
+
+**The accent is a view decision, never a data flag.** It belongs to the first
+card of the current view, so it recalculates whenever the view changes and
+cannot vanish when the card holding it is filtered out. `IssueCard` takes an
+`accent` prop that sets `data-accent` and nothing else, so a filter script moves
+the whole treatment by moving one attribute. Clear it from every card before
+setting it, or you end up with two.
+
+### Counting anchors when a fill is a gradient
+
+An anchor is a solid orange fill of real area, and a gradient is one. A sweep
+that only reads `background-color` misses it completely, so it has to read
+`background-image` too. It also has to collapse nesting: an orange chip inside
+an orange well is one orange region, not two, so only the outermost element
+counts.
+
+---
+
+## 19. When a section may not disappear
+
+The site's default is that a section with nothing in it does not render, and
+there is no empty state (§17). **A filter with no matches is the exception.**
+
+The difference is who caused the emptiness. A section with no content is empty
+because of us, and silence is the honest answer. A filter with no matches is
+empty because the visitor did something, and vanishing leaves them looking at a
+gap wondering whether the site broke. That case gets a real empty state: one
+line naming what happened, one line saying where everything went, and a control
+that puts it back.
+
+Do not reach for the disappearing-section pattern anywhere a visitor's own
+action produced the empty result.

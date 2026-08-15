@@ -1,107 +1,141 @@
 /**
- * Newsletter archive. Hand maintained.
+ * Newsletter archive.
  *
- * Add newest first. Nothing reads this from an API and nothing generates it;
- * when an issue goes out, it gets added here by hand.
+ * ============================================================================
+ *  SHAPED FOR THE BEEHIIV SWAP
  *
- * Copy rules apply to every string in this file. In particular: no invented
- * statistics, names or dates. See CLAUDE.md.
+ *  `Issue` carries exactly six fields, and they are all things a Beehiiv post
+ *  can give us: id, title, category, date, url, image. Nothing on any page
+ *  reads or writes a field outside that shape, so moving to the API is
+ *  replacing the body of `getIssues()` with a fetch. It is already async for
+ *  that reason: callers await it today, so they will not change.
  *
- * The rows currently in here are PLACEHOLDERS, marked `placeholder: true`.
- * They exist so the home page and the archive have something to render. Delete
- * them as real issues arrive: `grep "placeholder: true"` finds all of them.
+ *  Do not add presentational fields here. Anything a page needs that Beehiiv
+ *  cannot supply belongs in the page or the component, not on the record.
+ *  In particular there is deliberately no `featured` flag: which card carries
+ *  the accent is a view decision, recalculated per filter, not a property of
+ *  an issue.
+ * ============================================================================
+ *
+ * The rows below are placeholders. Every one has `url: null`, which is the
+ * marker: a real issue always has a Beehiiv URL. Two titles are the samples
+ * used elsewhere on the site; the rest are bracketed so nothing here can be
+ * mistaken for a real headline.
  */
 
-export const ISSUE_CATEGORIES = [
-  'Founder story',
-  'Event recap',
-  'Funding',
-  'Hiring',
-  'City',
-  '[Category]',
-] as const;
-
-export type IssueCategory = (typeof ISSUE_CATEGORIES)[number];
-
 export interface Issue {
-  /** URL-safe id, also the archive filter key. */
-  slug: string;
-  /** Sequential issue number as published. Null until it is known. */
-  number: number | null;
+  /** Stable id. Beehiiv's post id once this is live. */
+  id: string;
   title: string;
-  /** One line. Shown under the title in the archive list. */
-  summary: string;
-  /** ISO date, YYYY-MM-DD, the day it was sent. Null renders as [DATE]. */
+  /** Free-form so an API tag maps straight onto it. Drives the filters. */
+  category: string;
+  /** ISO date, YYYY-MM-DD. Null renders as [DATE] rather than a guess. */
   date: string | null;
-  category: IssueCategory;
-  /** Full URL of the issue on Beehiiv. Null falls back to the archive page. */
+  /** Full URL of the issue on Beehiiv. Null while there is not one. */
   url: string | null;
-  /**
-   * Path under /public, or null while there is no photo yet. Setting this is
-   * the single edit that swaps a real photo into the card.
-   */
+  /** Path under /public. Setting this is the single edit that swaps in a photo. */
   image: string | null;
-  /** Alt text. Required whenever image is set. */
-  imageAlt?: string;
-  /** At most one issue may be featured. It gets the orange chip. */
-  featured?: boolean;
-  /** Scaffolding row. Delete when a real issue replaces it. */
-  placeholder?: boolean;
 }
 
-export const issues: Issue[] = [
+const ISSUES: Issue[] = [
   {
-    slug: 'placeholder-1',
-    number: null,
+    id: 'placeholder-01',
     title: 'Inside the build with a $14M co-founder',
-    summary: '',
-    date: null,
     category: 'Founder story',
+    date: null,
     url: null,
     image: null,
-    featured: true,
-    placeholder: true,
   },
   {
-    slug: 'placeholder-2',
-    number: null,
+    id: 'placeholder-02',
     title: '100+ VCs, angels and LPs showed up for this one',
-    summary: '',
-    date: null,
     category: 'Event recap',
+    date: null,
     url: null,
     image: null,
-    placeholder: true,
   },
   {
-    slug: 'placeholder-3',
-    number: null,
-    title: '[Issue headline goes here]',
-    summary: '',
+    id: 'placeholder-03',
+    title: '[Issue headline three]',
+    category: 'Funding',
     date: null,
-    category: '[Category]',
     url: null,
     image: null,
-    placeholder: true,
+  },
+  {
+    id: 'placeholder-04',
+    title: '[Issue headline four]',
+    category: 'Founder story',
+    date: null,
+    url: null,
+    image: null,
+  },
+  {
+    id: 'placeholder-05',
+    title: '[Issue headline five]',
+    category: 'Event recap',
+    date: null,
+    url: null,
+    image: null,
+  },
+  {
+    id: 'placeholder-06',
+    title: '[Issue headline six]',
+    category: 'Hiring',
+    date: null,
+    url: null,
+    image: null,
+  },
+  {
+    id: 'placeholder-07',
+    title: '[Issue headline seven]',
+    category: 'Funding',
+    date: null,
+    url: null,
+    image: null,
+  },
+  {
+    id: 'placeholder-08',
+    title: '[Issue headline eight]',
+    category: 'Hiring',
+    date: null,
+    url: null,
+    image: null,
+  },
+  {
+    id: 'placeholder-09',
+    title: '[Issue headline nine]',
+    category: 'Founder story',
+    date: null,
+    url: null,
+    image: null,
   },
 ];
 
 /**
- * Newest first, which is the order the archive renders.
- * Undated rows sort to the front: an issue without a date is either the next
- * one out or a placeholder, and both belong at the top.
+ * THE ONE READ POINT. Every page goes through here.
+ *
+ * To move to Beehiiv, replace the body with the fetch and map the response
+ * onto `Issue`. No caller changes, because this is already async and already
+ * returns the sorted list.
+ *
+ * Newest first. Undated issues sort to the front: an issue without a date is
+ * either the next one out or a placeholder, and both belong at the top.
  */
-export function sortedIssues(list: Issue[] = issues): Issue[] {
-  return [...list].sort((a, b) => (b.date ?? '9999').localeCompare(a.date ?? '9999'));
+export async function getIssues(): Promise<Issue[]> {
+  return [...ISSUES].sort((a, b) => (b.date ?? '9999').localeCompare(a.date ?? '9999'));
 }
 
-/** The n most recent issues, for the home page. */
-export function latestIssues(count: number, list: Issue[] = issues): Issue[] {
-  return sortedIssues(list).slice(0, count);
+/** The n most recent, for the home page. */
+export async function getLatestIssues(count: number): Promise<Issue[]> {
+  return (await getIssues()).slice(0, count);
 }
 
-/** Categories that actually have issues, for the archive filter row. */
-export function usedCategories(list: Issue[] = issues): IssueCategory[] {
-  const present = new Set(list.map((i) => i.category));
-  return ISSUE_CATEGORIES.filter((c) => present.has(c));
+/**
+ * The categories actually present, in first-seen order, for the filter row.
+ * Derived from the data rather than a hardcoded union, so whatever tags
+ * Beehiiv returns become the filters with no further edit.
+ */
+export function categoriesOf(issues: Issue[]): string[] {
+  return [...new Set(issues.map((issue) => issue.category))];
 }

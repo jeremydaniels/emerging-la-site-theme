@@ -329,6 +329,27 @@
     color: var(--palette-paper);
   }
 
+  /* Defers to the card. One attribute moves the accent, so a filter script can
+     hand it to a different card without re-rendering anything.
+
+     The accent card carries exactly ONE orange element. Where there is no
+     gradient well (the home page) that is the chip. Where there is one (the
+     showcase grid) the well carries it and the chip inverts to near-black,
+     because orange on orange is invisible and cream on orange is 3.32:1. Same
+     inversion as .on-accent, for the same reason. */
+  .chip-issue {
+    background: var(--palette-ink);
+    color: var(--palette-paper);
+  }
+  [data-accent] .chip-issue {
+    background: var(--ela-accent);
+    color: var(--palette-paper);
+  }
+  .grid-showcase [data-accent] .chip-issue {
+    background: var(--palette-ink);
+    color: var(--palette-paper);
+  }
+
   /* --- Card ------------------------------------------------------------- */
 
   .card {
@@ -344,6 +365,29 @@
   .card:hover {
     border-color: var(--ela-ink);
     box-shadow: var(--ela-shadow-card);
+  }
+
+  /* --- Showcase grid ----------------------------------------------------- */
+
+  /* The gradient well, scoped to a grid that opts in. The archive is a page of
+     nothing but issues and wants one card to carry the section; the home page's
+     issues are one section of five, where the chip alone is enough. Scoping it
+     here rather than in IssueCard keeps a single accent attribute driving both. */
+  .grid-showcase [data-accent] .frame-well {
+    background-image: var(--ela-well-accent);
+  }
+
+  /* On orange, small text goes near-black. Same inversion as .on-accent, for
+     the same reason: cream on this orange is 3.32:1. */
+  .grid-showcase [data-accent] .slot {
+    --ela-slot-line: rgb(28 28 28 / 0.32);
+    --ela-slot-ink: rgb(28 28 28 / 0.86);
+    --ela-slot-ink-faint: rgb(28 28 28 / 0.6);
+  }
+
+  /* The warm multiply is for photographs. Over a flat gradient it just muddies. */
+  .grid-showcase [data-accent] .frame-wash {
+    display: none;
   }
 
   /* --- Ruled table ------------------------------------------------------ */

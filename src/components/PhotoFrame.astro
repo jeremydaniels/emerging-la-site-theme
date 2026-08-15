@@ -42,8 +42,12 @@ interface Props {
   brief?: string;
   /** Category chip, bottom-left of the well. */
   chip?: string;
-  /** Orange chip is an anchor. One live in the viewport at a time. */
-  chipTone?: 'accent' | 'ink';
+  /**
+   * accent / ink pick the fill directly. `issue` defers to CSS, so the chip
+   * follows whatever `data-accent` the card carries and a script can move the
+   * accent without re-rendering. See IssueCard.
+   */
+  chipTone?: 'accent' | 'ink' | 'issue';
   /** Force the caption bar on or off. Defaults per variant. */
   showMeta?: boolean;
   /**
@@ -135,7 +139,9 @@ const wantsMeta = showMeta ?? (hasMetaSlot || (empty && preset.meta));
         <span
           class:list={[
             'chip pointer-events-none absolute bottom-0 left-0',
-            chipTone === 'accent' ? 'chip-accent' : 'chip-ink',
+            chipTone === 'accent' && 'chip-accent',
+            chipTone === 'ink' && 'chip-ink',
+            chipTone === 'issue' && 'chip-issue',
           ]}
         >
           {chip}

@@ -163,7 +163,13 @@ src/
   components/MetaBar.astro        Mono metadata bar.
   components/Stub.astro           Scaffolding marker. Delete as pages get written.
 
-  data/issues.ts              Newsletter archive. Hand maintained, typed.
+  data/issues.ts              Newsletter archive. SHAPED FOR THE BEEHIIV SWAP: six fields
+                              (id, title, category, date, url, image) and nothing else.
+                              getIssues() is async and is the one read point, so moving
+                              to the API is a change to that function alone. Nothing on
+                              any page may read a field outside that shape, and there is
+                              deliberately no `featured` flag: which card carries the
+                              accent is a view decision, not a property of an issue.
   data/events.ts              Events. Hand maintained, typed. STATUS IS A MANUAL FLAG.
   lib/links.ts                Every external URL. All placeholders right now.
   lib/site.ts                 Site constants and the nav link list.
