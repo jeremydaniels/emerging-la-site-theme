@@ -108,6 +108,10 @@ card headlines or table row titles, which stay sentence case. That distinction i
 headline like "Inside the build with a $14M co-founder" is unreadable shouted. Two classes carry
 it, `.t-display` (uppercase) and `.t-title` (sentence case, for the `title-1` and `title-2` steps).
 
+`.t-title` also carries **statements** at `display-5`: the mission and vision lines on About. A
+statement is a sentence, not a heading, and sixteen words of uppercase Riegal at 46px is a wall.
+Rule of thumb: if it is a sentence somebody would read aloud, it is `.t-title`.
+
 ### Display scale (Riegal, uppercase, tight tracking)
 
 | Step | Size | Line height | Tracking | Where |
@@ -245,12 +249,16 @@ standing in for the missing bar.
 | --- | --- | --- | --- | --- | --- |
 | Hero, wide | `21/9` | 4 | `16px` | `14px` | 2400 × 1029 |
 | Hero, portrait | `4/5` | 4 | `16px` | `14px` | 1200 × 1500 |
+| Band | `3/2` | 4 | `16px` | `14px` | 1800 × 1200 |
 | Card | `4/3` | 2 | `13px` | `10px` | 1200 × 900 |
 | Event row thumb | `1/1` | none | — | — | 600 × 600 |
 
-**ADDED:** the portrait hero. The home page hero puts the photo in the right column beside the
-headline rather than in a band underneath, so it needs a tall frame. Same four crop marks, same
-treatment, `4/5`.
+**Four marks is the standalone-photo treatment, two is the card treatment.** That is the rule the
+mockup's diagonal pair encodes, and it is what decides the count for any new frame.
+
+**ADDED:** the portrait hero (`4/5`), because the home page hero puts the photo in the right column
+beside the headline rather than in a band underneath. **ADDED:** the band (`3/2`), for a run of
+standalone photos across a page, as on About. Both keep all four marks.
 
 The image itself carries `filter: contrast(1.05) saturate(0.96)` and is overlaid with
 `linear-gradient(rgba(217,96,14,0.07), rgba(28,28,28,0.05))` at `mix-blend-mode: multiply`.
@@ -394,6 +402,23 @@ with the leading number in `--ela-accent-dark`. Only one such row at a time.
 container, each cell `padding: 26px 22px` with `border-right: 1px solid var(--ela-rule)` except the
 last. Collapses to two columns at ≤900px. Number in Riegal `stat` step, label in mono `10.5px`
 `0.16em` uppercase `--ela-ink-muted`, `margin-top: 8px`.
+
+### Ruled grids: use the gap, not per-cell borders
+
+For any ruled grid of more than one row, draw the dividers with a `1px` gap over a ruled ground
+rather than putting borders on the cells:
+
+```css
+.grid { display: grid; gap: 1px; background: var(--ela-rule); }
+.grid > * { background: var(--ela-ground); }   /* or --ela-paper */
+```
+
+The mockup's own stat grid does this. It is not a style preference: per-cell border arithmetic has
+to be redone every time the column count changes at a breakpoint, and it gets the first and last
+cell of each row wrong. The gap technique is correct at any column count and any cell height.
+
+**Do not put `items-start` on such a grid.** The cells have to stretch to the row height, or the
+ruled ground shows through under the shorter one as a grey block.
 
 ---
 

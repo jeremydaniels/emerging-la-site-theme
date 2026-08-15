@@ -1,0 +1,51 @@
+---
+/**
+ * The orange subscribe band. Shared by every page that ends with it, so there
+ * is exactly one of these and it never drifts between pages.
+ *
+ * This is the page's last anchor and the only section where orange carries the
+ * whole field. The heading stays cream, because display sizes clear AA-large on
+ * orange; everything smaller goes near-black, which the .on-accent token block
+ * handles. See design-system.md §15.
+ *
+ * The form panel resets itself with .on-paper. That lives in SubscribeForm.
+ */
+import SubscribeForm from './SubscribeForm.astro';
+import { site } from '../lib/site';
+
+interface Props {
+  /** Section number for this page. Numbering restarts on every page. */
+  number: string;
+  class?: string;
+}
+
+const { number, class: className = '' }: Props = Astro.props;
+---
+
+<section
+  id="subscribe"
+  class:list={['on-accent bg-ground mt-section-sm wide:mt-[88px]', className]}
+>
+  <div class="px-gutter-sm py-16 wide:px-gutter">
+    <div class="mx-auto max-w-page">
+      <div class="t-mono mb-5 flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
+        <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
+        <span>{number} · Subscribe</span>
+      </div>
+
+      <div
+        class="grid grid-cols-1 items-start gap-8 wide:grid-cols-[minmax(0,1fr)_minmax(0,520px)] wide:gap-[52px]"
+      >
+        <div>
+          <h2 class="t-display m-0 text-display-2 text-ink">Get it in<br />your inbox</h2>
+          <p class="mt-6 max-w-[44ch] text-lead-alt text-ink-muted-aa">
+            One email on what's happening in LA tech, plus first word on upcoming events.
+            Read by {site.communitySize} founders, investors and operators.
+          </p>
+        </div>
+
+        <SubscribeForm />
+      </div>
+    </div>
+  </div>
+</section>

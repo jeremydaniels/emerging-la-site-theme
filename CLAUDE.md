@@ -151,6 +151,10 @@ src/
   components/Footer.astro     Ink ground in both modes, via .on-ink.
   components/Wordmark.astro   Picks black or cream, enforces the 120px floor.
   components/SectionHeader.astro  Numbered eyebrow + H2 + rule.
+  components/SubscribeBand.astro  The orange band. Shared by every page that ends with it.
+  components/SubscribeForm.astro  The form inside it. There is only one of these.
+  components/IssueCard.astro      Issue card. Two crop marks, not four.
+  components/EventsTable.astro    Ruled events table. variant="upcoming" | "past".
   components/PhotoFrame.astro     Mat, well, warm multiply, corner crop marks, metadata bar.
   components/MetaBar.astro        Mono metadata bar.
   components/Stub.astro           Scaffolding marker. Delete as pages get written.
@@ -160,8 +164,10 @@ src/
   lib/links.ts                Every external URL. All placeholders right now.
   lib/site.ts                 Site constants and the nav link list.
 
-  pages/                      index, about, archive, events, subscribe, thanks,
-                              privacy, terms, 404. All stubs.
+  data/photos.ts              Standalone photo slots not attached to a data row.
+
+  pages/                      index and about are built. archive, events, subscribe,
+                              thanks, privacy, terms and 404 are still stubs.
 ```
 
 ### Utility classes worth knowing

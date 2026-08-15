@@ -1,14 +1,278 @@
 ---
+/**
+ * About page.
+ *
+ * Second page of the same document as home: same section numbering restarting
+ * at 01, same eyebrow, same frames, same rhythm.
+ *
+ * The subscribe band is the only anchor-orange element on this page.
+ *
+ * All copy here is placeholder and gets rewritten. Every slot is built to take
+ * a third more or a third less text without the layout moving: no fixed
+ * heights, prose capped in ch so line length stays sane, every grid
+ * top-aligned so a longer block grows downward instead of shifting its
+ * neighbour, and the ruled grids draw their dividers with a 1px gap over a
+ * ruled ground rather than per-cell borders, so they hold at any cell height
+ * and any column count.
+ */
 import SiteLayout from '../layouts/SiteLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
-import Stub from '../components/Stub.astro';
+import PhotoFrame from '../components/PhotoFrame.astro';
+import SubscribeBand from '../components/SubscribeBand.astro';
+
+import { site } from '../lib/site';
+import { photos, photoPaths } from '../data/photos';
+
+const values = [
+  {
+    name: 'Proximity over pedigree',
+    line: "Where you're standing matters more than where you went.",
+  },
+  {
+    name: 'The door stays open',
+    line: "If a room needs a gatekeeper to be worth walking into, it isn't worth walking into.",
+  },
+  {
+    name: 'Say the useful thing',
+    line: 'Specific beats impressive.',
+  },
+  {
+    name: 'LA first',
+    line: "This city doesn't have to become somewhere else to matter.",
+  },
+];
+
+const audiences = [
+  { name: 'Founders', line: 'Building here, or about to be.' },
+  { name: 'Investors', line: 'Writing checks in LA and looking for the next one.' },
+  { name: 'Operators', line: "Early at something, or figuring out what's next." },
+  { name: 'Students and first-timers', line: "No network yet. That's the point." },
+];
+
+/** Two cells, not four. Home already carries the four-cell version. */
+const numbers = [
+  { value: site.communitySize, label: 'Community', real: true },
+  { value: '[TBD]', label: 'Events hosted', real: false },
+];
+
+const rooms = [
+  { slot: photos.aboutRoom1, path: photoPaths.aboutRoom1 },
+  { slot: photos.aboutRoom2, path: photoPaths.aboutRoom2 },
+  { slot: photos.aboutRoom3, path: photoPaths.aboutRoom3 },
+];
 ---
 
-<SiteLayout title="About">
+<SiteLayout
+  title="About"
+  description="A newsletter and events for the people building tech in Los Angeles."
+>
   <span slot="strip-end">About</span>
 
-  <div class="mx-auto max-w-page px-gutter-sm py-section-sm wide:px-gutter wide:py-section">
-    <SectionHeader number="01" eyebrow="About" title="About" as="h1" />
-    <Stub note="What Emerging LA is, who it is for, what the newsletter covers and what the events are." />
-  </div>
+  {/* ------------------------------------------------------------------ 01 */}
+  <section class="mx-auto max-w-page px-gutter-sm pt-10 pb-9 wide:px-gutter wide:pt-[52px]">
+    <div class="t-mono mb-[22px] flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
+      <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
+      <span>01 · About</span>
+    </div>
+
+    <h1 class="t-display m-0 max-w-[22ch] text-display-3 text-ink">
+      LA's most ambitious people don't all come from the same five schools
+    </h1>
+
+    <p class="mt-7 max-w-[52ch] text-lead font-medium text-ink-muted-aa">
+      A newsletter and events for the people building tech in Los Angeles
+    </p>
+  </section>
+
+  {/* ------------------------------------------------------------------ 02 */}
+  {/*
+    Publication voice throughout, never a first person singular. The portrait
+    is its own column with a fixed aspect, so the prose beside it can grow or
+    shrink without dragging the photo around.
+  */}
+  <section
+    id="story"
+    class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
+  >
+    <SectionHeader number="02" eyebrow="Origin" title="Our story" class="mb-[34px]" />
+
+    <div
+      class="grid grid-cols-1 items-start gap-9 wide:grid-cols-[minmax(0,1.05fr)_minmax(260px,0.7fr)] wide:gap-14"
+    >
+      <div class="max-w-[62ch]">
+        <p class="m-0 text-body-lg text-ink">
+          For a long time the rooms that mattered in LA weren't advertised. They were
+          somebody's dinner, somebody's group chat, somebody's list. If you were on it, you
+          knew. If you weren't, you didn't know there was anything to be on.
+        </p>
+        <p class="mt-5 text-body text-ink-muted-aa">
+          So we started opening them. One, then another, then enough of them that showing
+          up became something you could just do instead of something you had to be invited
+          to.
+        </p>
+        <p class="mt-5 text-body text-ink-muted-aa">
+          The people who kept coming back weren't the ones with the résumé for it. They
+          were the ones who wanted it enough to be in a room on a Tuesday.
+        </p>
+        <p class="mt-5 text-body-lg text-ink">Emerging LA is what that turned into.</p>
+      </div>
+
+      <PhotoFrame
+        variant="portrait"
+        src={photos.aboutPortrait.src}
+        alt={photos.aboutPortrait.alt}
+        brief={photos.aboutPortrait.brief}
+        path={photoPaths.aboutPortrait}
+      />
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------------ 03 */}
+  {/*
+    Two independent blocks, each labelled, divided by a rule that runs
+    horizontally when they stack and vertically when they sit side by side.
+    Set in the display face at section-headline size but in SENTENCE case:
+    these are statements, and sixteen words of uppercase Riegal is a wall.
+  */}
+  <section
+    id="mission"
+    class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
+  >
+    <SectionHeader number="03" eyebrow="Purpose" title="Mission and vision" class="mb-[34px]" />
+
+    {/* No items-start here: the gap-px divider technique needs the cells to
+        stretch to the row height, or the ruled ground shows through under the
+        shorter one. */}
+    <div class="grid grid-cols-1 gap-px border-y border-rule bg-rule wide:grid-cols-2">
+      <div class="bg-ground py-9 wide:pr-14">
+        <div class="t-mono mb-4 text-mono-label-wide text-ink-muted">Mission</div>
+        <p class="t-title m-0 max-w-[24ch] text-display-5 text-ink">
+          Most people in LA never find out the room exists
+        </p>
+      </div>
+
+      <div class="bg-ground py-9 wide:pl-14">
+        <div class="t-mono mb-4 text-mono-label-wide text-ink-muted">Vision</div>
+        <p class="t-title m-0 max-w-[24ch] text-display-5 text-ink">
+          An LA where the person you need to meet is one introduction away instead of one
+          lucky accident
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------------ 04 */}
+  {/*
+    Same row construction as the events table: mono index, title in the display
+    face at sentence case, one line beside it.
+  */}
+  <section
+    id="values"
+    class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
+  >
+    <SectionHeader number="04" eyebrow="Principles" title="Values" class="mb-[34px]" />
+
+    <div class="border-t border-rule">
+      {
+        values.map((value, i) => (
+          <div class="flex flex-col gap-2 border-b border-hairline py-7 wide:flex-row wide:items-start wide:gap-8">
+            <div class="flex items-baseline gap-4 wide:w-[360px] wide:flex-none">
+              <span class="t-mono w-[30px] flex-none text-mono-index text-ink-faint">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <h3 class="t-title m-0 text-title-2 text-ink">{value.name}</h3>
+            </div>
+            <p class="m-0 max-w-[56ch] text-body-sm text-ink-muted-aa wide:flex-1">
+              {value.line}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* -------------------------------------------------------- photo band --- */}
+  {/*
+    Unnumbered, the way the home page's proof strip is: it breaks up the text
+    rather than making an argument. Ruled top and bottom, generous vertical
+    room, because this is the section that carries the most weight once real
+    photographs land.
+  */}
+  <section class="px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section">
+    <div class="mx-auto max-w-page border-y border-rule py-10 wide:py-14">
+      <div
+        class="t-mono mb-7 flex flex-wrap items-baseline gap-x-5 gap-y-2 text-mono-meta text-ink-muted"
+      >
+        <span class="text-ink">From recent events</span>
+        <span class="wide:ml-auto">Candid, unposed</span>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 wide:grid-cols-3 wide:gap-[26px]">
+        {
+          rooms.map((room) => (
+            <PhotoFrame
+              variant="band"
+              src={room.slot.src}
+              alt={room.slot.alt}
+              brief={room.slot.brief}
+              path={room.path}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------------ 05 */}
+  {/*
+    The ruled 2x2. Dividers come from a 1px gap over a ruled ground, so cells
+    stretch to the tallest in their row and a longer line just makes the row
+    taller. No per-cell border arithmetic to get wrong.
+  */}
+  <section
+    id="audience"
+    class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
+  >
+    <SectionHeader number="05" eyebrow="Audience" title="Who it's for" class="mb-[34px]" />
+
+    <div class="grid grid-cols-1 gap-px border-y border-rule bg-rule wide:grid-cols-2">
+      {
+        audiences.map((audience) => (
+          <div class="bg-ground py-7 wide:px-[26px] wide:py-[30px] wide:first:pl-0 wide:[&:nth-child(2)]:pr-0 wide:[&:nth-child(3)]:pl-0 wide:last:pr-0">
+            <h3 class="t-title m-0 text-title-2 text-ink">{audience.name}</h3>
+            <p class="mt-2 max-w-[44ch] text-body-sm text-ink-muted-aa">{audience.line}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* ----------------------------------------------------------- numbers --- */}
+  {/*
+    Two cells, and narrower than the page, so this reads as a footnote rather
+    than a second proof strip. 14K+ community is the only verified figure on
+    the site.
+  */}
+  <section class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section">
+    <div class="grid max-w-[560px] grid-cols-2 gap-px border-y border-rule bg-rule">
+      {
+        numbers.map((cell, i) => (
+          <div class:list={['bg-ground py-[26px] pr-[22px]', i > 0 && 'pl-[22px]']}>
+            <div
+              class:list={[
+                't-display text-display-5',
+                cell.real ? 'text-ink' : 'text-ink-faint',
+              ]}
+            >
+              {cell.value}
+            </div>
+            <div class="t-mono mt-2 text-mono-meta text-ink-muted">{cell.label}</div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------------ 06 */}
+  <SubscribeBand number="06" />
 </SiteLayout>
