@@ -18,6 +18,7 @@
 import SiteLayout from '../layouts/SiteLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import PhotoFrame from '../components/PhotoFrame.astro';
+import RuledList from '../components/RuledList.astro';
 import SubscribeBand from '../components/SubscribeBand.astro';
 
 import { site } from '../lib/site';
@@ -172,23 +173,8 @@ const rooms = [
   >
     <SectionHeader number="04" eyebrow="Principles" title="Values" class="mb-[34px]" />
 
-    <div class="border-t border-rule">
-      {
-        values.map((value, i) => (
-          <div class="flex flex-col gap-2 border-b border-hairline py-7 wide:flex-row wide:items-start wide:gap-8">
-            <div class="flex items-baseline gap-4 wide:w-[360px] wide:flex-none">
-              <span class="t-mono w-[30px] flex-none text-mono-index text-ink-faint">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <h3 class="t-title m-0 text-title-2 text-ink">{value.name}</h3>
-            </div>
-            <p class="m-0 max-w-[56ch] text-body-sm text-ink-muted-aa wide:flex-1">
-              {value.line}
-            </p>
-          </div>
-        ))
-      }
-    </div>
+    <RuledList items={values} />
+
   </section>
 
   {/* -------------------------------------------------------- photo band --- */}

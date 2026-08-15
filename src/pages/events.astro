@@ -1,22 +1,198 @@
 ---
+/**
+ * Events page.
+ *
+ * Same document as home and about: numbering restarts at 01, same eyebrow,
+ * same frames, same section rhythm.
+ *
+ * Section numbers are computed rather than hardcoded, because the Upcoming and
+ * Past sections each disappear when their list is empty. Hardcoding would leave
+ * a hole in the sequence the first time there is nothing upcoming.
+ *
+ * The subscribe band is the only anchor-orange element on this page.
+ */
 import SiteLayout from '../layouts/SiteLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
-import Stub from '../components/Stub.astro';
+import PhotoFrame from '../components/PhotoFrame.astro';
+import EventsTable from '../components/EventsTable.astro';
+import RuledList from '../components/RuledList.astro';
+import SubscribeBand from '../components/SubscribeBand.astro';
+
 import { upcomingEvents, pastEvents } from '../data/events';
+import { photos, photoPaths } from '../data/photos';
 
 const upcoming = upcomingEvents();
 const past = pastEvents();
+
+/**
+ * Sections in document order, minus the ones that are not rendering. `n()`
+ * then gives each its number, so the sequence is always contiguous.
+ */
+const sections = [
+  'header',
+  upcoming.length > 0 && 'upcoming',
+  past.length > 0 && 'past',
+  'photos',
+  'how',
+  'subscribe',
+].filter(Boolean) as string[];
+
+const n = (key: string) => String(sections.indexOf(key) + 1).padStart(2, '0');
+
+/** Three steps, and there is no fourth. Nothing here to apply for. */
+const steps = [
+  {
+    name: 'RSVP',
+    line: 'Pick something on the list and RSVP. That holds your spot. There is nothing to apply for and nobody approves you.',
+  },
+  {
+    name: 'Show up',
+    line: 'Come on your own or bring someone who should be there. No badge, no bio, nobody checking a list at the door.',
+  },
+  {
+    name: 'Come back',
+    line: 'Talk to people, then come to the next one. Showing up twice is most of it.',
+  },
+];
+
+const rooms = [
+  { slot: photos.eventsRoom1, path: photoPaths.eventsRoom1 },
+  { slot: photos.eventsRoom2, path: photoPaths.eventsRoom2 },
+  { slot: photos.eventsRoom3, path: photoPaths.eventsRoom3 },
+];
 ---
 
-<SiteLayout title="Events">
+<SiteLayout
+  title="Events"
+  description="Dinners, mixers and demo nights across Los Angeles. Anyone can attend."
+>
   <span slot="strip-end">Events</span>
 
-  <div class="mx-auto max-w-page px-gutter-sm py-section-sm wide:px-gutter wide:py-section">
-    <SectionHeader number="01" eyebrow="Events" title="Events" as="h1" />
+  {/* --------------------------------------------------------------- header */}
+  <section class="mx-auto max-w-page px-gutter-sm pt-10 pb-9 wide:px-gutter wide:pt-[52px]">
+    <div class="t-mono mb-[22px] flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
+      <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
+      <span>{n('header')} · Events</span>
+    </div>
 
-    {/* Interactive: the upcoming/past toggle. Scoped script, no framework island. */}
-    <Stub
-      note={`Ruled table of events with the upcoming and past toggle above it. ${upcoming.length} upcoming and ${past.length} past in src/data/events.ts. Status is a manual flag, not derived from the date.`}
+    <h1 class="t-display m-0 max-w-[22ch] text-display-3 text-ink">Anyone can attend</h1>
+
+    <p class="mt-7 max-w-[52ch] text-lead font-medium text-ink-muted-aa">
+      RSVP to hold a spot. No credential, no approval, no invite required.
+    </p>
+  </section>
+
+  {/* ------------------------------------------------------------- upcoming */}
+  {/*
+    Hidden entirely when there is nothing upcoming, the same rule the home page
+    uses. There is no empty state on this site: a section with nothing in it
+    does not render.
+  */}
+  {
+    upcoming.length > 0 && (
+      <section
+        id="upcoming"
+        class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
+      >
+        <SectionHeader
+          number={n('upcoming')}
+          eyebrow="Upcoming"
+          title="What's next"
+          class="mb-3"
+        />
+
+        <p class="mt-0 mb-[26px] text-body-sm text-ink-muted-aa">
+          Anyone can attend. RSVP to hold a spot.
+        </p>
+
+        <EventsTable events={upcoming} variant="upcoming" />
+
+        {/* Home has a "See all events" link here. This is that page, so the
+            note stands on its own. */}
+        <p class="t-mono mt-0 pt-[22px] text-mono-meta-lg text-ink-muted">
+          More dates added regularly
+        </p>
+      </section>
+    )
+  }
+
+  {/* ----------------------------------------------------------------- past */}
+  {
+    past.length > 0 && (
+      <section
+        id="past"
+        class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
+      >
+        <SectionHeader
+          number={n('past')}
+          eyebrow="Past"
+          title="Already run"
+          class="mb-3"
+        />
+
+        <p class="mt-0 mb-[26px] text-body-sm text-ink-muted-aa">
+          Recaps and photos from events that have happened.
+        </p>
+
+        <EventsTable events={past} variant="past" />
+      </section>
+    )
+  }
+
+  {/* --------------------------------------------------------------- photos */}
+  {/*
+    Numbered rather than left as an unnumbered breather the way the About band
+    is. On this page the photographs are the evidence of what an event is
+    actually like, which makes them content rather than punctuation.
+  */}
+  <section
+    id="photos"
+    class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
+  >
+    <SectionHeader
+      number={n('photos')}
+      eyebrow="In the room"
+      title="What it looks like"
+      class="mb-[34px]"
     />
-  </div>
+
+    <div
+      class="t-mono mb-7 flex flex-wrap items-baseline gap-x-5 gap-y-2 text-mono-meta text-ink-muted"
+    >
+      <span class="text-ink">From past events</span>
+      <span class="wide:ml-auto">Candid, unposed</span>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 wide:grid-cols-3 wide:gap-[26px]">
+      {
+        rooms.map((room) => (
+          <PhotoFrame
+            variant="band"
+            src={room.slot.src}
+            alt={room.slot.alt}
+            brief={room.slot.brief}
+            path={room.path}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------------ how */}
+  <section
+    id="how"
+    class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
+  >
+    <SectionHeader
+      number={n('how')}
+      eyebrow="How it works"
+      title="Three steps"
+      class="mb-[34px]"
+    />
+
+    <RuledList items={steps} />
+  </section>
+
+  {/* ------------------------------------------------------------ subscribe */}
+  <SubscribeBand number={n('subscribe')} />
 </SiteLayout>

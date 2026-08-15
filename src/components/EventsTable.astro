@@ -2,17 +2,22 @@
 /**
  * The ruled events table. See design-system.md §8.
  *
- * One component renders both views. The home page passes the upcoming list;
- * the events page will pass either, driven by its toggle:
+ * One component renders both views:
  *
  *   <EventsTable events={upcomingEvents()} variant="upcoming" />
  *   <EventsTable events={pastEvents()} variant="past" />
+ *
+ * The two variants share the layout completely. Every difference between them
+ * lives in the VARIANTS table below and lands in exactly one place, the
+ * trailing cell of each row plus its column heading. Nothing else in the markup
+ * reads `variant`, so the row structure cannot drift between the two. If you
+ * ever need a second branch, put it in VARIANTS rather than in the template.
  *
  * Renders nothing at all when the list is empty. The caller decides whether an
  * empty list means "hide the whole section" or "show an empty state".
  */
 import PhotoFrame from './PhotoFrame.astro';
-import { monthShort, dayOfMonth, machineDate, longDate } from '../lib/format';
+import { monthShort, dayOfMonth, machineDate } from '../lib/format';
 import { links } from '../lib/links';
 import type { EventItem } from '../data/events';
 
@@ -24,10 +29,29 @@ interface Props {
 
 const { events, variant = 'upcoming', class: className = '' }: Props = Astro.props;
 
-const isUpcoming = variant === 'upcoming';
-const cta = isUpcoming ? 'RSVP' : 'Photos';
-/** Upcoming rows fall back to the Luma calendar, past rows to nothing. */
-const fallbackHref = isUpcoming ? links.lumaCalendar : null;
+/**
+ * The whole of the difference between the two tables.
+ *
+ * `fallback` is where a row points when it has no url of its own: an upcoming
+ * event can still send you to the Luma calendar, a past one has nowhere to go
+ * until its recap exists.
+ */
+const VARIANTS = {
+  upcoming: {
+    heading: 'RSVP',
+    cta: 'RSVP',
+    fallback: links.lumaCalendar as string | null,
+    pending: '[LINK]',
+  },
+  past: {
+    heading: 'Recap',
+    cta: 'Photos',
+    fallback: null as string | null,
+    pending: '[SOON]',
+  },
+} as const;
+
+const v = VARIANTS[variant];
 ---
 
 {
@@ -39,15 +63,15 @@ const fallbackHref = isUpcoming ? links.lumaCalendar : null;
         <span class="flex-[0_0_96px]">Photo</span>
         <span class="flex-auto">Event</span>
         <span class="flex-[0_0_200px]">Location</span>
-        <span class="flex-[0_0_96px] text-right">{isUpcoming ? 'RSVP' : 'Recap'}</span>
+        <span class="flex-[0_0_96px] text-right">{v.heading}</span>
       </div>
 
       {events.map((event, i) => {
-        const href = event.url ?? fallbackHref;
+        const href = event.url ?? v.fallback;
         const index = String(i + 1).padStart(2, '0');
 
         return (
-          <div class:list={['row', event.featured && isUpcoming && 'row-featured']}>
+          <div class:list={['row', event.featured && 'row-featured']}>
             <span class="t-mono hidden flex-[0_0_46px] text-mono-index text-ink-faint wide:block">
               {index}
             </span>
@@ -92,11 +116,11 @@ const fallbackHref = isUpcoming ? links.lumaCalendar : null;
                 target="_blank"
                 class="t-mono ml-auto flex-[0_0_96px] text-right text-mono-tab text-accent-step transition-opacity hover:opacity-70"
               >
-                {cta} →
+                {v.cta} →
               </a>
             ) : (
               <span class="t-mono ml-auto flex-[0_0_96px] text-right text-mono-tab text-ink-faint">
-                {isUpcoming ? '[LINK]' : '[SOON]'}
+                {v.pending}
               </span>
             )}
           </div>

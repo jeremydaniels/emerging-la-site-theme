@@ -686,3 +686,42 @@ of the menu, under a hairline, with a `Mode` mono label on the left and the swit
   and Enter both work and the focus ring is the site's standard one.
 - `prefers-reduced-motion` drops the transition to nothing and keeps the state change, through the
   global rule in `global.css`.
+
+---
+
+## 17. Two rules for reused sections
+
+Both came out of building the same pattern on a second and third page.
+
+**A variant must isolate its differences.** `EventsTable` renders the upcoming
+and past tables. Every difference between them lives in one `VARIANTS` object at
+the top of the component and lands in exactly one place: the trailing cell of
+each row, plus that column's heading. Nothing else in the template reads
+`variant`. That is testable, and it is tested: the header signature, the row
+signature with the trailing cell removed, and the rendered column geometry are
+all identical between the two. If a variant ever needs a second difference, it
+goes in `VARIANTS`, not in the markup.
+
+**Section numbers are computed, not typed.** A page whose sections can
+disappear cannot hardcode `01`, `02`, `03`. The Events page hides Upcoming when
+nothing is upcoming, and hides Past when nothing has run. So it builds the list
+of sections that are actually rendering and numbers from that:
+
+```ts
+const sections = [
+  'header',
+  upcoming.length > 0 && 'upcoming',
+  past.length > 0 && 'past',
+  'photos', 'how', 'subscribe',
+].filter(Boolean) as string[];
+
+const n = (key: string) => String(sections.indexOf(key) + 1).padStart(2, '0');
+```
+
+With no upcoming events the page numbers 01, 02 Past, 03, 04, 05, with no hole
+where Upcoming used to be. Any page with a conditional section does this.
+
+**There is no empty state anywhere on this site.** A section with nothing in it
+does not render. `EventsTable` returns nothing for an empty list, and the caller
+wraps the whole section in the same length check. Do not add an "assign an empty
+state" component; the absence is the design.

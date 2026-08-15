@@ -98,6 +98,49 @@ export const events: EventItem[] = [
     image: null,
     placeholder: true,
   },
+
+  /* Past. Same shape, status flipped by hand. `note` on a past row is where the
+     recap line goes, not an attendance count: that would be an invented number
+     until somebody counts. */
+  {
+    slug: 'placeholder-past-1',
+    name: '[Past event name one]',
+    status: 'past',
+    date: null,
+    time: null,
+    venue: '[Venue]',
+    neighborhood: '[Neighborhood]',
+    note: '[One line on how this one went]',
+    url: null,
+    image: null,
+    placeholder: true,
+  },
+  {
+    slug: 'placeholder-past-2',
+    name: '[Past event name two]',
+    status: 'past',
+    date: null,
+    time: null,
+    venue: '[Venue]',
+    neighborhood: '[Neighborhood]',
+    note: '[One line on how this one went]',
+    url: null,
+    image: null,
+    placeholder: true,
+  },
+  {
+    slug: 'placeholder-past-3',
+    name: '[Past event name three]',
+    status: 'past',
+    date: null,
+    time: null,
+    venue: '[Venue]',
+    neighborhood: '[Neighborhood]',
+    note: '[One line on how this one went]',
+    url: null,
+    image: null,
+    placeholder: true,
+  },
 ];
 
 /** Soonest first, which is how upcoming events read. Undated rows go last. */

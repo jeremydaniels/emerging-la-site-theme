@@ -1,0 +1,42 @@
+---
+/**
+ * A ruled list of short entries: mono index, title in the display face at
+ * sentence case, one line beside it. Same row construction as the events
+ * table, see design-system.md §8.
+ *
+ * Used by the About page's values and the Events page's how it works. Both are
+ * the same object, so they are the same component.
+ *
+ * Rows have no fixed height: a longer line just makes the row taller.
+ */
+
+export interface RuledItem {
+  name: string;
+  line: string;
+}
+
+interface Props {
+  items: RuledItem[];
+  /** Heading level for the entry names, so each page keeps a sane outline. */
+  as?: 'h3' | 'h4';
+  class?: string;
+}
+
+const { items, as: Tag = 'h3', class: className = '' }: Props = Astro.props;
+---
+
+<div class:list={['border-t border-rule', className]}>
+  {
+    items.map((item, i) => (
+      <div class="flex flex-col gap-2 border-b border-hairline py-7 wide:flex-row wide:items-start wide:gap-8">
+        <div class="flex items-baseline gap-4 wide:w-[360px] wide:flex-none">
+          <span class="t-mono w-[30px] flex-none text-mono-index text-ink-faint">
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <Tag class="t-title m-0 text-title-2 text-ink">{item.name}</Tag>
+        </div>
+        <p class="m-0 max-w-[56ch] text-body-sm text-ink-muted-aa wide:flex-1">{item.line}</p>
+      </div>
+    ))
+  }
+</div>

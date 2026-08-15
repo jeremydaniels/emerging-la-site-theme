@@ -155,6 +155,10 @@ src/
   components/SubscribeForm.astro  The form inside it. There is only one of these.
   components/IssueCard.astro      Issue card. Two crop marks, not four.
   components/EventsTable.astro    Ruled events table. variant="upcoming" | "past".
+                              Both variants share the layout completely: every
+                              difference lives in the VARIANTS table at the top
+                              and lands only in the trailing cell.
+  components/RuledList.astro      Index + name + line rows. About values, Events steps.
   components/PhotoFrame.astro     Mat, well, warm multiply, corner crop marks, metadata bar.
   components/MetaBar.astro        Mono metadata bar.
   components/Stub.astro           Scaffolding marker. Delete as pages get written.
