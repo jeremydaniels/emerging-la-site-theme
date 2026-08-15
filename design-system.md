@@ -303,15 +303,19 @@ The top strip is the one place the design puts mono on `#1C1C1C` full-bleed: tex
 Every section is numbered. The number is part of the eyebrow, not a separate element.
 
 ```
-──  01 — START HERE          ← eyebrow: 26px rule + mono
+──  01 · START HERE          ← eyebrow: 26px rule + mono
 LATEST ISSUES                ← H2: display-5
 ────────────────────────────  ← 1px --ela-rule, then 34px of air
 ```
 
 **Eyebrow:** `display: flex; align-items: center; gap: 10px`, then a `26px × 1px` span filled with
 `--ela-accent-dark`, then the label in Courier Prime `11px` `0.16em` uppercase `--ela-accent-dark`.
-Label format is `NN — Name` with an em-space-flanked em dash, e.g. `01 — Start here`. Margin-bottom
-`12px` inside a header block, `18px`–`22px` when standalone.
+Label format is `NN · Name`, e.g. `01 · Start here`. Margin-bottom `12px` inside a header block,
+`18px`–`22px` when standalone.
+
+**PORT:** the mockup writes this separator as an em dash (`01 — Start here`). The copy rules forbid
+em dashes in anything user-facing, so the site uses a middot, which the design already uses as a
+separator in the footer legal line and the photo metadata bar. Same rhythm, allowed character.
 
 On the orange band, the eyebrow rule becomes `rgba(255,253,250,0.60)` and the label
 `rgba(255,253,250,0.78)`. In dark mode both become `--ela-accent-light`.
@@ -321,8 +325,8 @@ On the orange band, the eyebrow rule becomes `rgba(255,253,250,0.60)` and the la
 (`Read the archive →`, the events tab group) is pushed right with `margin-left: auto` and drops to
 `margin-left: 0` at ≤900px.
 
-Homepage numbering as built: `01 — Start here`, `02 — About`, `03 — Newsletter`, `04 — Events`,
-`05 — Subscribe`. Numbers are per page and restart at `01` on each page.
+Homepage numbering as built: `01 · Start here`, `02 · About`, `03 · Newsletter`, `04 · Events`,
+`05 · Subscribe`. Numbers are per page and restart at `01` on each page.
 
 ---
 

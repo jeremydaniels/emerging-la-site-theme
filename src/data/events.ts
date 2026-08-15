@@ -30,7 +30,7 @@ export interface EventItem {
   status: EventStatus;
   /** ISO date, YYYY-MM-DD. Display and sorting only, never the status. */
   date: string;
-  /** Free text, e.g. "6:30 PM". Null when the time is not settled. */
+  /** Display text, e.g. "6:30 PM". Null when the time is not settled. */
   time: string | null;
   venue: string;
   neighborhood: string;
