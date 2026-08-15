@@ -100,8 +100,13 @@ The mockup's display face is Archivo at `font-weight:800` with `font-stretch` be
 - Riegal metrics: 1000 upm, cap height 688, x-height 545, ascender 819, descender -181.
   The high x-height means the tight line-heights below (0.86–0.95) still work.
 
-Riegal is uppercase-and-lowercase complete (472 glyphs). The mockup sets all display type in
-`text-transform: uppercase`; keep that.
+Riegal is uppercase-and-lowercase complete (472 glyphs).
+
+**Uppercase is not universal on the display face.** The mockup sets
+`text-transform: uppercase` on H1 and H2 (and the stat numbers and date numerals) but **not** on
+card headlines or table row titles, which stay sentence case. That distinction is load bearing: a
+headline like "Inside the build with a $14M co-founder" is unreadable shouted. Two classes carry
+it, `.t-display` (uppercase) and `.t-title` (sentence case, for the `title-1` and `title-2` steps).
 
 ### Display scale (Riegal, uppercase, tight tracking)
 
@@ -236,12 +241,16 @@ standing in for the missing bar.
 **2. The well.** `position: relative` · `background: #15130F` · `overflow: hidden` ·
 `aspect-ratio` per context:
 
-| Context | Aspect | Crop mark size | Crop mark inset |
-| --- | --- | --- | --- |
-| Hero | `21/9` | `16px` | `14px` |
-| Card | `4/3` | `13px` | `10px` |
-| Event row thumb | `1/1` | none | — |
-| Face strip | `1/1` | none | — |
+| Context | Aspect | Crop marks | Size | Inset | Export at |
+| --- | --- | --- | --- | --- | --- |
+| Hero, wide | `21/9` | 4 | `16px` | `14px` | 2400 × 1029 |
+| Hero, portrait | `4/5` | 4 | `16px` | `14px` | 1200 × 1500 |
+| Card | `4/3` | 2 | `13px` | `10px` | 1200 × 900 |
+| Event row thumb | `1/1` | none | — | — | 600 × 600 |
+
+**ADDED:** the portrait hero. The home page hero puts the photo in the right column beside the
+headline rather than in a band underneath, so it needs a tall frame. Same four crop marks, same
+treatment, `4/5`.
 
 The image itself carries `filter: contrast(1.05) saturate(0.96)` and is overlaid with
 `linear-gradient(rgba(217,96,14,0.07), rgba(28,28,28,0.05))` at `mix-blend-mode: multiply`.
@@ -267,7 +276,28 @@ dark mode — they sit on a photo, not on the page.
 **Hero uses all four corners. Cards use two, top-left and bottom-right only.** That diagonal pair is
 deliberate; it reads as a crop instruction rather than a frame. Do not "fix" it to four.
 
-**4. Optional category chip.** Absolutely positioned `left: 0; bottom: 0` on the well, mono `10px`
+**4. The empty slot.** **ADDED** for the build, since there are no photographs yet.
+
+A slot with no file renders the frame exactly as it will ship: same mat, same well, same aspect
+ratio, same crop marks, same caption bar. Only the contents change, so nothing reflows when the
+photos land. Inside the well:
+
+- a `1px` dashed box at `inset: calc(crop-inset + crop-size + 8px)`, so it never collides with the
+  crop marks
+- a faint diagonal cross, which is what makes it read as an empty slot at any size, including the
+  96px event thumbs
+- the path the real file goes at, plus the aspect ratio and the recommended export size
+
+All three use `--ela-slot-line` / `--ela-slot-ink`, which do not change between modes: they sit
+inside the well, on the photo's ground, not on the page's.
+
+Thumbs are too small for the text and show only the dashed box and the cross.
+
+Swapping a real photo in is one edit at the path the slot prints: an `image` field on a row in
+`src/data/issues.ts` or `src/data/events.ts`, or an `src` in `src/data/photos.ts` for the slots that
+belong to no data row.
+
+**5. Optional category chip.** Absolutely positioned `left: 0; bottom: 0` on the well, mono `10px`
 `0.16em` uppercase, `padding: 5px 9px`, `pointer-events: none`. Orange fill `#FF6218` with `#FFFDFA`
 text for a live/featured category; ink fill `#1C1C1C` with `#FFFDFA` for everything else. Only one
 orange chip in view at a time (§1).
@@ -545,3 +575,29 @@ ground and ink swapped, using the tokens in §1. Specifics that are not a straig
 
 Mode is driven by `prefers-color-scheme` with a `[data-theme]` override on `<html>`, so a future
 toggle is a one-attribute change with no other edits.
+
+---
+
+## 15. Surface classes
+
+A block whose ground differs from the page re-points the tokens once, at the block, instead of
+every child opting out of them. Children keep writing `text-ink` and `border-rule` and come out
+right. There are three, and between them they cover every ground on the site.
+
+| Class | Ground | Ink | Where |
+| --- | --- | --- | --- |
+| `.on-ink` | Ink `#1C1C1C` | cream | Top strip, footer |
+| `.on-accent` | Accent `#FF6218` | see below | The subscribe band |
+| `.on-paper` | Ground / Paper, light palette, never inverts | ink | Panels sitting on the band |
+
+**`.on-accent` inverts what "muted" means.** Cream on this orange is 3.32:1, which is large text
+only. So `ink` stays cream and is for display sizes and the wordmark, while `ink-muted` (4.73:1)
+and `ink-muted-aa` (5.69:1) are **near-black**. On orange, the readable colour for body copy and
+small print is the dark one, and the tokens say so rather than leaving it to each element.
+
+**`.on-paper` exists because `.on-accent` re-points `paper` to orange.** A form panel inside the
+band would otherwise be orange on orange. `.on-paper` resets a surface to the light palette in
+both modes, which is right: the band stays orange in dark mode, so its panel stays paper.
+
+One token follows the surface rather than the page, and has to: `--ela-placeholder`. An input on a
+paper panel needs a dark placeholder even when the page is in dark mode.

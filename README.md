@@ -108,12 +108,44 @@ Read it before changing anything visual.
 
 ---
 
+## Photos
+
+There are no photographs on the site yet. Every photo slot renders the full frame treatment at the
+aspect ratio it will ship at, with a dashed box, a cross and the path its file goes at printed
+inside it. Nothing reflows when the real files land.
+
+To fill one, put the file under `public/` at the path the slot prints, then set the value it names:
+
+| Slot | Set this |
+| --- | --- |
+| Home hero | `src` in `src/data/photos.ts` |
+| Issue card | `image` on that row in `src/data/issues.ts` |
+| Event row | `image` on that row in `src/data/events.ts` |
+
+One edit per slot. Set `imageAlt` at the same time.
+
+## Placeholder content
+
+The home page renders placeholder issues and events so the sections have something in them. They
+are marked `placeholder: true` in `src/data/issues.ts` and `src/data/events.ts`, and their names
+are bracketed on purpose so nobody quotes them back as real.
+
+```bash
+grep -rn "placeholder: true" src/data/    # every placeholder row
+```
+
+Delete them as real content arrives. The only number stated as fact anywhere is 14K+ community;
+the other three cells in the proof strip read `[TBD]` until somebody verifies them.
+
 ## Current state
 
-Scaffolding only. All nine routes exist and render with the right layout, but the pages have no
-content yet: each one shows a dashed scaffolding block describing what belongs there.
+The home page is built. The other eight routes are still stubs showing a dashed block describing
+what belongs there.
 
 Routes: `/`, `/about`, `/archive`, `/events`, `/subscribe`, `/thanks`, `/privacy`, `/terms`, `404`.
 
 `/subscribe` and `/thanks` use `FocusLayout`: no nav, no footer columns, just a centred wordmark
 and a one line footer.
+
+`EventsTable` already takes a variant, so the events page can render past events from the same
+component: `<EventsTable events={pastEvents()} variant="past" />`.

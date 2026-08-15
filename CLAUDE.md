@@ -159,9 +159,16 @@ src/
 
 ### Utility classes worth knowing
 
-`.on-ink` and `.on-accent` re-point every token for a block sitting on an ink or orange ground, so
-children keep using `text-ink` and `border-rule` and come out right. Reach for these instead of
-hardcoding cream values on individual elements.
+`.on-ink`, `.on-accent` and `.on-paper` re-point every token for a block sitting on a different
+ground, so children keep using `text-ink` and `border-rule` and come out right. Reach for these
+instead of hardcoding values on individual elements. Full table in `design-system.md` §15.
+
+Note that `.on-accent` inverts what muted means: on orange, `ink` is cream and is for display sizes
+only, while `ink-muted` and `ink-muted-aa` are near-black, because that is what is readable there.
+A panel inside the orange band needs `.on-paper` or it comes out orange on orange.
+
+`.t-display` is the display face uppercase (H1, H2, stats). `.t-title` is the display face in
+sentence case, and it is what card headlines and table row titles use.
 
 ---
 
