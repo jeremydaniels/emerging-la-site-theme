@@ -1,0 +1,22 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import Stub from '../components/Stub.astro';
+import { upcomingEvents, pastEvents } from '../data/events';
+
+const upcoming = upcomingEvents();
+const past = pastEvents();
+---
+
+<SiteLayout title="Events">
+  <span slot="strip-end">Events</span>
+
+  <div class="mx-auto max-w-page px-gutter-sm py-section-sm wide:px-gutter wide:py-section">
+    <SectionHeader number="01" eyebrow="Events" title="Events" as="h1" />
+
+    {/* Interactive: the upcoming/past toggle. Scoped script, no framework island. */}
+    <Stub
+      note={`Ruled table of events with the upcoming and past toggle above it. ${upcoming.length} upcoming and ${past.length} past in src/data/events.ts. Status is a manual flag, not derived from the date.`}
+    />
+  </div>
+</SiteLayout>

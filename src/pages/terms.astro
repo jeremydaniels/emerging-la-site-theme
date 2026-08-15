@@ -1,0 +1,14 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import Stub from '../components/Stub.astro';
+---
+
+<SiteLayout title="Terms">
+  <span slot="strip-end">Terms</span>
+
+  <div class="mx-auto max-w-page px-gutter-sm py-section-sm wide:px-gutter wide:py-section">
+    <SectionHeader number="01" eyebrow="Legal" title="Terms" as="h1" />
+    <Stub note="Terms of use. Covers the site itself, the newsletter and event attendance." />
+  </div>
+</SiteLayout>

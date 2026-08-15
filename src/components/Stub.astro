@@ -1,0 +1,19 @@
+---
+/**
+ * Scaffolding marker. Every route stub uses this so it is obvious at a glance
+ * which pages still have no content. Delete each one as its page gets written,
+ * then delete this component.
+ */
+
+interface Props {
+  /** What still needs building on this page. */
+  note: string;
+}
+
+const { note } = Astro.props;
+---
+
+<div class="my-8 border border-dashed border-edge p-6">
+  <div class="t-mono text-mono-label text-ink-muted">Scaffolding</div>
+  <p class="mt-2 mb-0 max-w-[60ch] text-body-sm text-ink-muted-aa">{note}</p>
+</div>

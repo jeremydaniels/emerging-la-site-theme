@@ -1,0 +1,41 @@
+---
+/**
+ * Stripped chrome, for the /subscribe and /thanks route group.
+ *
+ * No nav, no footer columns, no top strip. A centred wordmark, the content,
+ * and a one-line footer. Nothing on these pages competes with the form.
+ */
+import BaseLayout from './BaseLayout.astro';
+import Wordmark from '../components/Wordmark.astro';
+import { routes } from '../lib/links';
+import { site } from '../lib/site';
+
+interface Props {
+  title: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const { title, description, noindex = false } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<BaseLayout title={title} description={description} noindex={noindex}>
+  <div class="flex min-h-dvh flex-col px-gutter-sm wide:px-gutter">
+    <header class="flex justify-center pt-12 pb-10">
+      <Wordmark href={routes.home} width="200px" />
+    </header>
+
+    <main id="main" class="mx-auto w-full max-w-[560px] flex-1">
+      <slot />
+    </main>
+
+    <footer
+      class="t-mono flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-rule py-6 text-mono-meta-tight text-ink-muted"
+    >
+      <span>© {year} {site.name}</span>
+      <a href={routes.privacy} class="transition-colors hover:text-accent-step">Privacy</a>
+      <a href={routes.terms} class="transition-colors hover:text-accent-step">Terms</a>
+    </footer>
+  </div>
+</BaseLayout>

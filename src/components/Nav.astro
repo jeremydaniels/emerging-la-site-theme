@@ -1,0 +1,92 @@
+---
+/**
+ * Site nav. Sticky, 60px tall, one rule underneath.
+ *
+ * Subscribe is a secondary action here, not the anchor orange: the anchor is
+ * spent once per viewport and pages own theirs. See design-system.md §1 and §10.
+ *
+ * The mobile menu is the only interactive thing in the nav and it runs on a
+ * scoped script, not a framework island. Zero JS ships on a page without it.
+ */
+import Wordmark from './Wordmark.astro';
+import { navLinks } from '../lib/site';
+import { routes } from '../lib/links';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<header
+  class="sticky top-0 z-50 border-b border-rule bg-ground/95 backdrop-blur-[12px]"
+>
+  <div
+    class="mx-auto flex h-navbar max-w-page items-center gap-4 px-gutter-sm wide:gap-[26px] wide:px-gutter"
+  >
+    <Wordmark href={routes.home} width="clamp(120px, 22vw, 168px)" />
+
+    <nav aria-label="Primary" class="ml-3 hidden items-center gap-7 wide:flex">
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.href}
+            aria-current={isCurrent(link.href) ? 'page' : undefined}
+            class="text-ui-sm font-semibold text-ink transition-colors hover:text-accent-step aria-[current=page]:text-accent-step"
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex-1"></div>
+
+    <a href={routes.subscribe} class="btn btn-secondary btn-sm hidden wide:inline-flex">
+      Subscribe
+    </a>
+
+    <button
+      type="button"
+      id="nav-toggle"
+      aria-label="Menu"
+      aria-expanded="false"
+      aria-controls="nav-menu"
+      class="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-chip border border-rule bg-transparent wide:hidden"
+    >
+      <span
+        class="block h-[9px] w-[17px] border-t-[1.5px] border-b-[1.5px] border-ink"
+        aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <div id="nav-menu" hidden class="flex flex-col border-t border-rule bg-paper wide:hidden">
+    {
+      navLinks.map((link) => (
+        <a
+          href={link.href}
+          class="border-b border-hairline px-[18px] py-[15px] text-base font-semibold text-ink"
+        >
+          {link.label}
+        </a>
+      ))
+    }
+    <a
+      href={routes.subscribe}
+      class="px-[18px] py-[15px] text-base font-bold text-accent-step"
+    >
+      Subscribe
+    </a>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const menu = document.getElementById('nav-menu');
+
+  if (toggle && menu) {
+    toggle.addEventListener('click', () => {
+      const open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      menu.hidden = open;
+    });
+  }
+</script>

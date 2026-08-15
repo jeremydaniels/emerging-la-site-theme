@@ -1,0 +1,27 @@
+---
+/**
+ * A mono metadata bar. See design-system.md §6.
+ *
+ * Items are passed as a slot. Push the last one right with `class="wide:ml-auto"`.
+ * The first item may carry `class="text-ink"` to act as the bar's title.
+ */
+
+interface Props {
+  /** strip = full-bleed ink band across the top of the page. */
+  variant?: 'strip' | 'plain';
+  class?: string;
+}
+
+const { variant = 'plain', class: className = '' } = Astro.props;
+---
+
+<div
+  class:list={[
+    variant === 'strip' && 'on-ink bg-ground px-[18px] py-[7px] wide:px-gutter',
+    variant === 'plain' && 'py-3',
+    't-mono flex flex-wrap items-baseline gap-x-[18px] gap-y-2 text-mono-meta text-ink-muted',
+    className,
+  ]}
+>
+  <slot />
+</div>

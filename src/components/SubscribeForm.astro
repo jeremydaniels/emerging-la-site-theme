@@ -1,0 +1,102 @@
+---
+/**
+ * The subscribe form. Used by the home page's orange band and, later, by the
+ * /subscribe page.
+ *
+ * The submit button is INK, not orange, even inside the orange band. The band
+ * itself is the anchor for that viewport, and a second orange fill inside it
+ * would be a second anchor. See design-system.md §10.
+ *
+ * The role picker is the only interactive part. It runs on a scoped script,
+ * not a framework island: it toggles aria-pressed and writes the value into a
+ * hidden input, so the form still submits without JavaScript.
+ */
+import { links, routes } from '../lib/links';
+
+interface Props {
+  /** Shown in the panel header, right side. */
+  hint?: string;
+  class?: string;
+}
+
+const { hint = 'Takes 10 seconds', class: className = '' }: Props = Astro.props;
+
+const ROLES = ['Founder', 'Investor', 'Operator', 'Something else'];
+---
+
+{/*
+  .on-paper because this panel sits on the orange band, where the tokens are
+  re-pointed for orange. It resets them so the panel is a normal paper surface
+  with normal ink on it, in both modes.
+*/}
+<div class:list={['on-paper border border-rule bg-paper text-ink shadow-panel', className]}>
+  <div
+    class="t-mono flex items-center justify-between gap-3.5 border-b border-rule bg-ground px-6 py-[13px] text-mono-meta text-ink-muted"
+  >
+    <span>Sign up</span>
+    <span class="text-accent-step">{hint}</span>
+  </div>
+
+  <form
+    method="post"
+    action={links.beehiivSubscribe}
+    class="flex flex-col gap-[22px] px-6 pt-[26px] pb-7"
+  >
+    <label class="block">
+      <span class="field-label">Email address</span>
+      <input
+        class="field"
+        type="email"
+        name="email"
+        autocomplete="email"
+        required
+        placeholder="you@company.com"
+      />
+    </label>
+
+    <div>
+      <span class="field-label" id="role-label">I'm a</span>
+      <div class="flex flex-wrap gap-2" role="group" aria-labelledby="role-label" data-roles>
+        {
+          ROLES.map((role) => (
+            <button type="button" class="pick" aria-pressed="false" data-role={role}>
+              {role}
+            </button>
+          ))
+        }
+      </div>
+      <input type="hidden" name="role" value="" data-role-value />
+    </div>
+
+    <button type="submit" class="btn btn-ink w-full">Subscribe</button>
+
+    <p class="t-mono m-0 text-mono-meta leading-relaxed text-ink-muted-aa">
+      No spam. Unsubscribe in one click. <a
+        href={routes.privacy}
+        class="underline underline-offset-2">Privacy</a
+      >
+    </p>
+  </form>
+</div>
+
+<script>
+  // Role picker. Single select, and the form still submits without this.
+  document.querySelectorAll<HTMLElement>('[data-roles]').forEach((group) => {
+    const target = group
+      .closest('form')
+      ?.querySelector<HTMLInputElement>('[data-role-value]');
+
+    group.querySelectorAll<HTMLButtonElement>('[data-role]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const wasOn = button.getAttribute('aria-pressed') === 'true';
+
+        group.querySelectorAll<HTMLButtonElement>('[data-role]').forEach((other) => {
+          other.setAttribute('aria-pressed', 'false');
+        });
+
+        button.setAttribute('aria-pressed', String(!wasOn));
+        if (target) target.value = wasOn ? '' : (button.dataset.role ?? '');
+      });
+    });
+  });
+</script>

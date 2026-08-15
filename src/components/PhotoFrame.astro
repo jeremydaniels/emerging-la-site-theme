@@ -1,0 +1,158 @@
+---
+/**
+ * The photo frame: paper mat, dark well, warm multiply, corner crop marks and
+ * an optional mono metadata bar. See design-system.md §5.
+ *
+ * Hero frames use all four crop marks. Card frames use two, top-left and
+ * bottom-right. That diagonal pair is deliberate: it reads as a crop
+ * instruction rather than a border.
+ *
+ * ## Empty slots
+ *
+ * Pass `src={null}` and the frame renders an empty slot instead of a photo:
+ * same well, same aspect ratio, same crop marks, same caption bar, with a
+ * dashed box and a cross inside so it cannot be mistaken for a design element.
+ * The slot prints the path the real file goes at, so swapping one in is a
+ * single edit at that path's source (a data row, or src/data/photos.ts).
+ *
+ * Because the aspect ratio is already the final one, nothing reflows when the
+ * photos land.
+ */
+
+interface Props {
+  /** Path under /public. Null renders the empty slot. */
+  src?: string | null;
+  alt?: string;
+  /**
+   * hero      21/9, four crop marks
+   * portrait  4/5, four crop marks (the home hero's right column)
+   * card      4/3, two crop marks
+   * thumb     1/1, no crop marks, no caption bar
+   */
+  variant?: 'hero' | 'portrait' | 'card' | 'thumb';
+  /** Overrides the variant's aspect ratio, e.g. "16/9". */
+  ratio?: string;
+  /** Where the real file goes. Printed in the empty slot. */
+  path?: string;
+  /** What the photo should be. Printed in the empty slot's caption bar. */
+  brief?: string;
+  /** Category chip, bottom-left of the well. */
+  chip?: string;
+  /** Orange chip is an anchor. One live in the viewport at a time. */
+  chipTone?: 'accent' | 'ink';
+  /** Force the caption bar on or off. Defaults per variant. */
+  showMeta?: boolean;
+  /**
+   * Draw the paper mat. Off when the frame sits inside something that is
+   * already the mat, such as a card, so the border and padding are not
+   * doubled up.
+   */
+  mat?: boolean;
+  loading?: 'lazy' | 'eager';
+  class?: string;
+}
+
+const {
+  src = null,
+  alt = '',
+  variant = 'card',
+  ratio,
+  path,
+  brief,
+  chip,
+  chipTone = 'ink',
+  showMeta,
+  mat = true,
+  loading = 'lazy',
+  class: className = '',
+}: Props = Astro.props;
+
+const PRESETS = {
+  hero: { ratio: '21/9', size: '16px', inset: '14px', marks: 4, exportSize: '2400 x 1029', meta: true },
+  portrait: { ratio: '4/5', size: '16px', inset: '14px', marks: 4, exportSize: '1200 x 1500', meta: true },
+  card: { ratio: '4/3', size: '13px', inset: '10px', marks: 2, exportSize: '1200 x 900', meta: false },
+  thumb: { ratio: '1/1', size: '0px', inset: '0px', marks: 0, exportSize: '600 x 600', meta: false },
+} as const;
+
+const preset = PRESETS[variant];
+const aspect = ratio ?? preset.ratio;
+const small = variant === 'thumb';
+const empty = !src;
+
+/** Thumbs are too small to hold text; the dashed box and cross carry it. */
+const compact = variant === 'thumb';
+
+const hasMetaSlot = Astro.slots.has('meta');
+const wantsMeta = showMeta ?? (hasMetaSlot || (empty && preset.meta));
+---
+
+<figure
+  class:list={[mat && (small ? 'frame-sm' : 'frame'), 'm-0', className]}
+  style={`--crop-size:${preset.size};--crop-inset:${preset.inset}`}
+>
+  <div class="frame-well" style={`aspect-ratio:${aspect}`}>
+    {
+      src ? (
+        <img class="frame-img" src={src} alt={alt} loading={loading} decoding="async" />
+      ) : (
+        <div class="slot" aria-hidden="true">
+          {!compact && (
+            <>
+              <span class="slot-label">Photo slot</span>
+              {path && <span class="slot-path">{path}</span>}
+              <span class="slot-size">
+                {aspect.replace('/', ' : ')} · {preset.exportSize}
+              </span>
+            </>
+          )}
+        </div>
+      )
+    }
+    <div class="frame-wash"></div>
+    {
+      preset.marks > 0 && (
+        <>
+          <span class="crop crop-tl" aria-hidden="true" />
+          <span class="crop crop-br" aria-hidden="true" />
+        </>
+      )
+    }
+    {
+      preset.marks === 4 && (
+        <>
+          <span class="crop crop-tr" aria-hidden="true" />
+          <span class="crop crop-bl" aria-hidden="true" />
+        </>
+      )
+    }
+    {
+      chip && (
+        <span
+          class:list={[
+            'chip pointer-events-none absolute bottom-0 left-0',
+            chipTone === 'accent' ? 'chip-accent' : 'chip-ink',
+          ]}
+        >
+          {chip}
+        </span>
+      )
+    }
+  </div>
+
+  {
+    wantsMeta ? (
+      <figcaption class="t-mono flex flex-wrap items-baseline gap-x-5 gap-y-2 px-1 pt-[11px] pb-3 text-mono-meta-tight text-ink-muted">
+        {hasMetaSlot ? (
+          <slot name="meta" />
+        ) : (
+          <>
+            <span class="text-ink">Empty slot</span>
+            {brief && <span>{brief}</span>}
+          </>
+        )}
+      </figcaption>
+    ) : (
+      small && <div class="h-[5px]" aria-hidden="true" />
+    )
+  }
+</figure>

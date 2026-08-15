@@ -1,0 +1,43 @@
+---
+/**
+ * The standard page: top strip, nav, content, footer.
+ * Every route uses this except /subscribe and /thanks.
+ */
+import BaseLayout from './BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import MetaBar from '../components/MetaBar.astro';
+import { site } from '../lib/site';
+
+interface Props {
+  title: string;
+  description?: string;
+  suffix?: boolean;
+  /** The ink strip above the nav. On by default. */
+  strip?: boolean;
+}
+
+const { title, description, suffix, strip = true } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} suffix={suffix}>
+  {
+    strip && (
+      <MetaBar variant="strip">
+        <span class="text-accent-light">{site.location}</span>
+        <span class="hidden wide:inline">Newsletter and events</span>
+        <span class="wide:ml-auto">
+          <slot name="strip-end" />
+        </span>
+      </MetaBar>
+    )
+  }
+
+  <Nav />
+
+  <main id="main">
+    <slot />
+  </main>
+
+  <Footer />
+</BaseLayout>

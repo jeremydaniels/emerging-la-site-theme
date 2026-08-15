@@ -1,0 +1,30 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { routes } from '../lib/links';
+---
+
+<SiteLayout title="Page not found">
+  <span slot="strip-end">404</span>
+
+  <div class="mx-auto max-w-page px-gutter-sm py-section-sm wide:px-gutter wide:py-section">
+    <div class="t-mono mb-5 flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
+      <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
+      <span>404</span>
+    </div>
+
+    <h1 class="t-display m-0 max-w-[16ch] text-display-3 text-ink">
+      This page is not here
+    </h1>
+
+    <p class="mt-7 max-w-[52ch] text-body-lg text-ink-muted-aa">
+      The link may be out of date, or the page may have moved. The archive and the
+      events list are both below.
+    </p>
+
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href={routes.home} class="btn btn-secondary">Home</a>
+      <a href={routes.archive} class="btn btn-secondary">Archive</a>
+      <a href={routes.events} class="btn btn-secondary">Events</a>
+    </div>
+  </div>
+</SiteLayout>

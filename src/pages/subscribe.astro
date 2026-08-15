@@ -1,0 +1,13 @@
+---
+import FocusLayout from '../layouts/FocusLayout.astro';
+import Stub from '../components/Stub.astro';
+---
+
+<FocusLayout title="Subscribe">
+  <h1 class="t-display m-0 text-display-4 text-ink">Subscribe</h1>
+
+  {/* Interactive: the subscribe form. Scoped script, no framework island. */}
+  <Stub
+    note="Email field, the role picker, and the submit button posting to Beehiiv. On success the browser goes to /thanks. The Beehiiv endpoint is a placeholder in src/lib/links.ts."
+  />
+</FocusLayout>

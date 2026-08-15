@@ -1,0 +1,14 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import Stub from '../components/Stub.astro';
+---
+
+<SiteLayout title="About">
+  <span slot="strip-end">About</span>
+
+  <div class="mx-auto max-w-page px-gutter-sm py-section-sm wide:px-gutter wide:py-section">
+    <SectionHeader number="01" eyebrow="About" title="About" as="h1" />
+    <Stub note="What Emerging LA is, who it is for, what the newsletter covers and what the events are." />
+  </div>
+</SiteLayout>
