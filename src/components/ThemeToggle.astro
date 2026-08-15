@@ -1,0 +1,168 @@
+---
+/**
+ * Light/dark toggle.
+ *
+ * Built as a piece of equipment rather than a candy pill: a hard-cornered
+ * track with a fine tick scale printed across it, two mono position markings,
+ * and a solid ink knob with a milled grip that slides between them. Same
+ * vocabulary as the rest of the site, see design-system.md §16.
+ *
+ * The knob covers the position it is currently in, so the marking you can read
+ * is the one you are about to switch to.
+ *
+ * Behaviour lives in two places on purpose:
+ *   1. A blocking inline script in BaseLayout restores the stored choice
+ *      before first paint, so there is no flash of the wrong mode.
+ *   2. The module script below wires the clicks and keeps every instance of
+ *      the toggle in sync.
+ *
+ * Never carries an orange fill. It sits in the nav next to Subscribe and would
+ * otherwise be a second anchor in the viewport.
+ */
+
+interface Props {
+  /** Shown beside the switch in the mobile menu, where there is room for it. */
+  showLabel?: boolean;
+  class?: string;
+}
+
+const { showLabel = false, class: className = '' }: Props = Astro.props;
+---
+
+<div class:list={['flex items-center gap-3', className]}>
+  {showLabel && <span class="t-mono text-mono-label text-ink-muted">Mode</span>}
+
+  <button
+    type="button"
+    role="switch"
+    aria-checked="false"
+    aria-label="Dark mode"
+    class="tog"
+    data-theme-toggle
+  >
+    <span class="tog-track" aria-hidden="true">
+      <span class="tog-mark tog-mark-light">Light</span>
+      <span class="tog-mark tog-mark-dark">Dark</span>
+      <span class="tog-knob"></span>
+    </span>
+  </button>
+</div>
+
+<style>
+  .tog {
+    display: inline-flex;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    border-radius: var(--radius-chip);
+  }
+
+  .tog-track {
+    position: relative;
+    display: block;
+    width: 84px;
+    height: 26px;
+    overflow: hidden;
+    border: 1px solid var(--ela-edge);
+    border-radius: var(--radius-chip);
+    /* A fine tick scale, like the printed rule on a piece of equipment. */
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--ela-hairline) 0 1px,
+      transparent 1px 4px
+    );
+    transition: border-color 0.15s ease;
+  }
+
+  /* The line gets darker on hover, never thicker. */
+  .tog:hover .tog-track {
+    border-color: var(--ela-ink);
+  }
+
+  .tog-mark {
+    position: absolute;
+    top: 0;
+    display: flex;
+    width: 50%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-label);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    /* A control marking carries state, so it takes the AA muted token rather
+       than the plain one the decorative labels use. */
+    color: var(--ela-ink-muted-aa);
+  }
+
+  .tog-mark-light {
+    left: 0;
+  }
+
+  .tog-mark-dark {
+    right: 0;
+  }
+
+  /* Solid block of the current ink. Sits over the position it is in, so the
+     readable marking is the destination. */
+  .tog-knob {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 40px;
+    height: 22px;
+    background: var(--ela-ink);
+    /* Hard corners. The design has 2px or nothing, and an inset moving part
+       reads as machined when it is squarer than the housing around it. */
+    border-radius: 0;
+    transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  /* Milled grip, in the ground colour so it reads as cut into the knob. */
+  .tog-knob::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 9px;
+    height: 8px;
+    margin: auto;
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--ela-ground) 0 1px,
+      transparent 1px 4px
+    );
+  }
+
+  /* Track inner width is 82px, knob is 40px, so the throw is 42px. */
+  .tog[aria-checked='true'] .tog-knob {
+    transform: translateX(42px);
+  }
+</style>
+
+<script>
+  const KEY = 'ela-theme';
+  const root = document.documentElement;
+  const toggles = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
+
+  function apply(dark: boolean) {
+    root.dataset.theme = dark ? 'dark' : 'light';
+    toggles.forEach((t) => t.setAttribute('aria-checked', String(dark)));
+  }
+
+  // The head script already set the attribute; catch the buttons up to it.
+  apply(root.dataset.theme === 'dark');
+
+  toggles.forEach((toggle) => {
+    toggle.addEventListener('click', () => {
+      const dark = root.dataset.theme !== 'dark';
+      try {
+        localStorage.setItem(KEY, dark ? 'dark' : 'light');
+      } catch {
+        // Private mode and blocked storage: the choice just will not persist.
+      }
+      apply(dark);
+    });
+  });
+</script>

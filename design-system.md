@@ -573,8 +573,8 @@ ground and ink swapped, using the tokens in §1. Specifics that are not a straig
 - **Paper is darker than ground** in dark mode (`#141311` on `#1C1C1C`). Raised surfaces read as
   wells, matching how the mockup's dark blocks behave.
 
-Mode is driven by `prefers-color-scheme` with a `[data-theme]` override on `<html>`, so a future
-toggle is a one-attribute change with no other edits.
+Mode is driven **only** by `data-theme` on `<html>`. There is no `prefers-color-scheme` rule
+anywhere in the codebase, deliberately: see §16.
 
 ---
 
@@ -601,3 +601,63 @@ both modes, which is right: the band stays orange in dark mode, so its panel sta
 
 One token follows the surface rather than the page, and has to: `--ela-placeholder`. An input on a
 paper panel needs a dark placeholder even when the page is in dark mode.
+
+---
+
+## 16. The mode toggle
+
+**ADDED.** A switch, built as a piece of equipment rather than a rounded pill, because the rest of
+the page is hairlines, hard corners and mono markings.
+
+```
+ light                        dark
+┌──────────┬──────────┐     ┌──────────┬──────────┐
+│ ███║║║██ │  DARK    │     │  LIGHT   │ ███║║║██ │
+└──────────┴──────────┘     └──────────┴──────────┘
+   knob left                            knob right
+```
+
+| Part | Spec |
+| --- | --- |
+| Track | `84 × 26px` · `1px solid var(--ela-edge)` · radius `2px` · `overflow: hidden` |
+| Track fill | `repeating-linear-gradient(90deg, var(--ela-hairline) 0 1px, transparent 1px 4px)` |
+| Track hover | `border-color: var(--ela-ink)`. Darker, never thicker. |
+| Position markings | Courier Prime `10px` `0.10em` uppercase `--ela-ink-muted-aa`, one per half |
+| Knob | `40 × 22px` at `top/left: 1px` · `background: var(--ela-ink)` · radius **`0`** |
+| Knob grip | `9 × 8px` centred, `repeating-linear-gradient(90deg, var(--ela-ground) 0 1px, transparent 1px 4px)` |
+| Throw | `translateX(42px)` (82px inner width minus the 40px knob) |
+| Easing | `transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1)` |
+
+Three things carry the design:
+
+- **The tick scale.** A printed rule across the track, the way a measuring scale is printed onto a
+  physical control. It is what stops the track reading as an empty pill.
+- **The milled grip.** Cut in the ground colour, so it reads as machined out of the knob rather
+  than drawn on it.
+- **The knob is a solid block of the current ink.** Dark on the cream ground, cream on the dark
+  one. The switch shows you the ink the page is currently set in.
+
+The knob covers the position it is currently in, so **the marking you can read is the one you are
+about to switch to**. The knob is square where the housing is `2px`: an inset moving part reads as
+machined when it is sharper than the thing around it.
+
+**Never orange.** It sits in the nav beside Subscribe and would otherwise be a second anchor in
+that viewport. The only orange it ever shows is the site's standard `2px` focus ring.
+
+**Placement.** Desktop: right side of the nav, separated from Subscribe by a `20 × 1px`
+`--ela-rule` hairline, so the control and the action read as separate things. Mobile: the last row
+of the menu, under a hairline, with a `Mode` mono label on the left and the switch on the right.
+
+### Behaviour
+
+- **Light is the default for everyone.** A first-time visitor on a phone set to dark still gets the
+  light site. `data-theme="light"` is written into the markup, so this holds with JavaScript off.
+- The choice persists in `localStorage` under `ela-theme`.
+- **The OS preference never moves the mode**, not on first visit and not when it changes mid
+  session. The toggle is the only thing that changes it.
+- A 106 byte synchronous script is the first node in `<head>`, before the stylesheet, and restores
+  a stored choice before first paint. There is no flash of the wrong mode.
+- `role="switch"` with `aria-checked` and an `aria-label` of `Dark mode`. Real `<button>`, so Space
+  and Enter both work and the focus ring is the site's standard one.
+- `prefers-reduced-motion` drops the transition to nothing and keeps the state change, through the
+  global rule in `global.css`.

@@ -96,37 +96,15 @@
   color-scheme: light;
 }
 
-/* Dark mode. Defined twice on purpose: once for the system preference (guarded
-   so an explicit light choice wins) and once for the explicit override, so the
-   attribute wins in both directions. */
+/* Dark mode. Driven ONLY by the data-theme attribute, which the toggle sets and
+   a blocking script in the head restores before first paint.
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --ela-ground: var(--palette-ink);
-    --ela-paper: var(--palette-paper-dark);
-    --ela-well: var(--palette-well-deep);
+   There is deliberately no prefers-color-scheme rule here. Light is the default
+   for everyone, including a first-time visitor whose OS is set to dark, and the
+   only thing that ever changes the mode is the toggle. See CLAUDE.md.
 
-    --ela-ink: var(--palette-on-dark);
-    --ela-ink-muted: var(--palette-on-dark-muted);
-    --ela-ink-muted-aa: var(--palette-on-dark-muted);
-    --ela-ink-faint: var(--palette-on-dark-faint);
-
-    --ela-rule: var(--palette-on-dark-rule);
-    --ela-hairline: var(--palette-on-dark-hairline);
-    --ela-edge: var(--palette-on-dark-edge);
-    --ela-wash: var(--palette-on-dark-wash);
-    --ela-placeholder: var(--palette-on-dark-placeholder);
-
-    --ela-accent-step: var(--palette-accent-light);
-
-    /* Far-throw shadows read as smudges on a dark ground. Rules carry depth. */
-    --ela-shadow-card: none;
-    --ela-shadow-panel: none;
-    --ela-shadow-hero: none;
-
-    color-scheme: dark;
-  }
-}
+   The far-throw shadows go to none: they read as smudges on a dark ground, and
+   depth comes from the rules instead. */
 
 :root[data-theme='dark'] {
   --ela-ground: var(--palette-ink);

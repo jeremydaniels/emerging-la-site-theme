@@ -28,10 +28,25 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
 ---
 
 <!doctype html>
-<html lang="en">
+<!--
+  data-theme is written into the markup as "light" rather than left off. Light
+  is the default for everyone, including a first-time visitor whose OS is set
+  to dark, and this way that holds with JavaScript disabled too.
+-->
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    {/*
+      Blocking, first thing in the head, before any style or markup: restores a
+      stored choice before first paint so the page never flashes the wrong mode.
+      is:inline keeps Astro from bundling or deferring it.
+    */}
+    {/* Kept on one line because is:inline ships it verbatim, unminified, and
+        it is the only script on the site that blocks parsing. */}
+    {/* prettier-ignore */}
+    <script is:inline>try{localStorage.getItem("ela-theme")==="dark"&&(document.documentElement.dataset.theme="dark")}catch(e){}</script>
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />

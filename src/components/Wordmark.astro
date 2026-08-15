@@ -71,18 +71,11 @@ const tagProps = href ? { href, 'aria-label': ALT } : {};
     height: auto;
   }
 
-  /* auto: black on the light ground, cream on the dark one. */
+  /* auto: black on the light ground, cream on the dark one.
+     Keyed on data-theme only. There is no prefers-color-scheme rule anywhere
+     on this site: the toggle is the only thing that changes the mode. */
   .wordmark-auto .wordmark-cream-img {
     display: none;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme='light'])) .wordmark-auto .wordmark-black-img {
-      display: none;
-    }
-    :global(:root:not([data-theme='light'])) .wordmark-auto .wordmark-cream-img {
-      display: block;
-    }
   }
 
   :global(:root[data-theme='dark']) .wordmark-auto .wordmark-black-img {
@@ -90,13 +83,6 @@ const tagProps = href ? { href, 'aria-label': ALT } : {};
   }
   :global(:root[data-theme='dark']) .wordmark-auto .wordmark-cream-img {
     display: block;
-  }
-
-  :global(:root[data-theme='light']) .wordmark-auto .wordmark-black-img {
-    display: block;
-  }
-  :global(:root[data-theme='light']) .wordmark-auto .wordmark-cream-img {
-    display: none;
   }
 
   /* Inside an orange band or an ink block the ground is dark in both modes. */

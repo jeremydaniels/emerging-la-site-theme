@@ -9,6 +9,7 @@
  * scoped script, not a framework island. Zero JS ships on a page without it.
  */
 import Wordmark from './Wordmark.astro';
+import ThemeToggle from './ThemeToggle.astro';
 import { navLinks } from '../lib/site';
 import { routes } from '../lib/links';
 
@@ -39,6 +40,14 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     </nav>
 
     <div class="flex-1"></div>
+
+    {/*
+      The toggle sits on the utility side of the bar with a hairline between it
+      and Subscribe, so the control and the action read as separate things
+      rather than a pair of buttons competing.
+    */}
+    <ThemeToggle class="hidden wide:flex" />
+    <span class="hidden h-5 w-px bg-rule wide:block" aria-hidden="true"></span>
 
     <a href={routes.subscribe} class="btn btn-secondary btn-sm hidden wide:inline-flex">
       Subscribe
@@ -71,10 +80,12 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     }
     <a
       href={routes.subscribe}
-      class="px-[18px] py-[15px] text-base font-bold text-accent-step"
+      class="border-b border-hairline px-[18px] py-[15px] text-base font-bold text-accent-step"
     >
       Subscribe
     </a>
+
+    <ThemeToggle showLabel class="justify-between px-[18px] py-[15px]" />
   </div>
 </header>
 

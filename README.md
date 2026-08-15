@@ -98,6 +98,19 @@ buttons, rule weights, how the orange is deployed, and the logo placement rules.
 
 Read it before changing anything visual.
 
+### Light and dark
+
+Both modes are live, and the switch in the nav is the only thing that changes them.
+
+- **Light is what everybody sees first**, including someone arriving on a phone set to dark. The
+  site does not read `prefers-color-scheme` at all, on purpose.
+- Once somebody flips the switch, the choice sticks across pages and return visits, in
+  `localStorage` under `ela-theme`.
+- A short synchronous script at the top of `<head>` applies the stored choice before first paint,
+  so there is no flash of the wrong mode. It has to stay first in the head and it has to stay
+  synchronous.
+- Do not add a `@media (prefers-color-scheme: …)` block anywhere. It would fight all of the above.
+
 ### Notes for whoever styles the next page
 
 - Both light and dark mode are live. Check both.

@@ -49,8 +49,14 @@ at the top of that file. **Nothing else in the codebase may contain a hex, rgb o
 | Accent core | `#FF6218` | `#FF6218` |
 | Accent light | `#FF8426` | `#FF8426` |
 
-Light and dark are both V1. Mode follows `prefers-color-scheme`, with a `data-theme` attribute on
-`<html>` as an override so a toggle is a one-attribute change later.
+Light and dark are both V1, driven **only** by `data-theme` on `<html>`.
+
+**There is no `prefers-color-scheme` rule anywhere in this codebase and there must not be one.**
+Light is the default for everyone, including a first-time visitor whose OS is set to dark. The
+toggle in the nav is the only thing that ever changes the mode; the choice lives in `localStorage`
+under `ela-theme`, and a 106 byte synchronous script at the top of `<head>` restores it before
+first paint. If you add a `@media (prefers-color-scheme: …)` block, you have broken that. See
+`design-system.md` §16.
 
 ### Rules about the orange
 
@@ -141,6 +147,7 @@ src/
                               Used by /subscribe and /thanks only.
 
   components/Nav.astro        Sticky nav. Subscribe here is SECONDARY, not anchor orange.
+  components/ThemeToggle.astro    The mode switch. Never orange. Nav + mobile menu.
   components/Footer.astro     Ink ground in both modes, via .on-ink.
   components/Wordmark.astro   Picks black or cream, enforces the 120px floor.
   components/SectionHeader.astro  Numbered eyebrow + H2 + rule.
