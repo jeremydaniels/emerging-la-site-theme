@@ -784,3 +784,23 @@ that puts it back.
 
 Do not reach for the disappearing-section pattern anywhere a visitor's own
 action produced the empty result.
+
+---
+
+## 20. A component does not declare its own surface
+
+`SubscribeForm` used to carry `.on-paper` itself, because the first place it
+appeared was inside the orange band, where a panel would otherwise come out
+orange on orange. That was the right pixel result for the wrong reason, and it
+broke the moment the same form appeared on `/subscribe`: a bright white slab on
+a dark page, because the form was forcing a light palette nothing had asked for.
+
+**The surface is a fact about where a thing sits, so the caller declares it.**
+The band passes `.on-paper` to the form; the standalone page passes nothing and
+the panel follows the page into dark mode like every other raised surface. Same
+component, same fields, two correct results.
+
+The general rule: `.on-ink`, `.on-accent` and `.on-paper` go on the element that
+owns the ground, or are passed in by whoever put the child on that ground. A
+component that re-points its own tokens is only correct in the one place it was
+first used.

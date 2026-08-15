@@ -176,8 +176,8 @@ src/
 
   data/photos.ts              Standalone photo slots not attached to a data row.
 
-  pages/                      index and about are built. archive, events, subscribe,
-                              thanks, privacy, terms and 404 are still stubs.
+  pages/                      All nine routes are built: index, about, archive, events,
+                              subscribe, thanks, privacy, terms, 404.
 ```
 
 ### Utility classes worth knowing

@@ -1,14 +1,109 @@
 ---
+/**
+ * Terms. Same chrome and same construction as Privacy: page header, mono
+ * metadata bar, numbered ruled rows.
+ *
+ * The liability clause is deliberately plain language with a marker on it. We
+ * are not equipped to write the jurisdiction-specific wording, so it says what
+ * we actually mean and flags that a lawyer has to look at it, rather than
+ * inventing something that reads legal and is not.
+ */
 import SiteLayout from '../layouts/SiteLayout.astro';
-import SectionHeader from '../components/SectionHeader.astro';
-import Stub from '../components/Stub.astro';
+import RuledList from '../components/RuledList.astro';
+import SubscribeBand from '../components/SubscribeBand.astro';
+import { links } from '../lib/links';
+
+const clauses = [
+  {
+    name: 'What this is',
+    line: 'Emerging LA is a newsletter and a set of events for people building tech in Los Angeles. Reading the newsletter and attending the events are open to anyone. Using this site means these terms apply to you.',
+  },
+  {
+    name: 'The newsletter',
+    line: [
+      'The newsletter reports on what is happening around the city. It is information, not advice. Nothing in it is investment, legal, hiring or career advice, and nothing in it is an offer of anything.',
+      'We try to get it right and we correct it when we get it wrong. Things move fast here, so something accurate when it was sent may not be accurate a month later.',
+    ],
+  },
+  {
+    name: 'RSVPs and admission',
+    line: [
+      'An RSVP holds a spot. It is not a ticket and it is not a guarantee of admission. Rooms have a capacity, and when more people RSVP than a room holds, not everybody who RSVPd will get in. When that is likely we will say so on the event.',
+      'Events can move, change format, or be cancelled. If that happens we will tell everybody who RSVPd at the address they gave us.',
+    ],
+  },
+  {
+    name: 'At the event',
+    line: [
+      'Treat the people in the room the way you would want to be treated. Nobody has to justify being there.',
+      'We can ask somebody to leave an event, or decline a future RSVP, if their behaviour makes the room worse for everybody else. That is the whole rule and we would rather not need it.',
+    ],
+  },
+  {
+    name: 'Photography',
+    line: 'Events are photographed. The pictures are used on this site, in the newsletter, and on our social accounts. If you would rather not be in them, tell whoever is holding the camera on the night, or write to the address below and we will take a photograph down.',
+  },
+  {
+    name: 'Liability',
+    line: [
+      'You come to events at your own risk. We are not responsible for anything that happens to you or your belongings at a venue we do not own, for anything another attendee does, or for any loss that follows from something you read in the newsletter.',
+      '[TBD: this clause needs a lawyer to review it and to add the wording specific to California before launch. It says what we mean; it is not yet a drafted limitation of liability.]',
+    ],
+  },
+  {
+    name: 'What belongs to whom',
+    line: 'The writing, the photographs and the design of this site are ours. Quote us, link to us and forward the newsletter as much as you like. Republishing a whole issue or using our photographs commercially needs a yes from us first.',
+  },
+  {
+    name: 'Changes',
+    line: 'We can update these terms. The effective date above tells you which version you are reading, and material changes get said out loud in the newsletter rather than slipped in quietly.',
+  },
+  {
+    name: 'Questions',
+    line: 'Anything about these terms goes to the contact address below.',
+  },
+];
 ---
 
-<SiteLayout title="Terms">
+<SiteLayout
+  title="Terms"
+  description="The terms that apply to the Emerging LA newsletter, this site, and attending events."
+>
   <span slot="strip-end">Terms</span>
 
-  <div class="mx-auto max-w-page px-gutter-sm py-section-sm wide:px-gutter wide:py-section">
-    <SectionHeader number="01" eyebrow="Legal" title="Terms" as="h1" />
-    <Stub note="Terms of use. Covers the site itself, the newsletter and event attendance." />
-  </div>
+  <section class="mx-auto max-w-page px-gutter-sm pt-10 pb-9 wide:px-gutter wide:pt-[52px]">
+    <div class="t-mono mb-[22px] flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
+      <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
+      <span>Legal</span>
+    </div>
+
+    <h1 class="t-display m-0 max-w-[22ch] text-display-3 text-ink">Terms</h1>
+
+    <p class="mt-7 max-w-[52ch] text-lead font-medium text-ink-muted-aa">
+      What applies when you read the newsletter, use this site, or come to an event.
+    </p>
+
+    <div
+      class="t-mono mt-9 flex flex-wrap items-baseline gap-x-5 gap-y-2 border-y border-rule py-4 text-mono-meta text-ink-muted"
+    >
+      <span class="text-ink">Effective [TBD]</span>
+      <span>Emerging LA</span>
+      <span class="wide:ml-auto">Los Angeles, California</span>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-page px-gutter-sm wide:px-gutter">
+    <RuledList items={clauses} />
+
+    <p class="mt-9 text-body-sm text-ink-muted-aa">
+      Questions go to <a
+        href={links.email}
+        class="text-ink underline decoration-rule underline-offset-4 transition-colors hover:text-accent-step"
+        >[contact email]</a
+      >.
+    </p>
+  </section>
+
+  {/* The clauses are this page's numbered sections, so the band continues them. */}
+  <SubscribeBand number={String(clauses.length + 1).padStart(2, '0')} />
 </SiteLayout>

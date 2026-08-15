@@ -1,13 +1,38 @@
 ---
+/**
+ * Subscribe. Stripped chrome: centred wordmark, the form, one line of footer.
+ *
+ * This is the full-page version of the form in the orange band, not a second
+ * one. It renders the same SubscribeForm component, so the fields, the
+ * required-email validation, the role picker and the submit target are
+ * identical by construction and cannot drift apart.
+ *
+ * Sized to fit an iPhone X viewport (375 x 812) without scrolling, which is
+ * why the headline runs at display-5 rather than the display-3 the full pages
+ * use, and why there is one supporting line and no more. SE-class devices
+ * (375 x 667) do scroll, which is fine.
+ */
 import FocusLayout from '../layouts/FocusLayout.astro';
-import Stub from '../components/Stub.astro';
+import SubscribeForm from '../components/SubscribeForm.astro';
 ---
 
-<FocusLayout title="Subscribe">
-  <h1 class="t-display m-0 text-display-4 text-ink">Subscribe</h1>
+<FocusLayout
+  title="Subscribe"
+  description="One email on what is actually happening in LA tech."
+>
+  <div class="t-mono mb-4 flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
+    <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
+    <span>Newsletter</span>
+  </div>
 
-  {/* Interactive: the subscribe form. Scoped script, no framework island. */}
-  <Stub
-    note="Email field, the role picker, and the submit button posting to Beehiiv. On success the browser goes to /thanks. The Beehiiv endpoint is a placeholder in src/lib/links.ts."
-  />
+  <h1 class="t-display m-0 text-display-5 text-ink">
+    One email on what is actually happening in LA tech
+  </h1>
+
+  <p class="mt-4 mb-8 max-w-[46ch] text-body-sm text-ink-muted-aa">
+    Who raised, who is hiring, what shipped, and the rooms it happened in. Event
+    invitations come to the same address.
+  </p>
+
+  <SubscribeForm />
 </FocusLayout>

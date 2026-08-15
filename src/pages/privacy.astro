@@ -1,14 +1,109 @@
 ---
+/**
+ * Privacy. Full chrome, and built out of the same parts as the archive: the
+ * page header pattern, a mono metadata bar, and the numbered ruled rows that
+ * carry the About values and the Events steps. It is a content page, not
+ * boilerplate dropped into a blank template.
+ *
+ * Anything that needs a real answer is a bracketed marker. Nothing here invents
+ * a date, a company name, a processor, or a compliance claim.
+ */
 import SiteLayout from '../layouts/SiteLayout.astro';
-import SectionHeader from '../components/SectionHeader.astro';
-import Stub from '../components/Stub.astro';
+import RuledList from '../components/RuledList.astro';
+import SubscribeBand from '../components/SubscribeBand.astro';
+import { links } from '../lib/links';
+
+const clauses = [
+  {
+    name: 'What we collect',
+    line: [
+      'When you subscribe, we collect the email address you give us and, if you pick one, the role you selected. That is the whole form.',
+      'When you RSVP to an event, we collect what the RSVP asks for, which is your name and email address. If an event ever needs more than that, the form will say so at the time.',
+    ],
+  },
+  {
+    name: 'What we use it for',
+    line: [
+      'Sending you the newsletter, telling you about upcoming events, and running the event you actually signed up for.',
+      'The role you select shapes which event invitations are worth sending you. It is not used for anything else.',
+    ],
+  },
+  {
+    name: 'What we do not do with it',
+    line: "We do not sell your details, rent them, or trade them. We do not add you to anybody else's list, and we do not pass your address to a sponsor or a partner.",
+  },
+  {
+    name: 'Who else handles it',
+    line: [
+      'The newsletter runs on Beehiiv and events run on Luma, so subscribing or RSVPing means your details are stored with those services as well as with us. Each has its own privacy policy and its own controls.',
+      '[TBD: confirm the full list of processors before launch and link their policies here.]',
+    ],
+  },
+  {
+    name: 'Cookies and analytics',
+    line: [
+      'This site stores one thing in your browser: whether you chose light or dark mode. It sits in local storage, it never leaves your device, and it is not used to identify you.',
+      '[TBD: confirm whether any analytics runs on this site before launch, and name it here if it does.]',
+    ],
+  },
+  {
+    name: 'Unsubscribing and removal',
+    line: [
+      'Every email has an unsubscribe link and it works in one click. Unsubscribing stops the sending immediately.',
+      'If you want your details deleted rather than just unsubscribed, ask at the address below and we will remove them.',
+    ],
+  },
+  {
+    name: 'Changes to this policy',
+    line: 'If this policy changes in a way that affects what we collect or what we do with it, we will say so in the newsletter rather than quietly editing the page. The effective date above is the version you are reading.',
+  },
+  {
+    name: 'Questions',
+    line: 'Anything about your details, what we hold, or getting them removed goes to the contact address below and a person will answer it.',
+  },
+];
 ---
 
-<SiteLayout title="Privacy">
+<SiteLayout
+  title="Privacy"
+  description="What Emerging LA collects when you subscribe or RSVP, and what happens to it."
+>
   <span slot="strip-end">Privacy</span>
 
-  <div class="mx-auto max-w-page px-gutter-sm py-section-sm wide:px-gutter wide:py-section">
-    <SectionHeader number="01" eyebrow="Legal" title="Privacy" as="h1" />
-    <Stub note="Privacy policy. Needs to describe what the newsletter signup collects, that Beehiiv processes it, and how to unsubscribe." />
-  </div>
+  <section class="mx-auto max-w-page px-gutter-sm pt-10 pb-9 wide:px-gutter wide:pt-[52px]">
+    <div class="t-mono mb-[22px] flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
+      <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
+      <span>Legal</span>
+    </div>
+
+    <h1 class="t-display m-0 max-w-[22ch] text-display-3 text-ink">Privacy</h1>
+
+    <p class="mt-7 max-w-[52ch] text-lead font-medium text-ink-muted-aa">
+      What we collect when you subscribe or RSVP, what we do with it, and how to get it
+      back out.
+    </p>
+
+    <div
+      class="t-mono mt-9 flex flex-wrap items-baseline gap-x-5 gap-y-2 border-y border-rule py-4 text-mono-meta text-ink-muted"
+    >
+      <span class="text-ink">Effective [TBD]</span>
+      <span>Emerging LA</span>
+      <span class="wide:ml-auto">Los Angeles, California</span>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-page px-gutter-sm wide:px-gutter">
+    <RuledList items={clauses} />
+
+    <p class="mt-9 text-body-sm text-ink-muted-aa">
+      Questions go to <a
+        href={links.email}
+        class="text-ink underline decoration-rule underline-offset-4 transition-colors hover:text-accent-step"
+        >[contact email]</a
+      >.
+    </p>
+  </section>
+
+  {/* The clauses are this page's numbered sections, so the band continues them. */}
+  <SubscribeBand number={String(clauses.length + 1).padStart(2, '0')} />
 </SiteLayout>

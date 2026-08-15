@@ -44,7 +44,10 @@ const { number, class: className = '' }: Props = Astro.props;
           </p>
         </div>
 
-        <SubscribeForm />
+        {/* .on-paper resets the panel out of the band's orange tokens. It
+            belongs here, on the caller, because it is a fact about this
+            surface and not about the form. */}
+        <SubscribeForm class="on-paper" />
       </div>
     </div>
   </div>

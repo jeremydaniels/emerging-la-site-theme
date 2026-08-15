@@ -12,7 +12,8 @@
 
 export interface RuledItem {
   name: string;
-  line: string;
+  /** One line, or several paragraphs for a longer entry such as a legal clause. */
+  line: string | string[];
 }
 
 interface Props {
@@ -35,7 +36,11 @@ const { items, as: Tag = 'h3', class: className = '' }: Props = Astro.props;
           </span>
           <Tag class="t-title m-0 text-title-2 text-ink">{item.name}</Tag>
         </div>
-        <p class="m-0 max-w-[56ch] text-body-sm text-ink-muted-aa wide:flex-1">{item.line}</p>
+        <div class="max-w-[62ch] wide:flex-1">
+          {(Array.isArray(item.line) ? item.line : [item.line]).map((para, j) => (
+            <p class:list={['m-0 text-body-sm text-ink-muted-aa', j > 0 && 'mt-4']}>{para}</p>
+          ))}
+        </div>
       </div>
     ))
   }

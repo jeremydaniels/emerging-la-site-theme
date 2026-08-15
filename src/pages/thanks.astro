@@ -1,10 +1,52 @@
 ---
+/**
+ * Thanks. Same stripped route group as /subscribe.
+ *
+ * Confirmation, not celebration. Nothing on this page carries the accent at
+ * rest: the eyebrow rule is the only orange, and the two next-step links pick
+ * the accent up on hover, the same way the focus footer's links do.
+ *
+ * noindex, because it is the tail of a flow rather than a page anybody should
+ * arrive at from search.
+ */
 import FocusLayout from '../layouts/FocusLayout.astro';
-import Stub from '../components/Stub.astro';
+import { routes } from '../lib/links';
 ---
 
-<FocusLayout title="Thanks" noindex={true}>
+<FocusLayout
+  title="Thanks"
+  description="You are subscribed to the Emerging LA newsletter."
+  noindex={true}
+>
   <h1 class="t-display m-0 text-display-4 text-ink">You are subscribed</h1>
 
-  <Stub note="Confirmation copy, when the next issue lands, and a link back to the archive and the events page." />
+  <p class="mt-6 max-w-[48ch] text-body-lg text-ink-muted-aa">
+    That address is on the list. Event invitations go to the same one, so there is
+    nothing else to sign up for.
+  </p>
+
+  <div class="mt-10 border-t border-rule pt-7">
+    <div class="t-mono mb-4 text-mono-label-wide text-ink-muted">While you are here</div>
+
+    <nav class="flex flex-col gap-3" aria-label="Next steps">
+      <a
+        href={routes.archive}
+        class="text-ui text-ink underline decoration-rule underline-offset-4 transition-colors hover:text-accent-step"
+      >
+        Read the archive
+      </a>
+      <a
+        href={routes.events}
+        class="text-ui text-ink underline decoration-rule underline-offset-4 transition-colors hover:text-accent-step"
+      >
+        See what is coming up
+      </a>
+      <a
+        href={routes.home}
+        class="text-ui text-ink underline decoration-rule underline-offset-4 transition-colors hover:text-accent-step"
+      >
+        Back to home
+      </a>
+    </nav>
+  </div>
 </FocusLayout>

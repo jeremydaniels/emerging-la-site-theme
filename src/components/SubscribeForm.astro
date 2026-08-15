@@ -25,11 +25,13 @@ const ROLES = ['Founder', 'Investor', 'Operator', 'Something else'];
 ---
 
 {/*
-  .on-paper because this panel sits on the orange band, where the tokens are
-  re-pointed for orange. It resets them so the panel is a normal paper surface
-  with normal ink on it, in both modes.
+  The form follows whatever surface it is on. It does NOT force a light palette
+  itself: on the orange band the caller passes .on-paper, because there the
+  tokens are re-pointed for orange and a panel would otherwise come out orange
+  on orange. On /subscribe there is no orange, so the panel follows the page and
+  goes dark in dark mode like every other raised surface.
 */}
-<div class:list={['on-paper border border-rule bg-paper text-ink shadow-panel', className]}>
+<div class:list={['border border-rule bg-paper text-ink shadow-panel', className]}>
   <div
     class="t-mono flex items-center justify-between gap-3.5 border-b border-rule bg-ground px-6 py-[13px] text-mono-meta text-ink-muted"
   >
