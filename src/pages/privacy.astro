@@ -1,0 +1,14 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import Stub from '../components/Stub.astro';
+---
+
+<SiteLayout title="Privacy">
+  <span slot="strip-end">Privacy</span>
+
+  <div class="mx-auto max-w-page px-gutter-sm py-section-sm wide:px-gutter wide:py-section">
+    <SectionHeader number="01" eyebrow="Legal" title="Privacy" as="h1" />
+    <Stub note="Privacy policy. Needs to describe what the newsletter signup collects, that Beehiiv processes it, and how to unsubscribe." />
+  </div>
+</SiteLayout>

@@ -1,0 +1,100 @@
+---
+/**
+ * The photo frame: paper mat, dark well, warm multiply, corner crop marks and
+ * an optional mono metadata bar. See design-system.md §5.
+ *
+ * Hero frames use all four crop marks. Card frames use two, top-left and
+ * bottom-right. That diagonal pair is deliberate: it reads as a crop
+ * instruction rather than a border.
+ */
+
+interface Props {
+  src?: string;
+  alt?: string;
+  /** Preset sizing. hero 21/9 with 4 marks, card 4/3 with 2, thumb 1/1 none. */
+  variant?: 'hero' | 'card' | 'thumb';
+  /** Overrides the variant's aspect ratio, e.g. "16/9". */
+  ratio?: string;
+  /** Category chip, bottom-left of the well. */
+  chip?: string;
+  /** Orange chip is the anchor. One live in the viewport at a time. */
+  chipTone?: 'accent' | 'ink';
+  loading?: 'lazy' | 'eager';
+  class?: string;
+}
+
+const {
+  src,
+  alt = '',
+  variant = 'card',
+  ratio,
+  chip,
+  chipTone = 'ink',
+  loading = 'lazy',
+  class: className = '',
+} = Astro.props;
+
+const preset = {
+  hero: { ratio: '21/9', size: '16px', inset: '14px', marks: 4 },
+  card: { ratio: '4/3', size: '13px', inset: '10px', marks: 2 },
+  thumb: { ratio: '1/1', size: '0px', inset: '0px', marks: 0 },
+}[variant];
+
+const aspect = ratio ?? preset.ratio;
+const small = variant === 'thumb';
+const hasBar = Astro.slots.has('meta');
+---
+
+<figure
+  class:list={[small ? 'frame-sm' : 'frame', 'm-0', className]}
+  style={`--crop-size:${preset.size};--crop-inset:${preset.inset}`}
+>
+  <div class="frame-well" style={`aspect-ratio:${aspect}`}>
+    {
+      src ? (
+        <img class="frame-img" src={src} alt={alt} loading={loading} decoding="async" />
+      ) : (
+        <slot name="image" />
+      )
+    }
+    <div class="frame-wash"></div>
+    {
+      preset.marks > 0 && (
+        <>
+          <span class="crop crop-tl" aria-hidden="true" />
+          <span class="crop crop-br" aria-hidden="true" />
+        </>
+      )
+    }
+    {
+      preset.marks === 4 && (
+        <>
+          <span class="crop crop-tr" aria-hidden="true" />
+          <span class="crop crop-bl" aria-hidden="true" />
+        </>
+      )
+    }
+    {
+      chip && (
+        <span
+          class:list={[
+            'chip pointer-events-none absolute bottom-0 left-0',
+            chipTone === 'accent' ? 'chip-accent' : 'chip-ink',
+          ]}
+        >
+          {chip}
+        </span>
+      )
+    }
+  </div>
+
+  {
+    hasBar ? (
+      <figcaption class="t-mono flex flex-wrap items-baseline gap-x-5 gap-y-2 px-1 pt-[11px] pb-3 text-mono-meta-tight text-ink-muted">
+        <slot name="meta" />
+      </figcaption>
+    ) : (
+      small && <div class="h-[5px]" aria-hidden="true" />
+    )
+  }
+</figure>

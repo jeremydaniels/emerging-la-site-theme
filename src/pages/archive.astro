@@ -1,0 +1,22 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import Stub from '../components/Stub.astro';
+import { sortedIssues, usedCategories } from '../data/issues';
+
+const issues = sortedIssues();
+const categories = usedCategories();
+---
+
+<SiteLayout title="Archive">
+  <span slot="strip-end">Archive</span>
+
+  <div class="mx-auto max-w-page px-gutter-sm py-section-sm wide:px-gutter wide:py-section">
+    <SectionHeader number="01" eyebrow="Newsletter" title="Archive" as="h1" />
+
+    {/* Interactive: the category filters. Scoped script, no framework island. */}
+    <Stub
+      note={`Card grid of every issue, newest first, with the category filter row above it. ${issues.length} issue(s) and ${categories.length} category(ies) in src/data/issues.ts so far.`}
+    />
+  </div>
+</SiteLayout>

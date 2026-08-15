@@ -1,0 +1,412 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+/* ----------------------------------------------------------------------------
+   Faces
+   Riegal is supplied locally and ships ONE static weight. Never synthesise a
+   bold or a stretch from it. See design-system.md §2.
+   Manrope and Courier Prime are loaded from Google Fonts in BaseLayout.astro.
+   -------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: 'Riegal';
+  src:
+    url('/fonts/riegal.woff2') format('woff2'),
+    url('/fonts/riegal.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ----------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--ela-ground);
+    color: var(--ela-ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    /* Riegal has one weight and no width axis. Faking either wrecks it. */
+    font-synthesis: none;
+  }
+
+  ::selection {
+    background: var(--ela-accent);
+    color: var(--palette-paper);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* The mockup has no keyboard focus states. We are not shipping that. */
+  :focus-visible {
+    outline: 2px solid var(--ela-accent);
+    outline-offset: 2px;
+  }
+
+  input::placeholder {
+    color: rgb(28 28 28 / 0.32);
+  }
+
+  :root[data-theme='dark'] input::placeholder {
+    color: rgb(255 253 250 / 0.35);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) input::placeholder {
+      color: rgb(255 253 250 / 0.35);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Components
+   Only the patterns that are genuinely awkward as inline utilities live here.
+   Everything else stays as Tailwind classes in the markup, close to the way the
+   mockup wrote them.
+   -------------------------------------------------------------------------- */
+
+@layer components {
+  /* --- Type roles ------------------------------------------------------- */
+
+  .t-display {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+  }
+
+  .t-mono {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+  }
+
+  /* --- Buttons ---------------------------------------------------------- */
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--radius-chip);
+    font-family: var(--font-body);
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  /* Anchor orange. One live in the viewport at a time. */
+  .btn-primary {
+    background: var(--ela-accent);
+    color: var(--palette-paper);
+    border: 0;
+    font-size: 15px;
+    padding: 16px 26px;
+  }
+  .btn-primary:hover {
+    background: var(--ela-accent-light);
+    color: var(--palette-paper);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--ela-ink);
+    border: 1px solid var(--ela-ink-faint);
+    font-size: var(--text-ui);
+    padding: 14px 26px;
+  }
+  .btn-secondary:hover {
+    background: var(--ela-ink);
+    color: var(--ela-ground);
+    border-color: var(--ela-ink);
+  }
+
+  .btn-ink {
+    background: var(--ela-ink);
+    color: var(--ela-ground);
+    border: 0;
+    font-size: 15.5px;
+    padding: 17px 24px;
+  }
+  .btn-ink:hover {
+    background: var(--ela-accent);
+    color: var(--palette-paper);
+  }
+
+  .btn-sm {
+    font-size: var(--text-ui-sm);
+    padding: 11px 20px;
+  }
+
+  /* Ink underscored by orange. Reads as a link, weighs like a button. */
+  .btn-quiet {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: var(--text-ui);
+    font-weight: 700;
+    color: var(--ela-ink);
+    border-bottom: 1.5px solid var(--ela-accent);
+    padding-bottom: 2px;
+    transition: color 0.15s ease;
+  }
+  .btn-quiet:hover {
+    color: var(--ela-accent-step);
+  }
+
+  /* --- Photo frame ------------------------------------------------------ */
+
+  .frame {
+    background: var(--ela-paper);
+    border: 1px solid var(--ela-rule);
+    padding: 12px 12px 0;
+  }
+
+  .frame-sm {
+    background: var(--ela-paper);
+    border: 1px solid var(--ela-rule);
+    padding: 5px 5px 0;
+  }
+
+  .frame-well {
+    position: relative;
+    overflow: hidden;
+    background: var(--ela-well);
+  }
+
+  /* The warm multiply that makes every photo look like the same night. */
+  .frame-wash {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(rgb(217 96 14 / 0.07), rgb(28 28 28 / 0.05));
+    mix-blend-mode: multiply;
+  }
+
+  .frame-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: contrast(1.05) saturate(0.96);
+  }
+
+  /* Crop marks. Always cream, on the photo, identical in both modes. */
+  .crop {
+    position: absolute;
+    width: var(--crop-size, 13px);
+    height: var(--crop-size, 13px);
+    pointer-events: none;
+    border: 0 solid var(--ela-crop);
+  }
+  .crop-tl {
+    left: var(--crop-inset, 10px);
+    top: var(--crop-inset, 10px);
+    border-left-width: 1.5px;
+    border-top-width: 1.5px;
+  }
+  .crop-tr {
+    right: var(--crop-inset, 10px);
+    top: var(--crop-inset, 10px);
+    border-right-width: 1.5px;
+    border-top-width: 1.5px;
+  }
+  .crop-bl {
+    left: var(--crop-inset, 10px);
+    bottom: var(--crop-inset, 10px);
+    border-left-width: 1.5px;
+    border-bottom-width: 1.5px;
+  }
+  .crop-br {
+    right: var(--crop-inset, 10px);
+    bottom: var(--crop-inset, 10px);
+    border-right-width: 1.5px;
+    border-bottom-width: 1.5px;
+  }
+
+  /* --- Chips ------------------------------------------------------------ */
+
+  .chip {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-label);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 5px 9px;
+    line-height: 1.2;
+  }
+  .chip-accent {
+    background: var(--ela-accent);
+    color: var(--palette-paper);
+  }
+  .chip-ink {
+    background: var(--palette-ink);
+    color: var(--palette-paper);
+  }
+
+  /* --- Card ------------------------------------------------------------- */
+
+  .card {
+    display: block;
+    background: var(--ela-paper);
+    border: 1px solid var(--ela-rule);
+    padding: 12px 12px 0;
+    color: var(--ela-ink);
+    transition:
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .card:hover {
+    border-color: var(--ela-ink);
+    box-shadow: var(--ela-shadow-card);
+  }
+
+  /* --- Ruled table ------------------------------------------------------ */
+
+  .row-head {
+    display: flex;
+    gap: 16px;
+    padding: 0 0 10px;
+    border-bottom: 1px solid var(--ela-rule);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-label-wide);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ela-ink-muted);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 16px;
+    padding: 18px 8px;
+    margin: 0 -8px;
+    border-bottom: 1px solid var(--ela-hairline);
+    border-radius: var(--radius-chip);
+    transition: background-color 0.15s ease;
+  }
+  .row:hover {
+    background: var(--ela-wash);
+  }
+
+  /* One featured row at a time. */
+  .row-featured {
+    background: var(--ela-accent-tint);
+  }
+  .row-featured:hover {
+    background: var(--ela-accent-tint-hover);
+  }
+
+  /* The signature date cell. */
+  .row-date {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-left: 2px solid var(--ela-accent);
+    padding-left: 11px;
+  }
+
+  /* --- Form ------------------------------------------------------------- */
+
+  .field {
+    width: 100%;
+    border: 0;
+    border-bottom: 1.5px solid var(--ela-edge);
+    background: transparent;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-input);
+    color: var(--ela-ink);
+    padding: 9px 2px;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .field:focus {
+    border-bottom-color: var(--ela-accent);
+    outline: none;
+  }
+
+  .field-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-label);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ela-ink-muted);
+    margin-bottom: 8px;
+  }
+
+  /* --- Toggle group (events upcoming/past) ------------------------------ */
+
+  .toggle-group {
+    display: flex;
+    border: 1px solid var(--ela-edge);
+    border-radius: var(--radius-chip);
+    overflow: hidden;
+  }
+
+  .toggle {
+    border: 0;
+    cursor: pointer;
+    background: transparent;
+    color: var(--ela-ink-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-tab);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 10px 18px;
+    transition: all 0.15s ease;
+  }
+  .toggle[aria-pressed='true'],
+  .toggle[data-on] {
+    background: var(--ela-ink);
+    color: var(--ela-ground);
+  }
+
+  /* --- Role / filter chip ------------------------------------------------ */
+
+  .pick {
+    flex: 1 1 120px;
+    text-align: center;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-role);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 13px 10px;
+    border-radius: var(--radius-chip);
+    border: 1.5px solid var(--ela-edge);
+    background: transparent;
+    color: var(--ela-ink-muted);
+    transition: all 0.15s ease;
+  }
+  .pick[aria-pressed='true'],
+  .pick[data-on] {
+    border-color: var(--ela-ink);
+    background: var(--ela-ink);
+    color: var(--ela-ground);
+  }
+}

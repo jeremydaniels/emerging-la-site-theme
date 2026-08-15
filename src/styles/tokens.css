@@ -1,0 +1,328 @@
+/* ============================================================================
+   Emerging LA — design tokens
+
+   THIS IS THE ONLY FILE THAT CONTAINS A COLOUR VALUE.
+   A palette swap is one edit, in the PALETTE block directly below. Nothing else
+   in the codebase may hardcode a hex, rgb or hsl value.
+
+   Reference: design-system.md
+   ========================================================================= */
+
+/* ----------------------------------------------------------------------------
+   1. PALETTE — the raw values. Edit here and nowhere else.
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* Supplied palette */
+  --palette-ground: #f5f0eb;
+  --palette-paper: #fffdfa;
+  --palette-ink: #1c1c1c;
+  --palette-ink-muted: rgb(28 28 28 / 0.6);
+  --palette-rule: rgb(28 28 28 / 0.14);
+  --palette-accent-dark: #d9600e;
+  --palette-accent: #ff6218;
+  --palette-accent-light: #ff8426;
+
+  /* Derived, all taken from the mockup */
+  --palette-well: #15130f; /* backing behind every photo */
+  --palette-well-deep: #0f0e0c; /* same, dark mode */
+  --palette-paper-dark: #141311; /* raised surface, dark mode */
+  --palette-ink-muted-aa: rgb(28 28 28 / 0.66); /* 5.20:1, see design-system.md §1 */
+  --palette-ink-faint: rgb(28 28 28 / 0.3);
+  --palette-hairline: rgb(28 28 28 / 0.08);
+  --palette-edge: rgb(28 28 28 / 0.2);
+  --palette-wash: rgb(28 28 28 / 0.035); /* row hover */
+
+  --palette-on-dark: rgb(255 253 250 / 1);
+  --palette-on-dark-muted: rgb(255 253 250 / 0.62);
+  --palette-on-dark-faint: rgb(255 253 250 / 0.55);
+  --palette-on-dark-rule: rgb(255 253 250 / 0.16);
+  --palette-on-dark-hairline: rgb(255 253 250 / 0.1);
+  --palette-on-dark-edge: rgb(255 253 250 / 0.24);
+  --palette-on-dark-wash: rgb(255 253 250 / 0.05);
+
+  --palette-accent-tint: rgb(255 98 24 / 0.06); /* featured row */
+  --palette-accent-tint-hover: rgb(255 98 24 / 0.11);
+  --palette-crop: rgb(255 253 250 / 0.7); /* crop marks, never changes */
+}
+
+/* ----------------------------------------------------------------------------
+   2. SEMANTIC TOKENS — light mode is the bare :root so it is always defined.
+   -------------------------------------------------------------------------- */
+
+:root {
+  --ela-ground: var(--palette-ground);
+  --ela-paper: var(--palette-paper);
+  --ela-well: var(--palette-well);
+
+  --ela-ink: var(--palette-ink);
+  --ela-ink-muted: var(--palette-ink-muted);
+  --ela-ink-muted-aa: var(--palette-ink-muted-aa);
+  --ela-ink-faint: var(--palette-ink-faint);
+  --ela-on-accent: var(--palette-paper);
+
+  --ela-rule: var(--palette-rule);
+  --ela-hairline: var(--palette-hairline);
+  --ela-edge: var(--palette-edge);
+  --ela-wash: var(--palette-wash);
+
+  --ela-accent: var(--palette-accent);
+  --ela-accent-dark: var(--palette-accent-dark);
+  --ela-accent-light: var(--palette-accent-light);
+  /* The structural orange for the current mode. Components use this, never a
+     raw accent value. Light ground needs the darkest orange (3.29:1); dark
+     ground can afford the lightest (6.96:1). */
+  --ela-accent-step: var(--palette-accent-dark);
+  --ela-accent-tint: var(--palette-accent-tint);
+  --ela-accent-tint-hover: var(--palette-accent-tint-hover);
+
+  --ela-crop: var(--palette-crop);
+
+  --ela-shadow-card: 0 22px 40px -34px rgb(28 28 28 / 0.7);
+  --ela-shadow-panel: 0 40px 70px -50px rgb(28 28 28 / 0.6);
+  --ela-shadow-hero: 0 1px 0 rgb(28 28 28 / 0.04), 0 40px 70px -60px rgb(28 28 28 / 0.85);
+
+  color-scheme: light;
+}
+
+/* Dark mode. Defined twice on purpose: once for the system preference (guarded
+   so an explicit light choice wins) and once for the explicit override, so the
+   attribute wins in both directions. */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ela-ground: var(--palette-ink);
+    --ela-paper: var(--palette-paper-dark);
+    --ela-well: var(--palette-well-deep);
+
+    --ela-ink: var(--palette-on-dark);
+    --ela-ink-muted: var(--palette-on-dark-muted);
+    --ela-ink-muted-aa: var(--palette-on-dark-muted);
+    --ela-ink-faint: var(--palette-on-dark-faint);
+
+    --ela-rule: var(--palette-on-dark-rule);
+    --ela-hairline: var(--palette-on-dark-hairline);
+    --ela-edge: var(--palette-on-dark-edge);
+    --ela-wash: var(--palette-on-dark-wash);
+
+    --ela-accent-step: var(--palette-accent-light);
+
+    /* Far-throw shadows read as smudges on a dark ground. Rules carry depth. */
+    --ela-shadow-card: none;
+    --ela-shadow-panel: none;
+    --ela-shadow-hero: none;
+
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --ela-ground: var(--palette-ink);
+  --ela-paper: var(--palette-paper-dark);
+  --ela-well: var(--palette-well-deep);
+
+  --ela-ink: var(--palette-on-dark);
+  --ela-ink-muted: var(--palette-on-dark-muted);
+  --ela-ink-muted-aa: var(--palette-on-dark-muted);
+  --ela-ink-faint: var(--palette-on-dark-faint);
+
+  --ela-rule: var(--palette-on-dark-rule);
+  --ela-hairline: var(--palette-on-dark-hairline);
+  --ela-edge: var(--palette-on-dark-edge);
+  --ela-wash: var(--palette-on-dark-wash);
+
+  --ela-accent-step: var(--palette-accent-light);
+
+  --ela-shadow-card: none;
+  --ela-shadow-panel: none;
+  --ela-shadow-hero: none;
+
+  color-scheme: dark;
+}
+
+/* The orange band never inverts. Anything inside it reads on orange in both
+   modes, so it re-points the tokens rather than each child opting out. */
+:where(.on-accent) {
+  --ela-ground: var(--palette-accent);
+  --ela-paper: var(--palette-accent);
+  --ela-ink: var(--palette-paper);
+  --ela-ink-muted: rgb(255 253 250 / 0.86);
+  --ela-ink-muted-aa: rgb(255 253 250 / 0.86);
+  --ela-ink-faint: rgb(255 253 250 / 0.78);
+  --ela-rule: rgb(255 253 250 / 0.6);
+  --ela-hairline: rgb(255 253 250 / 0.3);
+  --ela-accent-step: rgb(255 253 250 / 0.78);
+  color-scheme: light;
+}
+
+/* Blocks of ink ground sitting inside a light page (the top strip, the footer). */
+:where(.on-ink) {
+  --ela-ground: var(--palette-ink);
+  --ela-paper: var(--palette-paper-dark);
+  --ela-ink: var(--palette-on-dark);
+  --ela-ink-muted: var(--palette-on-dark-muted);
+  --ela-ink-muted-aa: var(--palette-on-dark-muted);
+  --ela-ink-faint: var(--palette-on-dark-faint);
+  --ela-rule: var(--palette-on-dark-rule);
+  --ela-hairline: var(--palette-on-dark-hairline);
+  --ela-edge: var(--palette-on-dark-edge);
+  --ela-wash: var(--palette-on-dark-wash);
+  --ela-accent-step: var(--palette-accent-light);
+  color-scheme: dark;
+}
+
+/* ----------------------------------------------------------------------------
+   3. TAILWIND THEME — `inline` so utilities emit var(--ela-*) and follow mode.
+   -------------------------------------------------------------------------- */
+
+@theme inline {
+  /* Colours */
+  --color-ground: var(--ela-ground);
+  --color-paper: var(--ela-paper);
+  --color-well: var(--ela-well);
+  --color-ink: var(--ela-ink);
+  --color-ink-muted: var(--ela-ink-muted);
+  --color-ink-muted-aa: var(--ela-ink-muted-aa);
+  --color-ink-faint: var(--ela-ink-faint);
+  --color-on-accent: var(--ela-on-accent);
+  --color-rule: var(--ela-rule);
+  --color-hairline: var(--ela-hairline);
+  --color-edge: var(--ela-edge);
+  --color-wash: var(--ela-wash);
+  --color-accent: var(--ela-accent);
+  --color-accent-dark: var(--ela-accent-dark);
+  --color-accent-light: var(--ela-accent-light);
+  --color-accent-step: var(--ela-accent-step);
+  --color-accent-tint: var(--ela-accent-tint);
+  --color-accent-tint-hover: var(--ela-accent-tint-hover);
+  --color-crop: var(--ela-crop);
+
+  /* Shadows */
+  --shadow-card: var(--ela-shadow-card);
+  --shadow-panel: var(--ela-shadow-panel);
+  --shadow-hero: var(--ela-shadow-hero);
+}
+
+@theme {
+  /* Faces. Riegal is one static weight; see design-system.md §2. */
+  --font-display: 'Riegal', 'Archivo', system-ui, sans-serif;
+  --font-body: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Courier Prime', ui-monospace, 'Courier New', monospace;
+
+  /* Only one breakpoint exists in this design. */
+  --breakpoint-wide: 900px;
+
+  --container-page: 1360px;
+
+  /* Display scale — Riegal, uppercase */
+  --text-display-1: clamp(46px, 8.4vw, 124px);
+  --text-display-1--line-height: 0.86;
+  --text-display-1--letter-spacing: -0.03em;
+
+  --text-display-2: clamp(38px, 6.4vw, 92px);
+  --text-display-2--line-height: 0.87;
+  --text-display-2--letter-spacing: -0.028em;
+
+  --text-display-3: clamp(30px, 4.2vw, 54px);
+  --text-display-3--line-height: 0.9;
+  --text-display-3--letter-spacing: -0.025em;
+
+  --text-display-4: clamp(28px, 3.6vw, 52px);
+  --text-display-4--line-height: 0.95;
+  --text-display-4--letter-spacing: -0.022em;
+
+  --text-display-5: clamp(26px, 3.4vw, 46px);
+  --text-display-5--line-height: 0.95;
+  --text-display-5--letter-spacing: -0.02em;
+
+  --text-stat: clamp(34px, 4vw, 52px);
+  --text-stat--line-height: 1;
+  --text-stat--letter-spacing: -0.02em;
+
+  --text-title-1: clamp(19px, 1.7vw, 23px);
+  --text-title-1--line-height: 1.15;
+  --text-title-1--letter-spacing: -0.008em;
+
+  --text-title-2: clamp(18px, 1.8vw, 24px);
+  --text-title-2--line-height: 1.15;
+  --text-title-2--letter-spacing: -0.008em;
+
+  --text-day: 26px;
+  --text-day--line-height: 1;
+  --text-day--letter-spacing: -0.02em;
+
+  /* Body scale — Manrope */
+  --text-lead: clamp(16px, 1.3vw, 19px);
+  --text-lead--line-height: 1.5;
+
+  --text-lead-alt: clamp(16px, 1.4vw, 20px);
+  --text-lead-alt--line-height: 1.5;
+
+  --text-body-lg: clamp(16px, 1.35vw, 19px);
+  --text-body-lg--line-height: 1.55;
+
+  --text-body: 16px;
+  --text-body--line-height: 1.6;
+
+  --text-body-sm: 15px;
+  --text-body-sm--line-height: 1.55;
+
+  --text-ui: 14.5px;
+  --text-ui--line-height: 1;
+
+  --text-ui-sm: 14px;
+  --text-ui-sm--line-height: 1;
+
+  --text-note: 14px;
+  --text-note--line-height: 1.45;
+
+  --text-micro: 13.5px;
+  --text-micro--line-height: 1.35;
+
+  /* Mono scale — Courier Prime, uppercase */
+  --text-mono-eyebrow: 11px;
+  --text-mono-eyebrow--letter-spacing: 0.16em;
+
+  --text-mono-label: 10px;
+  --text-mono-label--letter-spacing: 0.16em;
+
+  --text-mono-label-wide: 10px;
+  --text-mono-label-wide--letter-spacing: 0.18em;
+
+  --text-mono-head: 10px;
+  --text-mono-head--letter-spacing: 0.2em;
+
+  --text-mono-meta: 10.5px;
+  --text-mono-meta--letter-spacing: 0.16em;
+
+  --text-mono-meta-tight: 10.5px;
+  --text-mono-meta-tight--letter-spacing: 0.13em;
+
+  --text-mono-meta-lg: 11.5px;
+  --text-mono-meta-lg--letter-spacing: 0.12em;
+
+  --text-mono-tab: 11px;
+  --text-mono-tab--letter-spacing: 0.14em;
+
+  --text-mono-role: 12px;
+  --text-mono-role--letter-spacing: 0.12em;
+
+  --text-mono-index: 12px;
+  --text-mono-index--letter-spacing: 0.06em;
+
+  --text-mono-input: 17px;
+  --text-mono-input--letter-spacing: 0em;
+
+  /* Spacing steps the mockup actually uses. 2px base, half-steps kept. */
+  --spacing: 2px;
+
+  /* Section rhythm */
+  --spacing-gutter: 30px;
+  --spacing-gutter-sm: 18px;
+  --spacing-section: 82px;
+  --spacing-section-sm: 54px;
+  --spacing-navbar: 60px;
+
+  /* Radius: 2px or nothing. */
+  --radius-chip: 2px;
+}

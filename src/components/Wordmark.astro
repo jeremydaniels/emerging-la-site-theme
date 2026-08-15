@@ -1,0 +1,111 @@
+---
+/**
+ * The wordmark. There is no emblem, icon or monogram anywhere on this site.
+ *
+ * Two files exist, black and cream, and the only decision is which ground the
+ * mark is sitting on. See design-system.md §12.
+ *
+ *   tone="auto"  follows light/dark mode (black on the light ground, cream on
+ *                the dark one). The default, and right for nav and footer.
+ *   tone="black" forces black. Use on Ground, Paper, or a light photo scrim.
+ *   tone="cream" forces cream. Use on Ink, Well, the orange band, or a dark
+ *                photo scrim.
+ *
+ * Width has a hard floor of 120px, applied here with max() so a caller cannot
+ * go under it. Do not raise the floor: a previous build set a higher minimum
+ * and clipped the mobile bar below 350px. Pass a clamp() to scale up.
+ */
+
+interface Props {
+  tone?: 'auto' | 'black' | 'cream';
+  /** Any CSS width. Anything under the 120px floor is clamped up to it. */
+  width?: string;
+  href?: string | null;
+  class?: string;
+}
+
+const {
+  tone = 'auto',
+  width = '168px',
+  href = '/',
+  class: className = '',
+}: Props = Astro.props;
+
+const BLACK = '/logo/wordmark-black.svg';
+const CREAM = '/logo/wordmark-cream.svg';
+const ALT = 'Emerging LA';
+
+/** Intrinsic aspect ratio of the trimmed lockup. */
+const RATIO = 5.34;
+
+const resolved = `max(120px, ${width})`;
+/** Clear space is half the rendered height, on all four sides. */
+const style = `width:${resolved};--wordmark-clear:calc(${resolved} / ${RATIO} / 2)`;
+
+const Tag = href ? 'a' : 'span';
+const tagProps = href ? { href, 'aria-label': ALT } : {};
+---
+
+<Tag {...tagProps} class:list={['wordmark', `wordmark-${tone}`, className]} style={style}>
+  {
+    tone !== 'cream' && (
+      <img class="wordmark-black-img" src={BLACK} alt={ALT} width="1912" height="358" />
+    )
+  }
+  {
+    tone !== 'black' && (
+      <img class="wordmark-cream-img" src={CREAM} alt={ALT} width="1912" height="358" />
+    )
+  }
+</Tag>
+
+<style>
+  .wordmark {
+    display: block;
+    flex: 0 0 auto;
+  }
+
+  .wordmark img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* auto: black on the light ground, cream on the dark one. */
+  .wordmark-auto .wordmark-cream-img {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .wordmark-auto .wordmark-black-img {
+      display: none;
+    }
+    :global(:root:not([data-theme='light'])) .wordmark-auto .wordmark-cream-img {
+      display: block;
+    }
+  }
+
+  :global(:root[data-theme='dark']) .wordmark-auto .wordmark-black-img {
+    display: none;
+  }
+  :global(:root[data-theme='dark']) .wordmark-auto .wordmark-cream-img {
+    display: block;
+  }
+
+  :global(:root[data-theme='light']) .wordmark-auto .wordmark-black-img {
+    display: block;
+  }
+  :global(:root[data-theme='light']) .wordmark-auto .wordmark-cream-img {
+    display: none;
+  }
+
+  /* Inside an orange band or an ink block the ground is dark in both modes. */
+  :global(.on-accent) .wordmark-auto .wordmark-black-img,
+  :global(.on-ink) .wordmark-auto .wordmark-black-img {
+    display: none;
+  }
+  :global(.on-accent) .wordmark-auto .wordmark-cream-img,
+  :global(.on-ink) .wordmark-auto .wordmark-cream-img {
+    display: block;
+  }
+</style>

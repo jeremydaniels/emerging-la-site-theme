@@ -1,0 +1,17 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import Stub from '../components/Stub.astro';
+import { site } from '../lib/site';
+---
+
+<SiteLayout title={site.name} suffix={false}>
+  {/* strip-end is where the current issue number and date go once there is one. */}
+
+  <div class="mx-auto max-w-page px-gutter-sm py-section-sm wide:px-gutter wide:py-section">
+    <SectionHeader number="01" eyebrow="Start here" title="Home" as="h1" />
+    <Stub
+      note="Hero, proof strip, about summary, latest issues, upcoming events and the subscribe band. Section numbering runs 01 to 05 on this page."
+    />
+  </div>
+</SiteLayout>
