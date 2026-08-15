@@ -32,6 +32,7 @@
   --palette-hairline: rgb(28 28 28 / 0.08);
   --palette-edge: rgb(28 28 28 / 0.2);
   --palette-wash: rgb(28 28 28 / 0.035); /* row hover */
+  --palette-placeholder: rgb(28 28 28 / 0.32);
 
   --palette-on-dark: rgb(255 253 250 / 1);
   --palette-on-dark-muted: rgb(255 253 250 / 0.62);
@@ -40,10 +41,16 @@
   --palette-on-dark-hairline: rgb(255 253 250 / 0.1);
   --palette-on-dark-edge: rgb(255 253 250 / 0.24);
   --palette-on-dark-wash: rgb(255 253 250 / 0.05);
+  --palette-on-dark-placeholder: rgb(255 253 250 / 0.35);
 
   --palette-accent-tint: rgb(255 98 24 / 0.06); /* featured row */
   --palette-accent-tint-hover: rgb(255 98 24 / 0.11);
   --palette-crop: rgb(255 253 250 / 0.7); /* crop marks, never changes */
+
+  /* Empty photo slots. Same in both modes: they sit inside the well. */
+  --palette-slot-line: rgb(255 253 250 / 0.22);
+  --palette-slot-ink: rgb(255 253 250 / 0.62);
+  --palette-slot-ink-faint: rgb(255 253 250 / 0.4);
 }
 
 /* ----------------------------------------------------------------------------
@@ -65,6 +72,7 @@
   --ela-hairline: var(--palette-hairline);
   --ela-edge: var(--palette-edge);
   --ela-wash: var(--palette-wash);
+  --ela-placeholder: var(--palette-placeholder);
 
   --ela-accent: var(--palette-accent);
   --ela-accent-dark: var(--palette-accent-dark);
@@ -77,6 +85,9 @@
   --ela-accent-tint-hover: var(--palette-accent-tint-hover);
 
   --ela-crop: var(--palette-crop);
+  --ela-slot-line: var(--palette-slot-line);
+  --ela-slot-ink: var(--palette-slot-ink);
+  --ela-slot-ink-faint: var(--palette-slot-ink-faint);
 
   --ela-shadow-card: 0 22px 40px -34px rgb(28 28 28 / 0.7);
   --ela-shadow-panel: 0 40px 70px -50px rgb(28 28 28 / 0.6);
@@ -104,6 +115,7 @@
     --ela-hairline: var(--palette-on-dark-hairline);
     --ela-edge: var(--palette-on-dark-edge);
     --ela-wash: var(--palette-on-dark-wash);
+    --ela-placeholder: var(--palette-on-dark-placeholder);
 
     --ela-accent-step: var(--palette-accent-light);
 
@@ -130,6 +142,7 @@
   --ela-hairline: var(--palette-on-dark-hairline);
   --ela-edge: var(--palette-on-dark-edge);
   --ela-wash: var(--palette-on-dark-wash);
+  --ela-placeholder: var(--palette-on-dark-placeholder);
 
   --ela-accent-step: var(--palette-accent-light);
 
@@ -141,17 +154,52 @@
 }
 
 /* The orange band never inverts. Anything inside it reads on orange in both
-   modes, so it re-points the tokens rather than each child opting out. */
+   modes, so it re-points the tokens rather than each child opting out.
+
+   Cream on this orange is 3.32:1, which is large text only. So `ink` stays
+   cream for the display headline and the wordmark, and everything smaller
+   goes near-black instead: `ink-muted` is 4.73:1 and `ink-muted-aa` is
+   5.69:1. That inversion is deliberate. On orange, the readable colour for
+   body copy and small print is the dark one. */
 :where(.on-accent) {
   --ela-ground: var(--palette-accent);
   --ela-paper: var(--palette-accent);
-  --ela-ink: var(--palette-paper);
-  --ela-ink-muted: rgb(255 253 250 / 0.86);
-  --ela-ink-muted-aa: rgb(255 253 250 / 0.86);
-  --ela-ink-faint: rgb(255 253 250 / 0.78);
+  --ela-ink: var(--palette-paper); /* display sizes only */
+  --ela-ink-muted: rgb(28 28 28 / 0.86); /* 4.73:1 */
+  --ela-ink-muted-aa: var(--palette-ink); /* 5.69:1 */
+  --ela-ink-faint: rgb(28 28 28 / 0.7);
   --ela-rule: rgb(255 253 250 / 0.6);
   --ela-hairline: rgb(255 253 250 / 0.3);
-  --ela-accent-step: rgb(255 253 250 / 0.78);
+  --ela-edge: rgb(28 28 28 / 0.3);
+  --ela-placeholder: rgb(28 28 28 / 0.4);
+  --ela-accent-step: rgb(255 253 250 / 0.86);
+  color-scheme: light;
+}
+
+/* A light paper surface that does not invert, for panels sitting on the orange
+   band. The band stays orange in dark mode, so its form panel stays paper in
+   dark mode too, and everything inside it goes back to reading normally. */
+:where(.on-paper) {
+  --ela-ground: var(--palette-ground);
+  --ela-paper: var(--palette-paper);
+  --ela-well: var(--palette-well);
+
+  --ela-ink: var(--palette-ink);
+  --ela-ink-muted: var(--palette-ink-muted);
+  --ela-ink-muted-aa: var(--palette-ink-muted-aa);
+  --ela-ink-faint: var(--palette-ink-faint);
+
+  --ela-rule: var(--palette-rule);
+  --ela-hairline: var(--palette-hairline);
+  --ela-edge: var(--palette-edge);
+  --ela-wash: var(--palette-wash);
+  --ela-placeholder: var(--palette-placeholder);
+
+  --ela-accent-step: var(--palette-accent-dark);
+
+  --ela-shadow-card: 0 22px 40px -34px rgb(28 28 28 / 0.7);
+  --ela-shadow-panel: 0 40px 70px -50px rgb(28 28 28 / 0.6);
+
   color-scheme: light;
 }
 
@@ -167,6 +215,7 @@
   --ela-hairline: var(--palette-on-dark-hairline);
   --ela-edge: var(--palette-on-dark-edge);
   --ela-wash: var(--palette-on-dark-wash);
+  --ela-placeholder: var(--palette-on-dark-placeholder);
   --ela-accent-step: var(--palette-accent-light);
   color-scheme: dark;
 }
@@ -196,6 +245,9 @@
   --color-accent-tint: var(--ela-accent-tint);
   --color-accent-tint-hover: var(--ela-accent-tint-hover);
   --color-crop: var(--ela-crop);
+  --color-slot-line: var(--ela-slot-line);
+  --color-slot-ink: var(--ela-slot-ink);
+  --color-slot-ink-faint: var(--ela-slot-ink-faint);
 
   /* Shadows */
   --shadow-card: var(--ela-shadow-card);

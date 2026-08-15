@@ -1,0 +1,107 @@
+---
+/**
+ * The ruled events table. See design-system.md §8.
+ *
+ * One component renders both views. The home page passes the upcoming list;
+ * the events page will pass either, driven by its toggle:
+ *
+ *   <EventsTable events={upcomingEvents()} variant="upcoming" />
+ *   <EventsTable events={pastEvents()} variant="past" />
+ *
+ * Renders nothing at all when the list is empty. The caller decides whether an
+ * empty list means "hide the whole section" or "show an empty state".
+ */
+import PhotoFrame from './PhotoFrame.astro';
+import { monthShort, dayOfMonth, machineDate, longDate } from '../lib/format';
+import { links } from '../lib/links';
+import type { EventItem } from '../data/events';
+
+interface Props {
+  events: EventItem[];
+  variant?: 'upcoming' | 'past';
+  class?: string;
+}
+
+const { events, variant = 'upcoming', class: className = '' }: Props = Astro.props;
+
+const isUpcoming = variant === 'upcoming';
+const cta = isUpcoming ? 'RSVP' : 'Photos';
+/** Upcoming rows fall back to the Luma calendar, past rows to nothing. */
+const fallbackHref = isUpcoming ? links.lumaCalendar : null;
+---
+
+{
+  events.length > 0 && (
+    <div class={className}>
+      <div class="row-head hidden wide:flex">
+        <span class="flex-[0_0_46px]">No.</span>
+        <span class="flex-[0_0_92px]">Date</span>
+        <span class="flex-[0_0_96px]">Photo</span>
+        <span class="flex-auto">Event</span>
+        <span class="flex-[0_0_200px]">Location</span>
+        <span class="flex-[0_0_96px] text-right">{isUpcoming ? 'RSVP' : 'Recap'}</span>
+      </div>
+
+      {events.map((event, i) => {
+        const href = event.url ?? fallbackHref;
+        const index = String(i + 1).padStart(2, '0');
+
+        return (
+          <div class:list={['row', event.featured && isUpcoming && 'row-featured']}>
+            <span class="t-mono hidden flex-[0_0_46px] text-mono-index text-ink-faint wide:block">
+              {index}
+            </span>
+
+            <div class="row-date flex-[0_0_92px]">
+              <span class="t-mono text-mono-label text-accent-step">
+                {monthShort(event.date)}
+              </span>
+              <time class="t-display text-day text-ink" datetime={machineDate(event.date)}>
+                {dayOfMonth(event.date)}
+              </time>
+            </div>
+
+            <PhotoFrame
+              variant="thumb"
+              src={event.image}
+              alt={event.imageAlt ?? ''}
+              path={`events.ts → ${event.slug}.image`}
+              class="flex-[0_0_96px]"
+            />
+
+            <div class="min-w-0 flex-[1_1_220px]">
+              <div class="t-title text-title-2 text-ink">{event.name}</div>
+              <div class="mt-[5px] text-note text-ink-muted-aa">{event.note}</div>
+              {/* The location column is hidden below 900px, so it folds in
+                  here. The date is not repeated: the date block above already
+                  carries it. */}
+              <div class="t-mono mt-1.5 text-mono-meta text-ink-muted wide:hidden">
+                {event.venue}, {event.neighborhood}{event.time && ` · ${event.time}`}
+              </div>
+            </div>
+
+            <div class="t-mono hidden flex-[0_0_200px] text-mono-meta-lg text-ink-muted wide:block">
+              {event.venue}, {event.neighborhood}
+              {event.time && <span class="block">{event.time}</span>}
+            </div>
+
+            {href ? (
+              <a
+                href={href}
+                rel="noopener"
+                target="_blank"
+                class="t-mono ml-auto flex-[0_0_96px] text-right text-mono-tab text-accent-step transition-opacity hover:opacity-70"
+              >
+                {cta} →
+              </a>
+            ) : (
+              <span class="t-mono ml-auto flex-[0_0_96px] text-right text-mono-tab text-ink-faint">
+                {isUpcoming ? '[LINK]' : '[SOON]'}
+              </span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  )
+}

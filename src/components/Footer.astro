@@ -20,21 +20,19 @@ const columns = [
     ],
   },
   {
-    heading: 'Get involved',
-    items: [
-      { label: 'Host an event', href: links.email },
-      { label: 'Partner with us', href: links.email },
-      { label: 'Submit a story', href: links.email },
-      { label: 'Advertise', href: links.email },
-    ],
-  },
-  {
     heading: 'Contact',
     items: [
       { label: 'Email', href: links.email },
       { label: 'LinkedIn', href: links.linkedin },
       { label: 'Instagram', href: links.instagram },
       { label: 'X', href: links.x },
+    ],
+  },
+  {
+    heading: 'Legal',
+    items: [
+      { label: 'Privacy', href: routes.privacy },
+      { label: 'Terms', href: routes.terms },
     ],
   },
 ];
@@ -51,7 +49,10 @@ const columns = [
           <p class="mt-[18px] max-w-[36ch] text-body-sm text-ink-muted">
             {site.description}
           </p>
-          <a href={routes.subscribe} class="btn btn-primary btn-sm mt-[22px]">Subscribe</a>
+          {/* Secondary, not anchor orange. On the home page the footer sits
+              directly under the orange band, and two anchors in one viewport
+              breaks the rule. Anchors belong to page content, not chrome. */}
+          <a href={routes.subscribe} class="btn btn-secondary btn-sm mt-[22px]">Subscribe</a>
         </div>
 
         {
@@ -79,10 +80,6 @@ const columns = [
         class="t-mono mt-11 flex flex-wrap items-center justify-between gap-3.5 border-t border-rule pt-[22px] text-mono-meta-tight text-ink-faint"
       >
         <span>© {year} {site.name} · {site.location}</span>
-        <div class="flex gap-5">
-          <a href={routes.privacy} class="transition-colors hover:text-accent-light">Privacy</a>
-          <a href={routes.terms} class="transition-colors hover:text-accent-light">Terms</a>
-        </div>
       </div>
     </div>
   </div>

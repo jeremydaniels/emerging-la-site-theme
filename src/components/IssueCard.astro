@@ -1,0 +1,52 @@
+---
+/**
+ * An issue card. See design-system.md §9.
+ *
+ * The photo frame with a body bolted on: 4/3 well, two crop marks, category
+ * chip bottom-left, then title and a mono row of date plus "Read".
+ *
+ * The whole card is one link. Only the featured issue gets the orange chip,
+ * and only one issue may be featured, because the chip is an anchor.
+ */
+import PhotoFrame from './PhotoFrame.astro';
+import { longDate, machineDate } from '../lib/format';
+import { routes } from '../lib/links';
+import type { Issue } from '../data/issues';
+
+interface Props {
+  issue: Issue;
+}
+
+const { issue }: Props = Astro.props;
+
+const href = issue.url ?? routes.archive;
+const external = Boolean(issue.url);
+---
+
+<a
+  href={href}
+  class="card group"
+  rel={external ? 'noopener' : undefined}
+  target={external ? '_blank' : undefined}
+>
+  <PhotoFrame
+    variant="card"
+    src={issue.image}
+    alt={issue.imageAlt ?? ''}
+    path={`issues.ts → ${issue.slug}.image`}
+    chip={issue.category}
+    chipTone={issue.featured ? 'accent' : 'ink'}
+    mat={false}
+  />
+
+  <div class="px-1 pt-4 pb-[18px]">
+    <h3 class="t-title m-0 text-title-1 text-ink">{issue.title}</h3>
+
+    <div
+      class="t-mono mt-3.5 flex items-baseline gap-3.5 border-t border-hairline pt-[11px] text-mono-meta-tight text-ink-muted"
+    >
+      <time datetime={machineDate(issue.date)}>{longDate(issue.date)}</time>
+      <span class="ml-auto text-accent-step">Read →</span>
+    </div>
+  </div>
+</a>

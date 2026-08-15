@@ -1,17 +1,242 @@
 ---
+/**
+ * Home page.
+ *
+ * Section numbering runs 01 to 05 and restarts on every page.
+ *
+ * Anchor orange, one live per viewport, in scroll order:
+ *   hero CTA  →  featured issue chip  →  featured event row tint  →  the band.
+ * Nothing else on this page carries a solid orange fill. The nav's Subscribe
+ * is deliberately the outline button.
+ */
 import SiteLayout from '../layouts/SiteLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
-import Stub from '../components/Stub.astro';
+import PhotoFrame from '../components/PhotoFrame.astro';
+import IssueCard from '../components/IssueCard.astro';
+import EventsTable from '../components/EventsTable.astro';
+import SubscribeForm from '../components/SubscribeForm.astro';
+
 import { site } from '../lib/site';
+import { routes } from '../lib/links';
+import { latestIssues } from '../data/issues';
+import { upcomingEvents } from '../data/events';
+import { photos, photoPaths } from '../data/photos';
+
+const issues = latestIssues(3);
+const upcoming = upcomingEvents();
+
+/**
+ * Only 14K+ community is a verified number. Every other cell is a visible
+ * placeholder, not a guess and not a rounded-down real figure.
+ */
+const proof = [
+  { value: site.communitySize, label: 'Community', real: true },
+  { value: '[TBD]', label: 'Issues published', real: false },
+  { value: '[TBD]', label: 'Events hosted', real: false },
+  { value: '[TBD]', label: 'Companies represented', real: false },
+];
 ---
 
 <SiteLayout title={site.name} suffix={false}>
   {/* strip-end is where the current issue number and date go once there is one. */}
 
-  <div class="mx-auto max-w-page px-gutter-sm py-section-sm wide:px-gutter wide:py-section">
-    <SectionHeader number="01" eyebrow="Start here" title="Home" as="h1" />
-    <Stub
-      note="Hero, proof strip, about summary, latest issues, upcoming events and the subscribe band. Section numbering runs 01 to 05 on this page."
-    />
-  </div>
+  {/* ------------------------------------------------------------------ 01 */}
+  {/*
+    Hero. Changed from the mockup: the right column is the photo, not an "in
+    this issue" list, and the mockup's full-width photo band below the hero is
+    gone. One photo, in the four-crop-mark hero frame, portrait so it holds its
+    own against the headline column.
+
+    On mobile the photo sits BELOW the headline and the CTA. The headline is
+    the whole proposition and it should be the first thing on a small screen,
+    and it keeps the largest paint a block of text rather than an image.
+  */}
+  <section class="mx-auto max-w-page px-gutter-sm wide:px-gutter">
+    <div
+      class="grid grid-cols-1 items-end gap-9 pt-10 pb-9 wide:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] wide:pt-[52px]"
+    >
+      <div>
+        <div class="t-mono mb-[22px] flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
+          <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
+          <span>01 · Start here</span>
+        </div>
+
+        <h1 class="t-display m-0 text-display-1 text-ink">
+          What's actually<br />happening in<br />
+          <span class="relative inline-block">
+            LA tech
+            <span
+              class="pointer-events-none absolute -inset-x-[3%] bottom-[6%] -z-10 h-[0.30em] bg-accent opacity-[0.22]"
+              aria-hidden="true"></span>
+          </span>
+        </h1>
+
+        <p class="mt-7 max-w-[62ch] text-lead font-medium text-ink-muted-aa">
+          Community of <span class="font-bold text-ink"
+            >{site.communitySize} founders, investors and operators</span
+          > collaborating through content and events to shape the future of tech innovation
+          in Los Angeles
+        </p>
+
+        <div class="mt-[30px] flex flex-wrap items-center gap-[18px]">
+          <a href={routes.subscribe} class="btn btn-primary">Subscribe to the newsletter</a>
+          <span class="t-mono text-mono-meta-lg text-ink-muted">Unsubscribe anytime</span>
+        </div>
+      </div>
+
+      <PhotoFrame
+        variant="portrait"
+        src={photos.homeHero.src}
+        alt={photos.homeHero.alt}
+        brief={photos.homeHero.brief}
+        path={photoPaths.homeHero}
+        loading="eager"
+      />
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------ proof strip --- */}
+  <section class="px-gutter-sm pt-[34px] wide:px-gutter">
+    <div class="mx-auto max-w-page border-y border-rule">
+      <div class="grid grid-cols-2 wide:grid-cols-4">
+        {
+          proof.map((cell, i) => (
+            <div
+              class:list={[
+                'px-[22px] py-[26px]',
+                i < proof.length - 1 && 'wide:border-r wide:border-rule',
+                i % 2 === 0 && 'border-r border-rule wide:border-r',
+                i < 2 && 'border-b border-rule wide:border-b-0',
+              ]}
+            >
+              <div
+                class:list={[
+                  't-display text-stat',
+                  cell.real ? 'text-ink' : 'text-ink-faint',
+                ]}
+              >
+                {cell.value}
+              </div>
+              <div class="t-mono mt-2 text-mono-meta text-ink-muted">{cell.label}</div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------------ 02 */}
+  <section
+    id="about"
+    class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-[88px]"
+  >
+    <div class="grid grid-cols-1 items-start gap-4 wide:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] wide:gap-14">
+      <div>
+        <div class="t-mono mb-[18px] flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
+          <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
+          <span>02 · About</span>
+        </div>
+        <h2 class="t-display m-0 text-display-4 text-ink">
+          LA's most ambitious people don't all come from the same five schools
+        </h2>
+      </div>
+
+      <div class="pt-1.5">
+        <p class="m-0 text-body-lg text-ink">
+          Most people in LA never find out the room exists. The introductions that change
+          a company happen somewhere, and if you didn't go to the right school or work at
+          the right company, you never hear about them.
+        </p>
+        <p class="mt-5 text-body text-ink-muted-aa">
+          Emerging LA exists so that the person you need to meet is one introduction away
+          instead of one lucky accident. Anyone building here can read it and anyone can
+          show up.
+        </p>
+        <a href={routes.about} class="btn-quiet mt-8">More about Emerging LA →</a>
+      </div>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------------ 03 */}
+  <section
+    id="issues"
+    class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
+  >
+    <SectionHeader number="03" eyebrow="Newsletter" title="Latest issues" class="mb-[34px]">
+      <a
+        slot="action"
+        href={routes.archive}
+        class="t-mono pb-1 text-mono-meta-lg text-accent-step">Read the archive →</a
+      >
+    </SectionHeader>
+
+    <div class="grid grid-cols-1 gap-4 wide:grid-cols-3 wide:gap-[26px]">
+      {issues.map((issue) => <IssueCard issue={issue} />)}
+    </div>
+
+    <div class="mt-9 flex justify-center">
+      <a href={routes.archive} class="btn btn-secondary">See all issues in the archive</a>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------------ 04 */}
+  {/*
+    The whole section is absent when there is nothing upcoming, rather than
+    sitting there empty. Past events live on the events page.
+  */}
+  {
+    upcoming.length > 0 && (
+      <section
+        id="events"
+        class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
+      >
+        <SectionHeader number="04" eyebrow="Events" title="Upcoming events" class="mb-3" />
+
+        <p class="mt-0 mb-[26px] text-body-sm text-ink-muted-aa">
+          Anyone can attend. RSVP to hold a spot.
+        </p>
+
+        <EventsTable events={upcoming} variant="upcoming" />
+
+        <div class="flex flex-wrap items-center justify-between gap-3.5 pt-[22px]">
+          <span class="t-mono text-mono-meta-lg text-ink-muted">
+            More dates added regularly
+          </span>
+          <a href={routes.events} class="btn-quiet">
+            See all events →
+          </a>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ------------------------------------------------------------------ 05 */}
+  {/*
+    The orange band. This is the page's last anchor and the only section where
+    orange carries the whole field. The heading stays cream (display sizes
+    clear AA-large on orange); everything smaller goes near-black, which the
+    .on-accent token block handles.
+  */}
+  <section id="subscribe" class="on-accent mt-section-sm bg-ground wide:mt-[88px]">
+    <div class="px-gutter-sm py-16 wide:px-gutter">
+      <div class="mx-auto max-w-page">
+        <div class="t-mono mb-5 flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
+          <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
+          <span>05 · Subscribe</span>
+        </div>
+
+        <div class="grid grid-cols-1 items-start gap-8 wide:grid-cols-[minmax(0,1fr)_minmax(0,520px)] wide:gap-[52px]">
+          <div>
+            <h2 class="t-display m-0 text-display-2 text-ink">Get it in<br />your inbox</h2>
+            <p class="mt-6 max-w-[44ch] text-lead-alt text-ink-muted-aa">
+              One email on what's happening in LA tech, plus first word on upcoming
+              events. Read by {site.communitySize} founders, investors and operators.
+            </p>
+          </div>
+
+          <SubscribeForm />
+        </div>
+      </div>
+    </div>
+  </section>
 </SiteLayout>
