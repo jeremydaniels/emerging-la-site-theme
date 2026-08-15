@@ -10,7 +10,7 @@ brief. When the two disagree, `design-system.md` wins on anything visual.
 
 ## Stack
 
-- **Astro 5**, static output, `trailingSlash: 'never'`, `build.format: 'file'`
+- **Astro 5**, static output, `trailingSlash: 'never'`, `build.format: 'directory'`
 - **Tailwind v4** via `@tailwindcss/vite`. No `tailwind.config.js`; the theme is CSS.
 - **TypeScript**, `astro/tsconfigs/strict`
 - **Zero client JS by default.** The build currently ships no framework and no JS bundle.
@@ -195,5 +195,10 @@ sentence case, and it is what card headlines and table row titles use.
 - **One breakpoint.** The design has exactly one, at 900px, exposed as the `wide:` variant. The
   mockup wrote it as `max-width: 900px` overrides; we write it as `wide:` min-width utilities.
   Do not add `sm:` `md:` `lg:`.
+- **`build.format` must stay `'directory'`.** With `'file'` the build emits flat `/about.html`
+  files, and a request for `/about` only resolves if the host rewrites extensionless URLs. Vercel
+  does not by default, so every route except `/` served the 404 page in production while
+  `/about.html` served fine. `'directory'` also keeps `Astro.url.pathname` clean, which the
+  canonical and og:url tags are built from.
 - **`vite` is pinned to `^6.4.3`** in devDependencies to match the copy Astro nests. Without the
   pin, `@tailwindcss/vite` pulls vite 8 and `astro check` fails on a plugin type mismatch.
