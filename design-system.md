@@ -250,11 +250,19 @@ standing in for the missing bar.
 | Hero, wide | `21/9` | 4 | `16px` | `14px` | 2400 × 1029 |
 | Hero, portrait | `4/5` | 4 | `16px` | `14px` | 1200 × 1500 |
 | Band | `3/2` | 4 | `16px` | `14px` | 1800 × 1200 |
-| Card | `4/3` | 2 | `13px` | `10px` | 1200 × 900 |
+| Issue card | `1200/630` | none | — | — | 1200 × 630 |
 | Event row thumb | `1/1` | none | — | — | 600 × 600 |
 
-**Four marks is the standalone-photo treatment, two is the card treatment.** That is the rule the
-mockup's diagonal pair encodes, and it is what decides the count for any new frame.
+**Four marks is the standalone-photo treatment.** That is the rule the mockup's diagonal pair
+encodes, and it is what decides the count for any new frame. A frame that is not a standalone
+photo takes none.
+
+**CHANGED:** the issue card well was `4/3` with the two-mark diagonal. It is now `1200/630`,
+which is Beehiiv's thumbnail size, because the archive grid and the home page's latest issues are
+the two places a real Beehiiv thumbnail will land and the well has to hold one uncropped. Those
+thumbnails come with their own rails, marks and metadata baked into the artwork, so the frame
+draws no marks of its own; ours on top of theirs is a doubled border. Both places render the same
+`IssueCard`, so this is one ratio in one component.
 
 **ADDED:** the portrait hero (`4/5`), because the home page hero puts the photo in the right column
 beside the headline rather than in a band underneath. **ADDED:** the band (`3/2`), for a run of
@@ -434,7 +442,8 @@ border-radius: 0        /* the mat is square; only buttons/chips get 2px */
 transition: box-shadow .2s ease, border-color .2s ease
 ```
 
-- **Well:** `aspect-ratio: 4/3`, two crop marks (TL + BR), optional category chip bottom-left.
+- **Well:** `aspect-ratio: 1200/630`, no crop marks, optional category chip bottom-left. See §5
+  for why this one is the Beehiiv thumbnail ratio and why it is the one frame with no marks.
 - **Body:** `padding: 16px 4px 18px`. Headline in Riegal `title-1`. Then `margin-top: 14px`,
   `padding-top: 11px`, `border-top: 1px solid var(--ela-hairline)`, and a mono `10.5px` `0.12em`
   uppercase row: date on the left, `Read →` in `--ela-accent-dark` pushed right.
@@ -731,7 +740,10 @@ state" component; the absence is the design.
 ## 18. The showcase card
 
 A grid of issue cards can promote one of them. The promoted card gets an orange
-gradient well:
+gradient well, **while its well is empty**. A well holding a thumbnail shows the
+thumbnail; there the chip carries the accent instead, exactly as it does on the
+home page. Every one of the rules below hangs off `.frame-well:has(.slot)` for
+that reason, so a card never ends up with no orange at all once its photo lands.
 
 ```css
 --ela-well-accent: linear-gradient(155deg,
@@ -741,7 +753,8 @@ gradient well:
 Three rules go with it.
 
 **One orange element per accent card.** Where there is no gradient well, the
-category chip carries the accent (the home page). Where there is one, the well
+category chip carries the accent (the home page, and any card with a photo in
+it). Where there is one, the well
 carries it and the chip inverts to near-black, because orange on orange is
 invisible and cream on this orange is 3.32:1. Same inversion as `.on-accent`.
 The empty slot's text and dashed box invert with it, and the warm multiply is

@@ -153,7 +153,10 @@ src/
   components/SectionHeader.astro  Numbered eyebrow + H2 + rule.
   components/SubscribeBand.astro  The orange band. Shared by every page that ends with it.
   components/SubscribeForm.astro  The form inside it. There is only one of these.
-  components/IssueCard.astro      Issue card. Two crop marks, not four.
+  components/IssueCard.astro      Issue card, shared by the archive grid and home's
+                              latest issues. The well is 1200/630, Beehiiv's
+                              thumbnail size, and draws no crop marks: the
+                              thumbnails carry their own framing.
   components/EventsTable.astro    Ruled events table. variant="upcoming" | "past".
                               Both variants share the layout completely: every
                               difference lives in the VARIANTS table at the top

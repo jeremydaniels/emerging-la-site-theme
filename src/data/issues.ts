@@ -18,9 +18,12 @@
  * ============================================================================
  *
  * The rows below are placeholders. Every one has `url: null`, which is the
- * marker: a real issue always has a Beehiiv URL. Two titles are the samples
- * used elsewhere on the site; the rest are bracketed so nothing here can be
- * mistaken for a real headline.
+ * marker: a real issue always has a Beehiiv URL. The first three carry real
+ * thumbnail artwork and the headlines that go with it; the rest are bracketed
+ * so nothing there can be mistaken for a real headline.
+ *
+ * Thumbnails live under `/images/issues/`, exported at Beehiiv's 1200 x 630 so
+ * the card well holds them uncropped.
  */
 
 export interface Issue {
@@ -38,6 +41,30 @@ export interface Issue {
 }
 
 const ISSUES: Issue[] = [
+  {
+    id: 'placeholder-issue-1',
+    title: '96 women showed up to a mixer with zero pitch decks',
+    category: 'Event recap',
+    date: null,
+    url: null,
+    image: '/images/issues/issue-1.jpg',
+  },
+  {
+    id: 'placeholder-issue-2',
+    title: "Inside the dinner series nobody's allowed to post about",
+    category: 'Event recap',
+    date: null,
+    url: null,
+    image: '/images/issues/issue-2.jpg',
+  },
+  {
+    id: 'placeholder-issue-3',
+    title: 'Why a fintech founder traded San Francisco for Venice Beach',
+    category: 'Founder story',
+    date: null,
+    url: null,
+    image: '/images/issues/issue-3.jpg',
+  },
   {
     id: 'placeholder-01',
     title: 'Inside the build with a $14M co-founder',

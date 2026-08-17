@@ -333,10 +333,14 @@
      hand it to a different card without re-rendering anything.
 
      The accent card carries exactly ONE orange element. Where there is no
-     gradient well (the home page) that is the chip. Where there is one (the
-     showcase grid) the well carries it and the chip inverts to near-black,
-     because orange on orange is invisible and cream on orange is 3.32:1. Same
-     inversion as .on-accent, for the same reason. */
+     gradient well (the home page) that is the chip. Where there is one (an
+     empty slot in the showcase grid) the well carries it and the chip inverts
+     to near-black, because orange on orange is invisible and cream on orange is
+     3.32:1. Same inversion as .on-accent, for the same reason.
+
+     A well holding a photo is never the gradient, so the chip stays orange
+     there and the card keeps its one orange element. That is why the inversion
+     hangs off :has(.slot) rather off the grid alone. */
   .chip-issue {
     background: var(--palette-ink);
     color: var(--palette-paper);
@@ -345,7 +349,7 @@
     background: var(--ela-accent);
     color: var(--palette-paper);
   }
-  .grid-showcase [data-accent] .chip-issue {
+  .grid-showcase [data-accent] .frame-well:has(.slot) .chip-issue {
     background: var(--palette-ink);
     color: var(--palette-paper);
   }
@@ -372,8 +376,11 @@
   /* The gradient well, scoped to a grid that opts in. The archive is a page of
      nothing but issues and wants one card to carry the section; the home page's
      issues are one section of five, where the chip alone is enough. Scoping it
-     here rather than in IssueCard keeps a single accent attribute driving both. */
-  .grid-showcase [data-accent] .frame-well {
+     here rather than in IssueCard keeps a single accent attribute driving both.
+
+     Empty wells only. A well holding a thumbnail already has something in it,
+     and there the chip is what carries the accent. */
+  .grid-showcase [data-accent] .frame-well:has(.slot) {
     background-image: var(--ela-well-accent);
   }
 
@@ -385,8 +392,9 @@
     --ela-slot-ink-faint: rgb(28 28 28 / 0.6);
   }
 
-  /* The warm multiply is for photographs. Over a flat gradient it just muddies. */
-  .grid-showcase [data-accent] .frame-wash {
+  /* The warm multiply is for photographs. Over a flat gradient it just muddies,
+     so it comes off the accent card only while that card's well is empty. */
+  .grid-showcase [data-accent] .frame-well:has(.slot) .frame-wash {
     display: none;
   }
 

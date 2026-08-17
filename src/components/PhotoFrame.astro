@@ -3,9 +3,12 @@
  * The photo frame: paper mat, dark well, warm multiply, corner crop marks and
  * an optional mono metadata bar. See design-system.md §5.
  *
- * Hero frames use all four crop marks. Card frames use two, top-left and
- * bottom-right. That diagonal pair is deliberate: it reads as a crop
- * instruction rather than a border.
+ * Hero frames use all four crop marks. That is the standalone-photo treatment.
+ *
+ * The `issue` variant is the exception and draws none: its well is the Beehiiv
+ * thumbnail slot, and those thumbnails arrive with their own rails and marks
+ * baked into the artwork. A frame of ours on top of a frame of theirs is a
+ * doubled border. See design-system.md §5.
  *
  * ## Empty slots
  *
@@ -27,13 +30,13 @@ interface Props {
    * hero      21/9, four crop marks
    * portrait  4/5, four crop marks (the home hero's right column, headshots)
    * band      3/2, four crop marks (a run of standalone photos across a page)
-   * card      4/3, two crop marks
+   * issue     1200/630, no crop marks (the issue card's Beehiiv thumbnail)
    * thumb     1/1, no crop marks, no caption bar
    *
-   * Four marks is the standalone-photo treatment; two is the card treatment.
-   * A photo in a band is standalone, so it takes four.
+   * Four marks is the standalone-photo treatment. A photo in a band is
+   * standalone, so it takes four. `issue` and `thumb` take none.
    */
-  variant?: 'hero' | 'portrait' | 'band' | 'card' | 'thumb';
+  variant?: 'hero' | 'portrait' | 'band' | 'issue' | 'thumb';
   /** Overrides the variant's aspect ratio, e.g. "16/9". */
   ratio?: string;
   /** Where the real file goes. Printed in the empty slot. */
@@ -63,7 +66,7 @@ interface Props {
 const {
   src = null,
   alt = '',
-  variant = 'card',
+  variant = 'issue',
   ratio,
   path,
   brief,
@@ -79,7 +82,9 @@ const PRESETS = {
   hero: { ratio: '21/9', size: '16px', inset: '14px', marks: 4, exportSize: '2400 x 1029', meta: true },
   portrait: { ratio: '4/5', size: '16px', inset: '14px', marks: 4, exportSize: '1200 x 1500', meta: true },
   band: { ratio: '3/2', size: '16px', inset: '14px', marks: 4, exportSize: '1800 x 1200', meta: true },
-  card: { ratio: '4/3', size: '13px', inset: '10px', marks: 2, exportSize: '1200 x 900', meta: false },
+  /* 1200/630 is Beehiiv's thumbnail size. Matching it here means a real
+     thumbnail drops into this well with nothing cropped off it. */
+  issue: { ratio: '1200/630', size: '0px', inset: '0px', marks: 0, exportSize: '1200 x 630', meta: false },
   thumb: { ratio: '1/1', size: '0px', inset: '0px', marks: 0, exportSize: '600 x 600', meta: false },
 } as const;
 
