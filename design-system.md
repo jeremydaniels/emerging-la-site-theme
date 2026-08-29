@@ -116,7 +116,7 @@ Rule of thumb: if it is a sentence somebody would read aloud, it is `.t-title`.
 
 | Step | Size | Line height | Tracking | Where |
 | --- | --- | --- | --- | --- |
-| `display-1` | `clamp(46px, 8.4vw, 124px)` | `0.86` | `-0.03em` | H1, homepage hero |
+| `display-1` | `clamp(40px, 7.4vw, 103px)` | `0.86` | `-0.03em` | H1, homepage hero |
 | `display-2` | `clamp(38px, 6.4vw, 92px)` | `0.87` | `-0.028em` | Subscribe band headline |
 | `display-3` | `clamp(30px, 4.2vw, 54px)` | `0.90` | `-0.025em` | Footer wordmark line |
 | `display-4` | `clamp(28px, 3.6vw, 52px)` | `0.95` | `-0.022em` | About statement |
@@ -126,6 +126,16 @@ Rule of thumb: if it is a sentence somebody would read aloud, it is `.t-title`.
 | `title-2` | `clamp(18px, 1.8vw, 24px)` | `1.15` | `-0.008em` | Table row title |
 | `day` | `26px` | `1` | `-0.02em` | Date block day number |
 | `wordmark` | `19px` | `1` | `0.01em` | Nav wordmark (text fallback) |
+
+`display-1` is sized to the hero headline it carries, not chosen for its own sake. The headline
+sets as three lines, HOME TO LA'S / MOST AMBITIOUS / [rotating word], and the middle line is the
+constraint: "MOST AMBITIOUS" is 6.854em of Riegal, so the step has to stay under the width of the
+hero text column divided by that. Three points bind it, and all three have 3 to 6% of headroom at
+the values above: 320px, where the floor governs; 900px, where the hero splits into two columns
+and the text column drops from 863px to 473px; and 1440px and up, where the page container caps at
+1360px while the viewport keeps growing. The earlier `clamp(46px, 8.4vw, 124px)` broke the middle
+line at 320px and everywhere from 900px up, leaving MOST alone on a line. Changing this step, or
+the hero grid ratio, or that line of copy, means re-checking the other two.
 
 ### Body scale (Manrope)
 

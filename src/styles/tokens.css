@@ -252,7 +252,7 @@
   --container-page: 1360px;
 
   /* Display scale — Riegal, uppercase */
-  --text-display-1: clamp(46px, 8.4vw, 124px);
+  --text-display-1: clamp(40px, 7.4vw, 103px);
   --text-display-1--line-height: 0.86;
   --text-display-1--letter-spacing: -0.03em;
 
