@@ -62,20 +62,30 @@ const proof = [
         </div>
 
         <h1 class="t-display m-0 text-display-1 text-ink">
-          What's actually<br />happening in<br />
-          <span class="relative inline-block">
-            LA tech
-            <span
-              class="pointer-events-none absolute -inset-x-[3%] bottom-[6%] -z-10 h-[0.30em] bg-accent opacity-[0.22]"
-              aria-hidden="true"></span>
-          </span>
+          Home to LA's<br />most ambitious<br />
+          {/*
+            The rotating word. "builders" is the rendered text: it is what a
+            scraper, a link preview and a no-JS visitor get, and the script
+            starts its cycle from it rather than from a random index.
+
+            The width is reserved in `em`, not px. The step is a clamp between
+            46px and 124px, so a pinned pixel width would only be right at one
+            viewport; the ratio of word width to font-size is constant, and
+            letter-spacing is in em too, so one min-width holds at every width.
+            Measured in Riegal at display-1, uppercase, with the step's
+            -0.03em tracking: builders 3.863em, founders 4.173em, investors
+            4.326em, operators 4.657em. 4.66em is the widest of the four, and it
+            holds identically at 320px, 390px and 1200px. Nothing sits to the
+            right of the word on the line, so the reserved width moves nothing.
+          */}
+          <span class="hero-rotator" style="min-width: 4.66em"
+            ><span class="hero-rotator-word" data-hero-rotator>builders</span></span
+          >
         </h1>
 
         <p class="mt-7 max-w-[62ch] text-lead font-medium text-ink-muted-aa">
-          Community of <span class="font-bold text-ink"
-            >{site.communitySize} founders, investors and operators</span
-          > collaborating through content and events to shape the future of tech innovation
-          in Los Angeles
+          On a mission to put capital, knowledge and opportunity within reach of everyone
+          building here.
         </p>
 
         <div class="mt-[30px] flex flex-wrap items-center gap-[18px]">
@@ -214,3 +224,77 @@ const proof = [
   <SubscribeBand number="05" />
 
 </SiteLayout>
+
+<style>
+  /* The reserved-width box. The min-width is set inline in the markup, next to
+     the note explaining the em. */
+  .hero-rotator {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  /* A crossfade and nothing else. §13 of the design system allows almost no
+     motion, so no slide, no settle, no typewriter. The global
+     prefers-reduced-motion block already flattens the duration, and the script
+     never starts under that setting anyway. */
+  .hero-rotator-word {
+    display: inline-block;
+    transition: opacity 0.2s ease;
+  }
+
+  .hero-rotator-word[data-state='out'] {
+    opacity: 0;
+  }
+</style>
+
+<script>
+  /**
+   * The last word of the hero headline cycles. Scoped script, no framework, no
+   * island, in line with the three other interactive spots on the site.
+   *
+   * Three things are load bearing:
+   *   - The cycle starts at the word the server rendered, so "builders" is
+   *     always what loads and the order is stable, never random.
+   *   - Under prefers-reduced-motion: reduce nothing runs at all. No interval
+   *     is created and the headline stays "builders" for good.
+   *   - The interval is cleared while the tab is hidden, so a backgrounded tab
+   *     is not repainting a headline nobody is looking at.
+   */
+  const rotator = document.querySelector<HTMLElement>('[data-hero-rotator]');
+
+  if (rotator && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const word = rotator;
+    const words = ['builders', 'founders', 'investors', 'operators'];
+    let index = 0;
+    let cycle = 0;
+    let swap = 0;
+
+    function advance() {
+      word.dataset.state = 'out';
+      swap = window.setTimeout(() => {
+        index = (index + 1) % words.length;
+        word.textContent = words[index];
+        word.dataset.state = 'in';
+      }, 200);
+    }
+
+    function start() {
+      if (!cycle) cycle = window.setInterval(advance, 2000);
+    }
+
+    function stop() {
+      window.clearInterval(cycle);
+      window.clearTimeout(swap);
+      cycle = 0;
+      // Stopping mid fade would leave the word invisible.
+      word.dataset.state = 'in';
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop();
+      else start();
+    });
+
+    start();
+  }
+</script>
