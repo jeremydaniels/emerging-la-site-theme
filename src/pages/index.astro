@@ -77,8 +77,18 @@ const proof = [
             4.326em, operators 4.657em. 4.66em is the widest of the four, and it
             holds identically at 320px, 390px and 1200px. Nothing sits to the
             right of the word on the line, so the reserved width moves nothing.
+
+            The wash carries the width of the CURRENT word, never the reserved
+            width of the box: pinned to the box it would be 0.84em wider than
+            BUILDERS needs, a fifth of the word hanging off the end. The bar inside it keeps the exact geometry the "LA tech"
+            wash had, the 3% bleed and 6% baseline offset included, and the
+            track it sits in is the only thing that animates.
           */}
           <span class="hero-rotator" style="min-width: 4.66em"
+            ><span class="hero-rotator-wash" style="width: 3.863em" data-hero-wash aria-hidden="true"
+              ><span
+                class="pointer-events-none absolute -inset-x-[3%] bottom-[6%] h-[0.30em] bg-accent opacity-[0.22]"
+              ></span></span
             ><span class="hero-rotator-word" data-hero-rotator>builders</span></span
           >
         </h1>
@@ -229,15 +239,33 @@ const proof = [
   /* The reserved-width box. The min-width is set inline in the markup, next to
      the note explaining the em. */
   .hero-rotator {
+    position: relative;
     display: inline-block;
     vertical-align: top;
   }
 
+  /* The wash track. It is sized to the word on show, not to the box, and its
+     width is the only thing that animates: the bar inside is inset by a
+     percentage of this track, so the 3% bleed follows the word for nothing.
+     Same duration and easing as the word, started in the same frame as the
+     fade back in, so the two read as one movement. */
+  .hero-rotator-wash {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    transition: width 0.2s ease;
+  }
+
   /* A crossfade and nothing else. §13 of the design system allows almost no
      motion, so no slide, no settle, no typewriter. The global
-     prefers-reduced-motion block already flattens the duration, and the script
-     never starts under that setting anyway. */
+     prefers-reduced-motion block already flattens both durations, and the
+     script never starts under that setting anyway.
+
+     position: relative is what keeps the word above the wash. The old "LA tech"
+     wash used -z-10 for that; two positioned siblings in document order do the
+     same job without leaning on the stacking context of an ancestor. */
   .hero-rotator-word {
+    position: relative;
     display: inline-block;
     transition: opacity 0.2s ease;
   }
@@ -259,12 +287,21 @@ const proof = [
    *     is created and the headline stays "builders" for good.
    *   - The interval is cleared while the tab is hidden, so a backgrounded tab
    *     is not repainting a headline nobody is looking at.
+   *
+   * The wash behind the word is sized from the same table, in the same frame as
+   * the fade back in, so it grows with the new word rather than after it.
    */
   const rotator = document.querySelector<HTMLElement>('[data-hero-rotator]');
+  const wash = document.querySelector<HTMLElement>('[data-hero-wash]');
 
   if (rotator && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const word = rotator;
     const words = ['builders', 'founders', 'investors', 'operators'];
+    // The same measured em widths the reserved min-width came from, in the same
+    // order as the words. The wash is set from this table rather than from a
+    // getBoundingClientRect per swap: the ratio of word width to font-size is
+    // fixed, so one value per word is right at every viewport.
+    const washes = ['3.863em', '4.173em', '4.326em', '4.657em'];
     let index = 0;
     let cycle = 0;
     let swap = 0;
@@ -274,6 +311,7 @@ const proof = [
       swap = window.setTimeout(() => {
         index = (index + 1) % words.length;
         word.textContent = words[index];
+        if (wash) wash.style.width = washes[index];
         word.dataset.state = 'in';
       }, 200);
     }
