@@ -50,10 +50,18 @@ const proof = [
     On mobile the photo sits BELOW the headline and the CTA. The headline is
     the whole proposition and it should be the first thing on a small screen,
     and it keeps the largest paint a block of text rather than an image.
+
+    items-start, not items-end. The portrait frame is taller than the text
+    column, so bottom aligning them pushed the eyebrow down the page and the
+    hero read as half rendered. Top aligned, the eyebrow's box is flush with
+    the frame's top border and its ink lands 2px under it, which needs no
+    optical correction at 11px. The About story grid pairs a text column with
+    a portrait frame the same way. On mobile this changes nothing: the grid is
+    one column there, so every row is the height of its own item.
   */}
   <section class="mx-auto max-w-page px-gutter-sm wide:px-gutter">
     <div
-      class="grid grid-cols-1 items-end gap-9 pt-10 pb-9 wide:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] wide:pt-[52px]"
+      class="grid grid-cols-1 items-start gap-9 pt-10 pb-9 wide:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] wide:pt-[52px]"
     >
       <div>
         <div class="t-mono mb-[22px] flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
