@@ -1,0 +1,79 @@
+---
+/**
+ * Behaviour for RotatingWord. Render this ONCE per page that uses one, and
+ * render it OUTSIDE the heading, at the end of the page template.
+ *
+ * Why it is a second component rather than a script inside RotatingWord:
+ *
+ *   - An Astro script inside a component is emitted where that component
+ *     renders. RotatingWord renders inside an `<h1>`, so its script would sit
+ *     inside the heading and `h1.textContent` would hand a scraper the source
+ *     of this file along with the headline. The whole point of rendering
+ *     "builders" server side is that the heading reads cleanly without JS.
+ *   - Moving the body to a `.ts` module and importing it would fix that, but a
+ *     script with an import is a module Vite has to emit as a file, and the
+ *     build goes from zero `.js` files to one chunk per page. Inline and
+ *     import-free is what keeps it in the HTML.
+ *
+ * So: the markup is one component, the behaviour is this one, and neither is
+ * copied per page. It holds no measurements and no copy. The words and their
+ * em widths are read off each element, so it serves any type step and any word
+ * list, and a page that renders the markup without this simply never rotates,
+ * which is what reduced motion asks for anyway.
+ *
+ * Load bearing:
+ *   - The cycle starts at the word the server rendered, never a random index.
+ *   - Under prefers-reduced-motion: reduce nothing runs. No interval is
+ *     created, and the wash stays at the width the server gave it.
+ *   - The interval is cleared while the tab is hidden, so a backgrounded tab is
+ *     not repainting a headline nobody is looking at.
+ */
+---
+
+<script>
+  const rotators = document.querySelectorAll<HTMLElement>('[data-rotator]');
+
+  if (rotators.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const running = [...rotators].map((box) => {
+      const word = box.querySelector<HTMLElement>('[data-rotator-word]');
+      const wash = box.querySelector<HTMLElement>('[data-rotator-wash]');
+      const words = (box.dataset.rotatorWords ?? '').split(' ');
+      const widths = (box.dataset.rotatorWidths ?? '').split(' ');
+      let index = 0;
+      let cycle = 0;
+      let swap = 0;
+
+      function advance() {
+        if (!word) return;
+        word.dataset.state = 'out';
+        swap = window.setTimeout(() => {
+          index = (index + 1) % words.length;
+          word.textContent = words[index];
+          // Set in the same frame as the fade back in, so the wash grows with
+          // the new word rather than after it.
+          if (wash) wash.style.width = `${widths[index]}em`;
+          word.dataset.state = 'in';
+        }, 200);
+      }
+
+      return {
+        start() {
+          if (!cycle && word && words.length > 1) cycle = window.setInterval(advance, 2000);
+        },
+        stop() {
+          window.clearInterval(cycle);
+          window.clearTimeout(swap);
+          cycle = 0;
+          // Stopping mid fade would leave the word invisible.
+          if (word) word.dataset.state = 'in';
+        },
+      };
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      running.forEach((r) => (document.hidden ? r.stop() : r.start()));
+    });
+
+    running.forEach((r) => r.start());
+  }
+</script>

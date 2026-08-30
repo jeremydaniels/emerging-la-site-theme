@@ -1,0 +1,116 @@
+---
+/**
+ * The last word of a headline, cycling.
+ *
+ * One implementation, two callers: the home hero at display-1 and the
+ * subscribe headline at display-5. Everything that differs between them is a
+ * measurement, and every measurement lives in this file.
+ *
+ * Three things are load bearing and must survive any edit here:
+ *
+ *   - WORDS[0] is what the server renders. It is what a scraper, a link
+ *     preview and a no-JS visitor get, and the cycle starts from it rather
+ *     than from a random index.
+ *   - The box reserves the width of the longest word, so the line never
+ *     reflows when the word swaps.
+ *   - Under prefers-reduced-motion: reduce nothing runs at all. No interval is
+ *     created, the word stays put and the wash stays at the width the server
+ *     gave it.
+ *
+ * WIDTHS is the rendered width of each word in em, in WORDS order, measured in
+ * Riegal at the step named. It is per step and not per size: width scales with
+ * font-size, so one em value holds across a clamp, but LETTER-SPACING is what
+ * makes the steps differ (display-1 tracks -0.03em, display-5 -0.02em), and
+ * that is why this is a table rather than a single row. A step with no row
+ * here is a type error rather than a wrong-width wash: measure it, add it.
+ *
+ * To measure a new step: render the four words in that step's h1, uppercase,
+ * and divide each rendered width by the computed font-size.
+ *
+ * The behaviour lives in RotatingWordScript, not in this file, and a page that
+ * renders this must render that one too, once, outside the heading. The reason
+ * is written up there: a script inside this component would be emitted inside
+ * the h1 and would end up in the heading's text. Without it the word simply
+ * never rotates, which is what reduced motion asks for anyway, so a page that
+ * forgets it degrades to static rather than breaking.
+ */
+const WORDS = ['builders', 'founders', 'investors', 'operators'] as const;
+
+const WIDTHS = {
+  'display-1': [3.863, 4.173, 4.326, 4.657],
+  'display-5': [3.944, 4.254, 4.417, 4.748],
+} as const;
+
+interface Props {
+  /** The type step this sits in. Must have a row in WIDTHS. */
+  step: keyof typeof WIDTHS;
+}
+
+const { step } = Astro.props;
+
+const widths = WIDTHS[step];
+/** The longest word is what the box reserves, so a swap moves nothing. */
+const reserve = Math.max(...widths);
+---
+
+{/*
+  The words and their widths are handed to the script as data, so the script
+  holds no copy of either and works for any step.
+*/}
+<span
+  class="rotator"
+  style={`min-width: ${reserve}em`}
+  data-rotator
+  data-rotator-words={WORDS.join(' ')}
+  data-rotator-widths={widths.join(' ')}
+  ><span
+    class="rotator-wash"
+    style={`width: ${widths[0]}em`}
+    data-rotator-wash
+    aria-hidden="true"
+    ><span
+      class="pointer-events-none absolute -inset-x-[3%] bottom-[6%] h-[0.30em] bg-accent opacity-[0.22]"
+    ></span></span
+  ><span class="rotator-word" data-rotator-word>{WORDS[0]}</span></span
+>
+
+<style>
+  /* The reserved-width box. min-width is set from the table above. */
+  .rotator {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  /* The wash track, sized to the word on show and never to the box: pinned to
+     the box it would run a fifth of a word past the end of the shortest one.
+     Its width is the only thing that animates. The bar inside is inset by a
+     percentage of this track, so the 3% bleed follows the word for nothing.
+     Same duration and easing as the word, started in the same frame as the
+     fade back in, so the two read as one movement. */
+  .rotator-wash {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    transition: width 0.2s ease;
+  }
+
+  /* A crossfade and nothing else. §13 of the design system allows almost no
+     motion, so no slide, no settle, no typewriter. The global
+     prefers-reduced-motion block already flattens both durations, and the
+     script never starts under that setting anyway.
+
+     position: relative is what keeps the word above the wash: two positioned
+     siblings paint in document order, which needs no stacking context of its
+     own the way a negative z-index would. */
+  .rotator-word {
+    position: relative;
+    display: inline-block;
+    transition: opacity 0.2s ease;
+  }
+
+  .rotator-word[data-state='out'] {
+    opacity: 0;
+  }
+</style>
+

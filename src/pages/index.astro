@@ -12,6 +12,8 @@
 import SiteLayout from '../layouts/SiteLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import PhotoFrame from '../components/PhotoFrame.astro';
+import RotatingWord from '../components/RotatingWord.astro';
+import RotatingWordScript from '../components/RotatingWordScript.astro';
 import IssueCard from '../components/IssueCard.astro';
 import EventsTable from '../components/EventsTable.astro';
 import SubscribeBand from '../components/SubscribeBand.astro';
@@ -72,33 +74,17 @@ const proof = [
         <h1 class="t-display m-0 text-display-1 text-ink">
           Home to LA's<br />most ambitious<br />
           {/*
-            The rotating word. "builders" is the rendered text: it is what a
-            scraper, a link preview and a no-JS visitor get, and the script
-            starts its cycle from it rather than from a random index.
+            The rotating word, and the wash behind it. Both live in
+            RotatingWord, measurements included: the reserved width, the em
+            table the wash is sized from and the script are one implementation
+            shared with the subscribe headline. The step is what picks the
+            right row of measurements, because the display steps track
+            differently and the words come out different widths.
 
-            The width is reserved in `em`, not px. The step is a clamp between
-            40px and 103px, so a pinned pixel width would only be right at one
-            viewport; the ratio of word width to font-size is constant, and
-            letter-spacing is in em too, so one min-width holds at every width.
-            Measured in Riegal at display-1, uppercase, with the step's
-            -0.03em tracking: builders 3.863em, founders 4.173em, investors
-            4.326em, operators 4.657em. 4.66em is the widest of the four, and it
-            holds identically at 320px, 390px and 1200px. Nothing sits to the
-            right of the word on the line, so the reserved width moves nothing.
-
-            The wash carries the width of the CURRENT word, never the reserved
-            width of the box: pinned to the box it would be 0.84em wider than
-            BUILDERS needs, a fifth of the word hanging off the end. The bar inside it keeps the exact geometry the "LA tech"
-            wash had, the 3% bleed and 6% baseline offset included, and the
-            track it sits in is the only thing that animates.
+            It carries its own reserved width, and nothing sits to the right of
+            it on the line, so the swap moves nothing.
           */}
-          <span class="hero-rotator" style="min-width: 4.66em"
-            ><span class="hero-rotator-wash" style="width: 3.863em" data-hero-wash aria-hidden="true"
-              ><span
-                class="pointer-events-none absolute -inset-x-[3%] bottom-[6%] h-[0.30em] bg-accent opacity-[0.22]"
-              ></span></span
-            ><span class="hero-rotator-word" data-hero-rotator>builders</span></span
-          >
+          <RotatingWord step="display-1" />
         </h1>
 
         <p class="mt-7 max-w-[62ch] text-lead font-medium text-ink-muted-aa">
@@ -243,104 +229,7 @@ const proof = [
 
 </SiteLayout>
 
-<style>
-  /* The reserved-width box. The min-width is set inline in the markup, next to
-     the note explaining the em. */
-  .hero-rotator {
-    position: relative;
-    display: inline-block;
-    vertical-align: top;
-  }
-
-  /* The wash track. It is sized to the word on show, not to the box, and its
-     width is the only thing that animates: the bar inside is inset by a
-     percentage of this track, so the 3% bleed follows the word for nothing.
-     Same duration and easing as the word, started in the same frame as the
-     fade back in, so the two read as one movement. */
-  .hero-rotator-wash {
-    position: absolute;
-    inset-block: 0;
-    left: 0;
-    transition: width 0.2s ease;
-  }
-
-  /* A crossfade and nothing else. §13 of the design system allows almost no
-     motion, so no slide, no settle, no typewriter. The global
-     prefers-reduced-motion block already flattens both durations, and the
-     script never starts under that setting anyway.
-
-     position: relative is what keeps the word above the wash. The old "LA tech"
-     wash used -z-10 for that; two positioned siblings in document order do the
-     same job without leaning on the stacking context of an ancestor. */
-  .hero-rotator-word {
-    position: relative;
-    display: inline-block;
-    transition: opacity 0.2s ease;
-  }
-
-  .hero-rotator-word[data-state='out'] {
-    opacity: 0;
-  }
-</style>
-
-<script>
-  /**
-   * The last word of the hero headline cycles. Scoped script, no framework, no
-   * island, in line with the three other interactive spots on the site.
-   *
-   * Three things are load bearing:
-   *   - The cycle starts at the word the server rendered, so "builders" is
-   *     always what loads and the order is stable, never random.
-   *   - Under prefers-reduced-motion: reduce nothing runs at all. No interval
-   *     is created and the headline stays "builders" for good.
-   *   - The interval is cleared while the tab is hidden, so a backgrounded tab
-   *     is not repainting a headline nobody is looking at.
-   *
-   * The wash behind the word is sized from the same table, in the same frame as
-   * the fade back in, so it grows with the new word rather than after it.
-   */
-  const rotator = document.querySelector<HTMLElement>('[data-hero-rotator]');
-  const wash = document.querySelector<HTMLElement>('[data-hero-wash]');
-
-  if (rotator && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const word = rotator;
-    const words = ['builders', 'founders', 'investors', 'operators'];
-    // The same measured em widths the reserved min-width came from, in the same
-    // order as the words. The wash is set from this table rather than from a
-    // getBoundingClientRect per swap: the ratio of word width to font-size is
-    // fixed, so one value per word is right at every viewport.
-    const washes = ['3.863em', '4.173em', '4.326em', '4.657em'];
-    let index = 0;
-    let cycle = 0;
-    let swap = 0;
-
-    function advance() {
-      word.dataset.state = 'out';
-      swap = window.setTimeout(() => {
-        index = (index + 1) % words.length;
-        word.textContent = words[index];
-        if (wash) wash.style.width = washes[index];
-        word.dataset.state = 'in';
-      }, 200);
-    }
-
-    function start() {
-      if (!cycle) cycle = window.setInterval(advance, 2000);
-    }
-
-    function stop() {
-      window.clearInterval(cycle);
-      window.clearTimeout(swap);
-      cycle = 0;
-      // Stopping mid fade would leave the word invisible.
-      word.dataset.state = 'in';
-    }
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stop();
-      else start();
-    });
-
-    start();
-  }
-</script>
+{/* The rotating word's behaviour. Here rather than in RotatingWord because a
+    script inside that component would render inside the h1: see the note in
+    RotatingWordScript. */}
+<RotatingWordScript />

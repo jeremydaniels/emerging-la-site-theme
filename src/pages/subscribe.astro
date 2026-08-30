@@ -14,25 +14,49 @@
  */
 import FocusLayout from '../layouts/FocusLayout.astro';
 import SubscribeForm from '../components/SubscribeForm.astro';
+import RotatingWord from '../components/RotatingWord.astro';
+import RotatingWordScript from '../components/RotatingWordScript.astro';
 ---
 
 <FocusLayout
   title="Subscribe"
-  description="One email on what is actually happening in LA tech."
+  description="Home to LA's most ambitious builders. Emerging LA is a newsletter and events community for anyone building in Los Angeles."
 >
   <div class="t-mono mb-4 flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
     <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
     <span>Newsletter</span>
   </div>
 
+  {/*
+    Same statement as the home hero, same rotating word, at this page's step.
+    The breaks are explicit and match the hero's for the same reason they do
+    there: left to wrap, the 560px measure splits "most ambitious" at 320px and
+    puts the rotating word on the same line as "ambitious", which reads as a
+    wrapping accident rather than a line. Three lines hold at every width here,
+    the longest of them 6.99em against a 10.92em measure at 320px.
+  */}
   <h1 class="t-display m-0 text-display-5 text-ink">
-    One email on what is actually happening in LA tech
+    Home to LA's<br />most ambitious<br />
+    <RotatingWord step="display-5" />
   </h1>
 
+  {/*
+    NOTE: 15K+ here, while site.communitySize is 14K+ and that is what the home
+    page proof strip renders. This line does not read the constant, because
+    doing so would either print the wrong number here or change the home page.
+    If 15K+ is the current figure, the fix is one edit to src/lib/site.ts and
+    the number in CLAUDE.md, and then this line should read the constant like
+    everything else does.
+  */}
   <p class="mt-4 mb-8 max-w-[46ch] text-body-sm text-ink-muted-aa">
-    Who raised, who is hiring, what shipped, and the rooms it happened in. Event
-    invitations come to the same address.
+    15K+ community making sure everyone building in LA has access to the capital,
+    knowledge and opportunity they need.
   </p>
 
   <SubscribeForm />
 </FocusLayout>
+
+{/* The rotating word's behaviour. Here rather than in RotatingWord because a
+    script inside that component would render inside the h1: see the note in
+    RotatingWordScript. */}
+<RotatingWordScript />
