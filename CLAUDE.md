@@ -112,7 +112,7 @@ labels and error messages.
 2. **No em dashes anywhere.** Not in copy, not in data files, not in comments that end up on the
    page. Use a period, a comma, or a rewrite. (The mockup is full of them. They do not carry over.)
 3. **No invented statistics, names or dates.** If a number is not verified, it does not go on the
-   page. The only real number is **14K+ community**. Do not invent issue counts, event counts,
+   page. The only real number is **15K+ community**. Do not invent issue counts, event counts,
    attendee counts, company counts, founder names or venue names.
 4. **Never frame this as exclusive or members-only.** No "invite only", no "apply for access", no
    "the room you can't get into". The events are open. The newsletter is open. Say so plainly.

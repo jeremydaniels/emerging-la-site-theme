@@ -84,7 +84,7 @@ Anyone writing text for this site, in a page or in a data file, follows these:
 
 1. Never the word "free."
 2. No em dashes anywhere.
-3. No invented statistics, names or dates. The only real number is 14K+ community.
+3. No invented statistics, names or dates. The only real number is 15K+ community.
 4. Never frame this as exclusive or members-only.
 
 ---
@@ -147,7 +147,7 @@ are bracketed on purpose so nobody quotes them back as real.
 grep -rn "placeholder: true" src/data/    # every placeholder row
 ```
 
-Delete them as real content arrives. The only number stated as fact anywhere is 14K+ community;
+Delete them as real content arrives. The only number stated as fact anywhere is 15K+ community;
 the other three cells in the proof strip read `[TBD]` until somebody verifies them.
 
 ## Current state

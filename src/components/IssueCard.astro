@@ -11,6 +11,20 @@
  * It draws no mat and no crop marks either: the card border already is the mat,
  * and the thumbnails carry their own rails and marks, so ours would double up.
  *
+ * `destination` is where the card points. The default follows the issue: its
+ * Beehiiv URL once there is one, the archive while there is not. 'archive'
+ * pins it to the archive whatever the issue carries, which is what a page with
+ * no nav wants, so that clicking a card cannot strand someone off the site.
+ *
+ * `compact` is for a card in a narrow column: the subscribe page runs three of
+ * these across a 560px measure, so each is about 182px wide and a title-1
+ * headline sets four lines and carries as much weight as the form above it.
+ * Compact drops the headline to the body-sm step and tightens the body
+ * padding. Note that this is the one place the display face is set at a body
+ * step: the display scale stops at 18px (§2), which is still too big at this
+ * width. If a third title step ever gets added to the scale, this is what
+ * should use it.
+ *
  * `accent` sets `data-accent` on the card and nothing else. Everything the
  * accent state looks like is CSS keyed on that attribute, so a script can move
  * the accent from one card to another by moving one attribute. See the archive
@@ -31,12 +45,22 @@ interface Props {
   issue: Issue;
   /** The one card carrying the accent in the current view. */
   accent?: boolean;
+  /** Where the card points. See above. */
+  destination?: 'issue' | 'archive';
+  /** Narrow-column variant. See above. */
+  compact?: boolean;
 }
 
-const { issue, accent = false }: Props = Astro.props;
+const {
+  issue,
+  accent = false,
+  destination = 'issue',
+  compact = false,
+}: Props = Astro.props;
 
-const href = issue.url ?? routes.archive;
-const external = Boolean(issue.url);
+const toIssue = destination === 'issue' && Boolean(issue.url);
+const href = toIssue ? issue.url! : routes.archive;
+const external = toIssue;
 ---
 
 <a
@@ -57,11 +81,16 @@ const external = Boolean(issue.url);
     mat={false}
   />
 
-  <div class="px-1 pt-4 pb-[18px]">
-    <h3 class="t-title m-0 text-title-1 text-ink">{issue.title}</h3>
+  <div class:list={['px-1', compact ? 'pt-3 pb-3.5' : 'pt-4 pb-[18px]']}>
+    <h3 class:list={['t-title m-0 text-ink', compact ? 'text-body-sm' : 'text-title-1']}>
+      {issue.title}
+    </h3>
 
     <div
-      class="t-mono mt-3.5 flex items-baseline gap-3.5 border-t border-hairline pt-[11px] text-mono-meta-tight text-ink-muted"
+      class:list={[
+        't-mono flex items-baseline gap-3.5 border-t border-hairline text-mono-meta-tight text-ink-muted',
+        compact ? 'mt-2.5 pt-2' : 'mt-3.5 pt-[11px]',
+      ]}
     >
       <time datetime={machineDate(issue.date)}>{longDate(issue.date)}</time>
       <span class="ml-auto text-accent-step">Read →</span>

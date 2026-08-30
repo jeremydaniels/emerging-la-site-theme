@@ -3,7 +3,7 @@
 export const site = {
   name: 'Emerging LA',
   /** The one real number we are allowed to state. See CLAUDE.md, copy rules. */
-  communitySize: '14K+',
+  communitySize: '15K+',
   location: 'Los Angeles, California',
   description:
     'A newsletter and events for the people building tech in Los Angeles.',

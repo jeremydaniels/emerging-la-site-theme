@@ -14,11 +14,19 @@
  */
 import FocusLayout from '../layouts/FocusLayout.astro';
 import SubscribeForm from '../components/SubscribeForm.astro';
+import IssueCard from '../components/IssueCard.astro';
 import RotatingWord from '../components/RotatingWord.astro';
 import RotatingWordScript from '../components/RotatingWordScript.astro';
+
+import { site } from '../lib/site';
+import { getLatestIssues } from '../data/issues';
+
+/** Same source and same call the home page's latest issues use. */
+const issues = await getLatestIssues(3);
 ---
 
 <FocusLayout
+  fill={false}
   title="Subscribe"
   description="Home to LA's most ambitious builders. Emerging LA is a newsletter and events community for anyone building in Los Angeles."
 >
@@ -40,20 +48,33 @@ import RotatingWordScript from '../components/RotatingWordScript.astro';
     <RotatingWord step="display-5" />
   </h1>
 
-  {/*
-    NOTE: 15K+ here, while site.communitySize is 14K+ and that is what the home
-    page proof strip renders. This line does not read the constant, because
-    doing so would either print the wrong number here or change the home page.
-    If 15K+ is the current figure, the fix is one edit to src/lib/site.ts and
-    the number in CLAUDE.md, and then this line should read the constant like
-    everything else does.
-  */}
   <p class="mt-4 mb-8 max-w-[46ch] text-body-sm text-ink-muted-aa">
-    15K+ community making sure everyone building in LA has access to the capital,
-    knowledge and opportunity they need.
+    {site.communitySize} community making sure everyone building in LA has access to the
+    capital, knowledge and opportunity they need.
   </p>
 
   <SubscribeForm />
+
+  {/*
+    Proof, for someone who arrived from a link and has no reason to trust the
+    newsletter yet. Deliberately quieter than the form: the secondary-block
+    treatment /thanks already uses, a rule and a muted mono label rather than
+    the orange eyebrow, and no button of its own.
+
+    Every card points at the archive rather than at an issue. This page has no
+    nav, so a card that opened a Beehiiv tab would be a one-way door out; the
+    archive is the one route onward and three cards pointing at it read as one
+    door, not four.
+  */}
+  <section class="mt-11 border-t border-rule pt-7" aria-labelledby="recent-issues">
+    <h2 id="recent-issues" class="t-mono mb-4 text-mono-label-wide text-ink-muted">
+      Recent issues
+    </h2>
+
+    <div class="grid grid-cols-1 gap-4 wide:grid-cols-3 wide:gap-3.5">
+      {issues.map((issue) => <IssueCard issue={issue} destination="archive" compact />)}
+    </div>
+  </section>
 </FocusLayout>
 
 {/* The rotating word's behaviour. Here rather than in RotatingWord because a

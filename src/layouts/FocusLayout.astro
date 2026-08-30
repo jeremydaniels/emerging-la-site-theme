@@ -4,6 +4,14 @@
  *
  * No nav, no footer columns, no top strip. A centred wordmark, the content,
  * and a one-line footer. Nothing on these pages competes with the form.
+ *
+ * `fill` is what decides where the footer sits when the content is shorter
+ * than the window. On by default: the wrapper is at least a viewport tall and
+ * main takes the slack, so the footer lands on the bottom edge. /thanks wants
+ * that, being three links and a line of text that would otherwise leave the
+ * footer stranded halfway up the screen. Pass fill={false} and the page is as
+ * tall as its content, footer directly under the last thing on it, which is
+ * what a page with real content below the fold wants.
  */
 import BaseLayout from './BaseLayout.astro';
 import Wordmark from '../components/Wordmark.astro';
@@ -14,19 +22,21 @@ interface Props {
   title: string;
   description?: string;
   noindex?: boolean;
+  /** Stretch to the viewport and pin the footer to the bottom. See above. */
+  fill?: boolean;
 }
 
-const { title, description, noindex = false } = Astro.props;
+const { title, description, noindex = false, fill = true } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
 <BaseLayout title={title} description={description} noindex={noindex}>
-  <div class="flex min-h-dvh flex-col px-gutter-sm wide:px-gutter">
+  <div class:list={['flex flex-col px-gutter-sm wide:px-gutter', fill && 'min-h-dvh']}>
     <header class="flex justify-center pt-12 pb-10">
       <Wordmark href={routes.home} width="200px" />
     </header>
 
-    <main id="main" class="mx-auto w-full max-w-[560px] flex-1">
+    <main id="main" class:list={['mx-auto w-full max-w-[560px]', fill && 'flex-1']}>
       <slot />
     </main>
 
