@@ -9,6 +9,16 @@
  *
  * `ratio` is passed straight through because the source photographs are not
  * all one shape and cropping them to a preset would lose the room.
+ *
+ * ## Why 760px
+ *
+ * The photographs are the one thing on this page that does NOT run to the page
+ * margin. Everything structural does. At 1440px the container is 1300px wide,
+ * and a plate pair at that width is a far bigger photograph than the one that
+ * was approved: the images would outweigh every other element on the page and
+ * the issue would read as a gallery rather than as a newsletter. 760px is the
+ * width the plates were signed off at, so it stays, set here rather than
+ * inherited so it survives any later change to the column.
  */
 import PhotoFrame from '../PhotoFrame.astro';
 
@@ -43,7 +53,7 @@ const {
   alt={alt}
   loading={loading}
   showMeta
-  class={className}
+  class:list={['max-w-[760px]', className]}
 >
   <Fragment slot="meta">
     <span class="text-ink">Plate {plate}</span>

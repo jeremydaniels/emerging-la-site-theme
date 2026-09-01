@@ -6,6 +6,9 @@
  *
  * Top aligned, so a longer caption grows downward instead of shifting the
  * other frame.
+ *
+ * Capped at the plate width, like a single Plate: the pair is one photo block,
+ * not two independent ones, so it holds the same measure. See Plate.
  */
 import Plate from './Plate.astro';
 
@@ -27,7 +30,7 @@ const { plates, class: className = '' }: Props = Astro.props;
 
 <div
   class:list={[
-    'grid grid-cols-1 items-start gap-4 wide:grid-cols-2 wide:gap-[26px]',
+    'grid max-w-[760px] grid-cols-1 items-start gap-4 wide:grid-cols-2 wide:gap-[26px]',
     className,
   ]}
 >

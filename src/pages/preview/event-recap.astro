@@ -160,16 +160,26 @@ const attendees = Array.from({ length: 6 }, (_, i) =>
 );
 
 /**
- * The issue's reading column.
+ * The issue's column: the same page container the nav, the footer and the
+ * events table use, with no cap of its own.
  *
- * The section is the full page container, so it starts at the same gutter as
- * the nav, the footer and the events table; the 760px cap lands on its
- * children instead. A newsletter issue is not 1360px wide, but a reading
- * column centred inside a 1360px page sat visibly out of line with its own
- * chrome, which is worse.
+ * Structure runs the full width and terminates at the page margin, exactly as
+ * it does on /about: section header rules, the facts strip, the ruled lists
+ * and the channel rows. Only the things that need a measure carry one, and
+ * they carry it individually, in `ch`, on the element itself.
+ *
+ * This column previously capped every direct child at 760px. That kept the
+ * left edge aligned but stopped every RULE 380px short of the footer rule
+ * directly beneath it, which reads as a broken edge rather than as a measure.
+ * A short line of text is a measure; a short rule is a mistake.
+ *
+ * The photographs are the deliberate exception and stay at 760: see Plate.
+ *
+ * The gutter is not here. PreviewLayout applies it once, outside the 1360px
+ * cap, so every rule on this page ends where the footer's rule ends at every
+ * width. See the note there.
  */
-const col =
-  'mx-auto max-w-page px-gutter-sm wide:px-gutter [&>*]:max-w-[760px]';
+const col = 'mx-auto max-w-page';
 ---
 
 <PreviewLayout
@@ -353,13 +363,12 @@ const col =
 
   {/* ------------------------------------------------------------------ 03 */}
   {/*
-    The one section that breaks out of the prose column. EventsTable lays out
-    six columns above 900px and wraps them into an unreadable stack at 760px,
-    and this block is the widest object in the issue anyway.
+    This used to be a deliberate breakout, because the column capped its
+    children at 760px and EventsTable wraps into an unreadable stack at that
+    width. The column no longer caps anything, so the breakout is gone and this
+    is an ordinary section again.
   */}
-  <section
-    class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
-  >
+  <section class:list={[col, 'pt-section-sm wide:pt-section']}>
     <SectionHeader number="03" eyebrow="Next" title="Next up" class="mb-[34px]" />
 
     <EventsTable events={upcoming} variant="upcoming" />
@@ -395,7 +404,7 @@ const col =
   {/* ------------------------------------------------------------ thank you */}
   <section class:list={[col, 'pt-12 pb-section-sm wide:pb-section']}>
     <div class="t-mono text-mono-label text-ink-muted">Thank you for being in the room</div>
-    <p class="mt-3 text-micro leading-[1.9] text-ink-muted-aa">
+    <p class="mt-3 max-w-[62ch] text-micro leading-[1.9] text-ink-muted-aa">
       {attendees.join(' · ')} · and [###] more.
     </p>
   </section>

@@ -27,6 +27,8 @@
  *
  * The caption bar carries the alt text pattern, because alt text is part of
  * the spec for an image slot and not an afterthought once the file arrives.
+ *
+ * Held at the plate width for the same reason the plates are. See Plate.
  */
 import PhotoFrame from '../PhotoFrame.astro';
 
@@ -50,7 +52,7 @@ const { path, brief, altPattern, class: className = '' }: Props = Astro.props;
   src={null}
   path={path}
   loading="eager"
-  class={className}
+  class:list={['max-w-[760px]', className]}
 >
   <Fragment slot="meta">
     <span class="text-ink">Header image</span>

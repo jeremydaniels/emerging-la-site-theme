@@ -32,19 +32,31 @@ const { title, description, kind }: Props = Astro.props;
   <span slot="strip-end">Preview · {kind}</span>
 
   {/*
-    Says what this page is, in the site's own metadata voice rather than as a
-    banner. It sits above the issue so nobody mistakes a preview URL for a
-    published issue, and it is the first thing to delete when these go.
-  */}
-  <div class="mx-auto max-w-page px-gutter-sm pt-7 wide:px-gutter">
-    <div
-      class="t-mono flex flex-wrap items-baseline gap-x-5 gap-y-2 border-y border-rule py-3 text-mono-meta text-ink-muted"
-    >
-      <span class="text-ink">Preview</span>
-      <span>Not published · Structure only</span>
-      <span class="wide:ml-auto">Bracketed values are placeholders</span>
-    </div>
-  </div>
+    The gutter lives here, outside the 1360px cap, and the issue's sections
+    carry only `mx-auto max-w-page`.
 
-  <slot />
+    That is Footer.astro's pattern, and it is the reason the issue's rules line
+    up with the footer's at every width. The other pattern on this site puts
+    the padding inside the cap, which lands content 30px short of the footer
+    once the viewport passes 1360px. Both are in use across the site; this page
+    picks the one the footer uses so there is a single right edge on the page.
+  */}
+  <div class="px-gutter-sm wide:px-gutter">
+    {/*
+      Says what this page is, in the site's own metadata voice rather than as a
+      banner. It sits above the issue so nobody mistakes a preview URL for a
+      published issue, and it is the first thing to delete when these go.
+    */}
+    <div class="mx-auto max-w-page pt-7">
+      <div
+        class="t-mono flex flex-wrap items-baseline gap-x-5 gap-y-2 border-y border-rule py-3 text-mono-meta text-ink-muted"
+      >
+        <span class="text-ink">Preview</span>
+        <span>Not published · Structure only</span>
+        <span class="wide:ml-auto">Bracketed values are placeholders</span>
+      </div>
+    </div>
+
+    <slot />
+  </div>
 </SiteLayout>
