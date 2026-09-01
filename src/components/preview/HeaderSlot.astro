@@ -1,6 +1,6 @@
 ---
 /**
- * The issue's header image slot: 1200 x 600, empty.
+ * The issue's header image slot: 1200 x 630, empty.
  *
  * Every issue type is specced to carry one, used for the inbox preview, the
  * web archive and the social share. It is deliberately an empty slot rather
@@ -13,9 +13,13 @@
  * frame already renders at the final aspect ratio, nothing on the page moves
  * when a real file lands.
  *
- * The ratio is written 2/1 rather than 1200/600 so the slot reads
- * "2 : 1 · 1200 x 600" the way every other slot on the site reads, instead of
- * printing the same pair of numbers twice. Same aspect either way.
+ * 1200 x 630 is the OG card size, Beehiiv's thumbnail size, and the ratio
+ * IssueCard and PhotoFrame's `issue` variant are already built around, so one
+ * exported file serves the header here and the archive card with no re-crop.
+ *
+ * The ratio is written 1200/630 rather than reduced, so the slot prints
+ * "1200 : 630 · 1200 x 630" exactly as the archive's empty issue slots already
+ * do. Reduced it would be 40 : 21, which is correct and tells nobody anything.
  *
  * `exportSize` has to be passed alongside `ratio`. PhotoFrame takes its export
  * dimensions from the variant preset, and `band` would otherwise tell whoever
@@ -41,8 +45,8 @@ const { path, brief, altPattern, class: className = '' }: Props = Astro.props;
 
 <PhotoFrame
   variant="band"
-  ratio="2/1"
-  exportSize="1200 x 600"
+  ratio="1200/630"
+  exportSize="1200 x 630"
   src={null}
   path={path}
   loading="eager"

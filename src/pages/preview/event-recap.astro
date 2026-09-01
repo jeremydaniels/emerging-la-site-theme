@@ -179,7 +179,7 @@ const col =
 >
   {/* -------------------------------------------------------- header image */}
   {/*
-    The 1200 x 600 header image every issue type carries, empty, above the
+    The 1200 x 630 header image every issue type carries, empty, above the
     title.
 
     This is NOT where the export put its lead visual: the export opened with
@@ -188,6 +188,10 @@ const col =
     directly above it), and the header image is a different object anyway.
     The export shipped one at 1200 x 630 and never placed it in the body at
     all, which fits its real job: the inbox preview and the social card.
+
+    1200 x 630 rather than a round 1200 x 600 so the same exported file also
+    serves the archive card: it is the size IssueCard's well is already cut
+    to.
   */}
   <section class:list={[col, 'pt-9 wide:pt-10']}>
     <HeaderSlot
