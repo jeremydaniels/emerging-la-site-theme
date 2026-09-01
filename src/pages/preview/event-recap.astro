@@ -1,0 +1,376 @@
+---
+/**
+ * /preview/event-recap
+ *
+ * A newsletter issue of the Event Recap type, rendered as a page so it can be
+ * looked at and approved on a phone. Ported from a Claude Design export, but
+ * rebuilt: none of the export's markup survives. The export was a 600px email
+ * table with 208 inline styles; this is the site's own components and tokens.
+ *
+ * THIS PAGE IS THROWAWAY. See PreviewLayout for the standing note.
+ *
+ * ## What is placeholder and why
+ *
+ * Everything that could be mistaken for a real person, company, date, venue or
+ * count is bracketed, per the copy rules in CLAUDE.md. That is: speaker names
+ * and their affiliations, sponsor and co-host names, attendee names, the
+ * headcount, the waitlist number, the issue and volume numbers, every date and
+ * time in the facts strip, and both upcoming events' dates and venues.
+ * Placeholders are kept roughly the length of the real thing so the layout is
+ * honest about how much room the copy needs.
+ *
+ * The structural body copy is real, so the rhythm and length of a recap are
+ * visible. `15K+` is the one verified number on the site and stays.
+ *
+ * Two things are deliberately NOT bracketed:
+ *
+ *   - The two upcoming events' names. They are burned into the supplied cover
+ *     artwork, so bracketing the text while the image says otherwise would
+ *     read as a bug rather than as a placeholder.
+ *   - The three attendee quotes. They are anonymous, attributed by role only,
+ *     and carry no name, number or date. Bracket them too if the client would
+ *     rather see nothing invented at all.
+ *
+ * ## Orange
+ *
+ * One anchor: the "See all upcoming events" button. The export's orange
+ * masthead band is dropped, so nothing competes with it. Every hairline orange
+ * on the page (the section rules, the quote bars) is `accent-step`, which
+ * resolves to the dark orange in light mode.
+ */
+import PreviewLayout from '../../layouts/PreviewLayout.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+import RuledList from '../../components/RuledList.astro';
+import EventsTable from '../../components/EventsTable.astro';
+import PullQuote from '../../components/preview/PullQuote.astro';
+import FactTable from '../../components/preview/FactTable.astro';
+import Plate from '../../components/preview/Plate.astro';
+import PlatePair from '../../components/preview/PlatePair.astro';
+
+import { site } from '../../lib/site';
+import { links, routes } from '../../lib/links';
+import type { EventItem } from '../../data/events';
+
+const IMG = '/images/preview/event-recap';
+
+const title = '🌴 Capital & Compute: An Emerging LA Nights Panel on Powering the City';
+
+const facts = [
+  { label: 'When', value: '[Weekday, Month DD, YYYY] · [Start]–[End]' },
+  { label: 'Where', value: '[Venue name], [Neighborhood]' },
+  { label: 'Headcount', value: '[###] in the room · [#,###] on the waitlist' },
+];
+
+/** Five rows, because five people sat on the panel. */
+const speakers = Array.from({ length: 5 }, (_, i) => ({
+  name: `[Speaker name ${['one', 'two', 'three', 'four', 'five'][i]}]`,
+  line: '[Role and title] · [Company name]',
+}));
+
+const takeaways = [
+  {
+    name: 'Power is the bottleneck, not chips.',
+    line: 'Two of the five said their [YEAR] roadmap now hangs on interconnection queues rather than hardware supply.',
+  },
+  {
+    name: "LA's edge is physical.",
+    line: 'Fabrication space, aerospace suppliers and stage infrastructure sit inside an hour of each other. No other metro has that mix.',
+  },
+  {
+    name: 'The seed gap is a sales gap.',
+    line: 'Local funds argued the shortfall is not capital but a thin bench of founders who can close enterprise contracts.',
+  },
+  {
+    name: 'Permitting is now a product decision.',
+    line: 'Teams are designing around what can be approved in eighteen months, and saying so out loud to investors.',
+  },
+];
+
+const quotes = [
+  {
+    text: 'I came for the panel and left with two introductions I have been chasing since March.',
+    attribution: 'Product lead · seed-stage climate hardware',
+  },
+  {
+    text: 'Nobody said the word ecosystem once. That is how we knew it was a real room.',
+    attribution: 'Founder · industrial automation',
+  },
+  {
+    text: 'First event in this city where the capital and the builders stood on the same side of the room.',
+    attribution: 'Operator · angel investor',
+  },
+];
+
+/**
+ * The upcoming block renders through the site's own EventsTable, so it is the
+ * same object here as it is on /events. Dates are null, which the format
+ * helpers print as bracketed markers rather than a guess.
+ */
+const upcoming: EventItem[] = [
+  {
+    slug: 'preview-upcoming-1',
+    name: 'AI x Media Mixer: Investor Edition',
+    status: 'upcoming',
+    date: null,
+    time: null,
+    venue: '[Venue name]',
+    neighborhood: '[Neighborhood]',
+    note: 'Who is actually writing checks for atoms in Los Angeles.',
+    url: null,
+    image: `${IMG}/event-cover-1.png`,
+    imageAlt:
+      'AI x Media Mixer: Investor Edition cover art. Santa Monica coastline at sunset, hosted by Female Investors Club and Emerging LA.',
+    placeholder: true,
+  },
+  {
+    slug: 'preview-upcoming-2',
+    name: 'NASA Space Tour',
+    status: 'upcoming',
+    date: null,
+    time: null,
+    venue: '[Venue name]',
+    neighborhood: '[Neighborhood]',
+    note: 'Three founders on shipping hardware inside an eighteen-month approval window.',
+    url: null,
+    image: `${IMG}/event-cover-2.png`,
+    imageAlt:
+      'NASA Space Tour cover art. Moon rising over a dark starfield, presented with SpaceTech Economic Forum, NASA and Emerging LA.',
+    placeholder: true,
+  },
+];
+
+const channels = [
+  { label: 'Email', text: 'Get the issue in your inbox', href: routes.subscribe },
+  { label: 'LinkedIn', text: 'Follow Emerging LA', href: links.linkedin },
+  { label: 'Luma', text: 'Subscribe to the events calendar', href: links.lumaCalendar },
+];
+
+/** 36 slots, the length the real list runs to before it is truncated. */
+const attendees = Array.from({ length: 36 }, (_, i) =>
+  `[Attendee ${String(i + 1).padStart(2, '0')}]`
+);
+
+/**
+ * The issue's reading column.
+ *
+ * The section is the full page container, so it starts at the same gutter as
+ * the nav, the footer and the events table; the 760px cap lands on its
+ * children instead. A newsletter issue is not 1360px wide, but a reading
+ * column centred inside a 1360px page sat visibly out of line with its own
+ * chrome, which is worse.
+ */
+const col =
+  'mx-auto max-w-page px-gutter-sm wide:px-gutter [&>*]:max-w-[760px]';
+---
+
+<PreviewLayout
+  title={title}
+  kind="Event recap"
+  description="Preview of an Event Recap newsletter issue. Not a published issue."
+>
+  {/* ------------------------------------------------------------ masthead */}
+  {/*
+    The export put its mono issue line under the title, below the masthead
+    banner. With the banner gone it moves above the headline, which is where
+    every other page on this site puts its eyebrow.
+  */}
+  <section class:list={[col, 'pt-10 wide:pt-[52px]']}>
+    <div class="t-mono mb-[22px] flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
+      <span class="h-px w-[26px] shrink-0 bg-accent-step" aria-hidden="true"></span>
+      <span>Issue [##] · Event Recap · [DATE]</span>
+    </div>
+
+    <h1 class="t-title m-0 max-w-[20ch] text-display-4 text-ink">{title}</h1>
+
+    <p class="mt-7 max-w-[54ch] text-lead font-medium text-ink-muted-aa">
+      Issue [##] · Emerging LA Nights, Vol. [##] · A full room in [Neighborhood] spent
+      three hours on the one thing nobody can buy their way out of: power.
+    </p>
+
+    <p class="mt-6 max-w-[52ch] text-note text-ink-muted-aa">
+      Emerging LA is a {site.communitySize} community making sure the most ambitious builders
+      in Los Angeles have access to the capital, knowledge and opportunity they need.
+    </p>
+  </section>
+
+  {/* ---------------------------------------------------------------- hook */}
+  <section class:list={[col, 'pt-9']}>
+    <PullQuote variant="hook">
+      [###] people came out on a Thursday to argue about where Los Angeles is going to
+      find its next gigawatt.
+    </PullQuote>
+  </section>
+
+  {/* ------------------------------------------------------------- plate 01 */}
+  <section class:list={[col, 'pt-8']}>
+    <Plate
+      src={`${IMG}/photo-room.png`}
+      alt="A packed ballroom watching the panel on a large projection screen, three panelists seated onstage under coloured lights."
+      plate="01"
+      caption="Panel on screen, main hall / 7:38 PM"
+      loading="eager"
+    />
+  </section>
+
+  {/* --------------------------------------------------------------- intro */}
+  <section class:list={[col, 'pt-9']}>
+    <div class="max-w-[62ch]">
+      <p class="m-0 text-body-lg text-ink">
+        We opened the waitlist on a Tuesday and it was full by the end of the week.
+      </p>
+      <p class="mt-5 text-body text-ink">
+        What we got was less panel and more working session. Five people who build, fund
+        and permit infrastructure, in one room, disagreeing on the record.
+      </p>
+      <p class="mt-5 text-body text-ink">Here is what the night actually sounded like.</p>
+    </div>
+  </section>
+
+  {/* --------------------------------------------------------------- facts */}
+  <section class:list={[col, 'pt-9']}>
+    <FactTable facts={facts} />
+  </section>
+
+  {/* ------------------------------------------------------------------ 01 */}
+  <section class:list={[col, 'pt-section-sm wide:pt-section']}>
+    <SectionHeader
+      number="01"
+      eyebrow="The room"
+      title="Who was in the room"
+      class="mb-[34px]"
+    />
+
+    <RuledList items={speakers} />
+
+    <Plate
+      class="mt-10"
+      src={`${IMG}/photo-panel.png`}
+      alt="Wide view from the back of the room: rows of seated attendees facing the stage, screens lit on both sides."
+      plate="02"
+      caption="Room settles before the open floor / 8:02 PM"
+      ratio="2/1"
+    />
+
+    <div class="mt-10 flex flex-col gap-[26px]">
+      {
+        quotes.map((quote) => (
+          <PullQuote attribution={quote.attribution}>{quote.text}</PullQuote>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------------ 02 */}
+  <section class:list={[col, 'pt-section-sm wide:pt-section']}>
+    <SectionHeader number="02" eyebrow="Takeaways" title="What stuck" class="mb-[34px]" />
+
+    <RuledList items={takeaways} />
+
+    <PlatePair
+      class="mt-10"
+      plates={[
+        {
+          src: `${IMG}/photo-a.png`,
+          alt: 'A group of attendees posing together on a waterfront patio under string lights after the panel.',
+          plate: '03',
+          caption: 'Open floor, back of house / 8:31 PM',
+          ratio: '6/5',
+        },
+        {
+          src: `${IMG}/photo-b.png`,
+          alt: 'The corner cafe where the pre-event coffee ran, streetside patio seating in afternoon light.',
+          plate: '04',
+          caption: 'Pre-event coffee, street level',
+          ratio: '6/5',
+        },
+      ]}
+    />
+  </section>
+
+  {/* ------------------------------------------------------- co-hosts ------ */}
+  {/*
+    Sponsor names are bracketed and are NOT links. Every external URL on this
+    site lives in lib/links.ts, and there is no real sponsor URL to put there
+    yet, so a placeholder name stays plain text rather than becoming a link to
+    example.com.
+  */}
+  <section class:list={[col, 'pt-12']}>
+    <div class="t-mono text-mono-label text-ink-muted">Co-hosts &amp; sponsors</div>
+    <p class="mt-3 max-w-[58ch] text-body text-ink">
+      Held with <span class="font-semibold">[Co-host one]</span> and
+      <span class="font-semibold">[Co-host two]</span>. Supported by
+      <span class="font-semibold">[Sponsor one]</span>,
+      <span class="font-semibold">[Sponsor two]</span> and
+      <span class="font-semibold">[Sponsor three]</span>.
+    </p>
+
+    <PlatePair
+      class="mt-9"
+      plates={[
+        {
+          src: `${IMG}/photo-c.png`,
+          alt: 'A large group of attendees crowded together for a photo inside the arcade bar, drinks in hand.',
+          plate: '05',
+          caption: 'Arcade bar, last round / 9:16 PM',
+          ratio: '6/5',
+        },
+        {
+          src: `${IMG}/photo-d.png`,
+          alt: 'Attendees lined up for a group portrait on a sunlit courtyard patio, name badges on.',
+          plate: '06',
+          caption: 'Courtyard portrait, daylight session',
+          ratio: '6/5',
+        },
+      ]}
+    />
+  </section>
+
+  {/* ------------------------------------------------------------------ 03 */}
+  {/*
+    The one section that breaks out of the prose column. EventsTable lays out
+    six columns above 900px and wraps them into an unreadable stack at 760px,
+    and this block is the widest object in the issue anyway.
+  */}
+  <section
+    class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
+  >
+    <SectionHeader number="03" eyebrow="Next" title="Next up" class="mb-[34px]" />
+
+    <EventsTable events={upcoming} variant="upcoming" />
+
+    {/* The page's only anchor orange. */}
+    <a href={routes.events} class="btn btn-primary mt-9">See all upcoming events</a>
+  </section>
+
+  {/* ------------------------------------------------------------ channels */}
+  <section class:list={[col, 'pt-section-sm wide:pt-section']}>
+    <h2 class="t-display m-0 text-display-5 text-ink">Never miss an event</h2>
+
+    <div class="mt-7 border-t border-rule">
+      {
+        channels.map((channel) => (
+          <a
+            href={channel.href}
+            class="group flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-hairline py-3.5"
+          >
+            <span class="t-mono w-[76px] flex-none text-mono-label text-ink-muted">
+              {channel.label}
+            </span>
+            <span class="text-body-sm font-semibold text-ink">{channel.text}</span>
+            <span class="text-body-sm text-accent-step transition-opacity group-hover:opacity-70">
+              →
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------ thank you */}
+  <section class:list={[col, 'pt-12 pb-section-sm wide:pb-section']}>
+    <div class="t-mono text-mono-label text-ink-muted">Thank you for being in the room</div>
+    <p class="mt-3 text-micro leading-[1.9] text-ink-muted-aa">
+      {attendees.join(' · ')} · and [###] more.
+    </p>
+  </section>
+</PreviewLayout>

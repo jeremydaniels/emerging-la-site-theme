@@ -1,0 +1,53 @@
+---
+/**
+ * A block of text behind a 2px orange rule, with an optional mono attribution.
+ *
+ * Two sizes, because a recap uses the same object twice at different weights:
+ * the opening hook that carries the issue, and the attendee quotes further
+ * down. Same construction, one step apart.
+ *
+ * The quotes are NOT italic. The export set them italic, but this site loads
+ * no italic in either Manrope or Courier Prime and `font-synthesis: none` is
+ * global, so the class would silently do nothing. The orange rule and the mono
+ * attribution are what mark a quote.
+ *
+ * The rule is `accent-step`, not core orange: it is a hairline, so it is not
+ * an anchor, and in light mode it has to resolve to the dark orange. Same
+ * token the section header's rule uses.
+ */
+
+interface Props {
+  /** hook = the opening statement. quote = an attendee quote. */
+  variant?: 'hook' | 'quote';
+  /** Mono line under the text. Omit for the hook. */
+  attribution?: string;
+  class?: string;
+}
+
+const { variant = 'quote', attribution, class: className = '' }: Props = Astro.props;
+
+const hook = variant === 'hook';
+---
+
+<figure
+  class:list={[
+    'm-0 border-l-2 border-accent-step pl-[18px]',
+    className,
+  ]}
+>
+  <blockquote
+    class:list={[
+      'm-0 max-w-[46ch] text-ink',
+      hook ? 'text-lead-alt font-semibold' : 'text-body-lg',
+    ]}
+  >
+    <slot />
+  </blockquote>
+  {
+    attribution && (
+      <figcaption class="t-mono mt-2.5 text-mono-label text-ink-muted">
+        {attribution}
+      </figcaption>
+    )
+  }
+</figure>

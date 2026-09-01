@@ -1,0 +1,45 @@
+---
+/**
+ * Two plates side by side, stacking below 900px. The recap uses this twice and
+ * the export's email version used the same 2-up, so it is the pair rather than
+ * the single that is the repeating object.
+ *
+ * Top aligned, so a longer caption grows downward instead of shifting the
+ * other frame.
+ */
+import Plate from './Plate.astro';
+
+export interface PlateItem {
+  src: string;
+  alt: string;
+  plate: string;
+  caption: string;
+  ratio?: string;
+}
+
+interface Props {
+  plates: [PlateItem, PlateItem];
+  class?: string;
+}
+
+const { plates, class: className = '' }: Props = Astro.props;
+---
+
+<div
+  class:list={[
+    'grid grid-cols-1 items-start gap-4 wide:grid-cols-2 wide:gap-[26px]',
+    className,
+  ]}
+>
+  {
+    plates.map((plate) => (
+      <Plate
+        src={plate.src}
+        alt={plate.alt}
+        plate={plate.plate}
+        caption={plate.caption}
+        ratio={plate.ratio}
+      />
+    ))
+  }
+</div>

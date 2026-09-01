@@ -160,5 +160,18 @@ Routes: `/`, `/about`, `/archive`, `/events`, `/subscribe`, `/thanks`, `/privacy
 `/subscribe` and `/thanks` use `FocusLayout`: no nav, no footer columns, just a centred wordmark
 and a one line footer.
 
+### `/preview/*` is not part of the site
+
+`/preview/*` pages are throwaway approval surfaces, one per newsletter issue type, so somebody can
+look at an issue on a phone and sign off its structure. They are deliberately outside the public
+site: no nav link, no sitemap entry, nothing in the archive, `noindex` on every one of them.
+
+**They go stale.** They are a snapshot of an issue type at the moment it was ported, and they do
+not track later changes to that type. Delete a preview once its issue type is approved rather than
+maintaining it. Nothing on the public site may import from `src/components/preview/` or link to a
+`/preview/` URL.
+
+Currently: `/preview/event-recap`.
+
 `EventsTable` already takes a variant, so the events page can render past events from the same
 component: `<EventsTable events={pastEvents()} variant="past" />`.

@@ -181,6 +181,9 @@ src/
 
   pages/                      All nine routes are built: index, about, archive, events,
                               subscribe, thanks, privacy, terms, 404.
+  pages/preview/              THROWAWAY. Not part of the site. See below.
+  components/preview/         Blocks used only by /preview/*. Nothing on the
+                              public site may import from here.
 ```
 
 ### Utility classes worth knowing
@@ -195,6 +198,30 @@ A panel inside the orange band needs `.on-paper` or it comes out orange on orang
 
 `.t-display` is the display face uppercase (H1, H2, stats). `.t-title` is the display face in
 sentence case, and it is what card headlines and table row titles use.
+
+---
+
+## `/preview/*` is not part of the site
+
+`/preview/*` renders one newsletter issue type as a page so it can be looked at on a phone and
+approved. One route per issue type. They are deliberately outside the public site:
+
+- **No nav link.** `navLinks` in `src/lib/site.ts` does not list them and must not.
+- **Not in the sitemap** and **not in the archive**. `getIssues()` never returns a preview.
+- **`noindex` on every one.** `PreviewLayout` sets it; do not add a preview that skips it.
+- Nothing on the public site may import from `src/components/preview/` or link to a `/preview/`
+  URL.
+
+**These pages are throwaway and they will go stale.** A preview is a snapshot of an issue type at
+the moment it was ported, taken to get a structure signed off. It does not track later changes to
+that issue type, and it is not worth maintaining as if it did. Delete a preview once its issue
+type is approved.
+
+A second one is a page plus its content: `PreviewLayout`, `PullQuote`, `FactTable`, `Plate`,
+`PlatePair` and the site's own components carry the rest. Images go in
+`public/images/preview/<route>/`.
+
+Currently: `/preview/event-recap`.
 
 ---
 

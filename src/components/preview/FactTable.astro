@@ -1,0 +1,35 @@
+---
+/**
+ * The issue's facts: a mono label in the left column, the value beside it, one
+ * ruled row each. Every recap opens with one of these.
+ *
+ * Same ruled-row construction as the events table, so it reads as part of the
+ * same document. Rows have no fixed height and the label column folds above
+ * the value below 900px.
+ */
+
+export interface Fact {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  facts: Fact[];
+  class?: string;
+}
+
+const { facts, class: className = '' }: Props = Astro.props;
+---
+
+<div class:list={['border-t border-rule', className]}>
+  {
+    facts.map((fact) => (
+      <div class="flex flex-col gap-1 border-b border-hairline py-[15px] wide:flex-row wide:items-baseline wide:gap-8">
+        <span class="t-mono text-mono-label text-ink-muted wide:w-[120px] wide:flex-none">
+          {fact.label}
+        </span>
+        <span class="text-body-sm font-semibold text-ink">{fact.value}</span>
+      </div>
+    ))
+  }
+</div>

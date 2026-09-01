@@ -1,0 +1,52 @@
+---
+/**
+ * One photograph from the issue: the site's PhotoFrame with a plate number and
+ * a caption in the metadata bar.
+ *
+ * The frame is untouched. Mat, dark well, warm multiply, four crop marks and
+ * the mono caption bar all come from PhotoFrame, so a recap photo looks like
+ * every other photo on the site rather than like an email attachment.
+ *
+ * `ratio` is passed straight through because the source photographs are not
+ * all one shape and cropping them to a preset would lose the room.
+ */
+import PhotoFrame from '../PhotoFrame.astro';
+
+interface Props {
+  src: string;
+  alt: string;
+  /** "01", "02" … Printed as the caption bar's title. */
+  plate: string;
+  /** The rest of the caption, e.g. "Panel on screen, main hall / 7:38 PM". */
+  caption: string;
+  /** Overrides the band preset's 3/2. */
+  ratio?: string;
+  loading?: 'lazy' | 'eager';
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  plate,
+  caption,
+  ratio,
+  loading = 'lazy',
+  class: className = '',
+}: Props = Astro.props;
+---
+
+<PhotoFrame
+  variant="band"
+  ratio={ratio}
+  src={src}
+  alt={alt}
+  loading={loading}
+  showMeta
+  class={className}
+>
+  <Fragment slot="meta">
+    <span class="text-ink">Plate {plate}</span>
+    <span>{caption}</span>
+  </Fragment>
+</PhotoFrame>

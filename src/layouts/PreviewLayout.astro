@@ -1,0 +1,50 @@
+---
+/**
+ * The shell for /preview/* pages.
+ *
+ * ============================================================================
+ *  THESE PAGES ARE THROWAWAY.
+ *
+ *  A /preview route exists so somebody can look at a newsletter issue type on
+ *  a phone and approve its structure. It is not part of the public site: no
+ *  nav link, no sitemap entry, nothing in the archive, noindex on every page.
+ *  It WILL go stale as the issue types change, and that is fine. Delete a
+ *  preview once its issue type is signed off.
+ * ============================================================================
+ *
+ * Adding a second one is a page plus its content. This layout, PullQuote,
+ * FactTable, PlatePair and the site's own components carry everything else.
+ */
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  /** The issue title. Used for <title> and the strip. */
+  title: string;
+  description?: string;
+  /** Short label for the ink strip, e.g. "Event recap". */
+  kind: string;
+}
+
+const { title, description, kind }: Props = Astro.props;
+---
+
+<SiteLayout title={title} description={description} noindex>
+  <span slot="strip-end">Preview · {kind}</span>
+
+  {/*
+    Says what this page is, in the site's own metadata voice rather than as a
+    banner. It sits above the issue so nobody mistakes a preview URL for a
+    published issue, and it is the first thing to delete when these go.
+  */}
+  <div class="mx-auto max-w-page px-gutter-sm pt-7 wide:px-gutter">
+    <div
+      class="t-mono flex flex-wrap items-baseline gap-x-5 gap-y-2 border-y border-rule py-3 text-mono-meta text-ink-muted"
+    >
+      <span class="text-ink">Preview</span>
+      <span>Not published · Structure only</span>
+      <span class="wide:ml-auto">Bracketed values are placeholders</span>
+    </div>
+  </div>
+
+  <slot />
+</SiteLayout>

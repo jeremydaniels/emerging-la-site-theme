@@ -15,12 +15,19 @@ interface Props {
   suffix?: boolean;
   /** The ink strip above the nav. On by default. */
   strip?: boolean;
+  /** Passed straight through to BaseLayout. Used by /preview/*. */
+  noindex?: boolean;
 }
 
-const { title, description, suffix, strip = true } = Astro.props;
+const { title, description, suffix, strip = true, noindex } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description} suffix={suffix}>
+<BaseLayout
+  title={title}
+  description={description}
+  suffix={suffix}
+  noindex={noindex}
+>
   {
     strip && (
       <MetaBar variant="strip">
