@@ -39,6 +39,12 @@ interface Props {
   variant?: 'hero' | 'portrait' | 'band' | 'issue' | 'thumb';
   /** Overrides the variant's aspect ratio, e.g. "16/9". */
   ratio?: string;
+  /**
+   * Overrides the variant's export size, e.g. "1200 x 600". Printed in the
+   * empty slot. Set this whenever `ratio` is set, or the slot tells whoever
+   * exports the file the wrong pixel dimensions.
+   */
+  exportSize?: string;
   /** Where the real file goes. Printed in the empty slot. */
   path?: string;
   /** What the photo should be. Printed in the empty slot's caption bar. */
@@ -68,6 +74,7 @@ const {
   alt = '',
   variant = 'issue',
   ratio,
+  exportSize,
   path,
   brief,
   chip,
@@ -90,6 +97,7 @@ const PRESETS = {
 
 const preset = PRESETS[variant];
 const aspect = ratio ?? preset.ratio;
+const size = exportSize ?? preset.exportSize;
 const small = variant === 'thumb';
 const empty = !src;
 
@@ -115,7 +123,7 @@ const wantsMeta = showMeta ?? (hasMetaSlot || (empty && preset.meta));
               <span class="slot-label">Photo slot</span>
               {path && <span class="slot-path">{path}</span>}
               <span class="slot-size">
-                {aspect.replace('/', ' : ')} · {preset.exportSize}
+                {aspect.replace('/', ' : ')} · {size}
               </span>
             </>
           )}

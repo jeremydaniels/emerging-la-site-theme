@@ -1,0 +1,56 @@
+---
+/**
+ * The issue's header image slot: 1200 x 600, empty.
+ *
+ * Every issue type is specced to carry one, used for the inbox preview, the
+ * web archive and the social share. It is deliberately an empty slot rather
+ * than a chosen photograph: this page exists to show WHERE the header image
+ * goes, not to pick one.
+ *
+ * Treatment is the site's own empty-slot treatment, the same one the home
+ * hero's photo slot uses: dashed box with a cross through it, four crop marks,
+ * and the destination path and export dimensions printed inside. Because the
+ * frame already renders at the final aspect ratio, nothing on the page moves
+ * when a real file lands.
+ *
+ * The ratio is written 2/1 rather than 1200/600 so the slot reads
+ * "2 : 1 · 1200 x 600" the way every other slot on the site reads, instead of
+ * printing the same pair of numbers twice. Same aspect either way.
+ *
+ * `exportSize` has to be passed alongside `ratio`. PhotoFrame takes its export
+ * dimensions from the variant preset, and `band` would otherwise tell whoever
+ * exports the file to make it 1800 x 1200.
+ *
+ * The caption bar carries the alt text pattern, because alt text is part of
+ * the spec for an image slot and not an afterthought once the file arrives.
+ */
+import PhotoFrame from '../PhotoFrame.astro';
+
+interface Props {
+  /** Where the real file goes, under /public. */
+  path: string;
+  /** What the header image should be. */
+  brief: string;
+  /** The alt text to write when the file lands. */
+  altPattern: string;
+  class?: string;
+}
+
+const { path, brief, altPattern, class: className = '' }: Props = Astro.props;
+---
+
+<PhotoFrame
+  variant="band"
+  ratio="2/1"
+  exportSize="1200 x 600"
+  src={null}
+  path={path}
+  loading="eager"
+  class={className}
+>
+  <Fragment slot="meta">
+    <span class="text-ink">Header image</span>
+    <span>{brief}</span>
+    <span class="basis-full text-ink-muted">Alt: {altPattern}</span>
+  </Fragment>
+</PhotoFrame>

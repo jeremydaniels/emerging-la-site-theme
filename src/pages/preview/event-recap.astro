@@ -42,6 +42,7 @@ import PreviewLayout from '../../layouts/PreviewLayout.astro';
 import SectionHeader from '../../components/SectionHeader.astro';
 import RuledList from '../../components/RuledList.astro';
 import EventsTable from '../../components/EventsTable.astro';
+import HeaderSlot from '../../components/preview/HeaderSlot.astro';
 import PullQuote from '../../components/preview/PullQuote.astro';
 import FactTable from '../../components/preview/FactTable.astro';
 import Plate from '../../components/preview/Plate.astro';
@@ -176,13 +177,33 @@ const col =
   kind="Event recap"
   description="Preview of an Event Recap newsletter issue. Not a published issue."
 >
+  {/* -------------------------------------------------------- header image */}
+  {/*
+    The 1200 x 600 header image every issue type carries, empty, above the
+    title.
+
+    This is NOT where the export put its lead visual: the export opened with
+    the title and subtitle and only then dropped in its 2400 x 800 orange
+    banner. That banner is gone (it duplicated the site header sitting
+    directly above it), and the header image is a different object anyway.
+    The export shipped one at 1200 x 630 and never placed it in the body at
+    all, which fits its real job: the inbox preview and the social card.
+  */}
+  <section class:list={[col, 'pt-9 wide:pt-10']}>
+    <HeaderSlot
+      path="/images/preview/event-recap/header.jpg"
+      brief="Lead visual for the issue"
+      altPattern="[what the image shows], [issue subject]"
+    />
+  </section>
+
   {/* ------------------------------------------------------------ masthead */}
   {/*
     The export put its mono issue line under the title, below the masthead
     banner. With the banner gone it moves above the headline, which is where
     every other page on this site puts its eyebrow.
   */}
-  <section class:list={[col, 'pt-10 wide:pt-[52px]']}>
+  <section class:list={[col, 'pt-9']}>
     <div class="t-mono mb-[22px] flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
       <span class="h-px w-[26px] shrink-0 bg-accent-step" aria-hidden="true"></span>
       <span>Issue [##] · Event Recap · [DATE]</span>
