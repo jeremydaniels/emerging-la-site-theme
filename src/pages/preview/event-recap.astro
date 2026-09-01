@@ -145,8 +145,16 @@ const channels = [
   { label: 'Luma', text: 'Subscribe to the events calendar', href: links.lumaCalendar },
 ];
 
-/** 36 slots, the length the real list runs to before it is truncated. */
-const attendees = Array.from({ length: 36 }, (_, i) =>
+/**
+ * Six, not the export's thirty-six.
+ *
+ * The real list runs to a few dozen names before the "and N more" truncation,
+ * but thirty-six bracketed placeholders in a row read as a rendering fault
+ * rather than as a deliberate placeholder. Six is enough to show what the
+ * block is and how a row of it wraps. The count goes back up when real names
+ * land, and nothing about the layout depends on it.
+ */
+const attendees = Array.from({ length: 6 }, (_, i) =>
   `[Attendee ${String(i + 1).padStart(2, '0')}]`
 );
 
