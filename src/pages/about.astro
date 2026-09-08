@@ -294,8 +294,21 @@ const proof = [
     to the other.
 
     The note itself is not written yet, so it renders as a marked slot the way
-    an empty photo does, at about the height four or five sentences will take,
-    so nothing moves when the copy lands.
+    an empty photo does, at the height four or five sentences will actually
+    take, so nothing moves when the copy lands.
+
+    That height is a line count, not a number: a body-lg line is
+    var(--text-body-lg) x var(--text-body-lg--line-height), and the slot is
+    seven of them wide and nine of them narrow. Both come off the measured
+    thing. A note of four or five sentences with a signature under it runs 6 to
+    10 lines in this 62ch column at 19px, and 8 to 14 in a phone's 354px column
+    at 16px; seven and nine are the middle of those, a five sentence note of
+    about 53 words. Setting it on the paragraph rather than the box means the
+    padding is not part of the sum, so the count is the count.
+
+    It is also the shorter half of the row on purpose. The portrait is 353px
+    and the slot lands at 238px, so the frame anchors the section and the note
+    sits beside it, rather than a wide empty rectangle towering over a photo.
 
     On mobile the frame is capped at 200px, so a 4/5 portrait does not take most
     of a phone screen before the note starts.
@@ -319,10 +332,10 @@ const proof = [
         />
       </div>
 
-      <div
-        class="flex min-h-[190px] max-w-[62ch] border border-dashed border-edge p-6 wide:min-h-[300px] wide:p-8"
-      >
-        <p class="m-0 text-body-lg text-ink-muted">
+      <div class="max-w-[62ch] border border-dashed border-edge p-6 wide:p-8">
+        <p
+          class="m-0 min-h-[calc(9*var(--text-body-lg)*var(--text-body-lg--line-height))] text-body-lg text-ink-muted wide:min-h-[calc(7*var(--text-body-lg)*var(--text-body-lg--line-height))]"
+        >
           [SLOT: note from Brandon, four or five sentences, first person, signed.]
         </p>
       </div>
