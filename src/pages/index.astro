@@ -18,7 +18,7 @@ import IssueCard from '../components/IssueCard.astro';
 import EventsTable from '../components/EventsTable.astro';
 import SubscribeBand from '../components/SubscribeBand.astro';
 
-import { site } from '../lib/site';
+import { aboutOpening, site } from '../lib/site';
 import { routes } from '../lib/links';
 import { getLatestIssues } from '../data/issues';
 import { upcomingEvents } from '../data/events';
@@ -141,11 +141,9 @@ const proof = [
 
   {/* ------------------------------------------------------------------ 02 */}
   {/*
-    The About page's opening, cut off mid-thought and handed to the link. It is
-    the same headline and the same first paragraph in the same type, stopping
-    at the ellipsis, so arriving on /about reads as the rest of a sentence
-    rather than a second pitch. The two are literal copies of each other on
-    purpose: change one and change the other.
+    The About page's opening, cut off mid-thought and handed to the link. Both
+    pages read it from `aboutOpening` in site.ts, so this is the same sentence
+    stopping early rather than a second pitch written to sound like the first.
 
     Nothing here carries the mission or the vision. Those are stated once, on
     the About page, and a home page that half states them says them twice.
@@ -160,17 +158,13 @@ const proof = [
           <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
           <span>02 · About</span>
         </div>
-        <h2 class="t-display m-0 text-display-4 text-ink">
-          LA has always built the hard stuff.
-        </h2>
+        <h2 class="t-display m-0 text-display-4 text-ink">{aboutOpening.headline}</h2>
       </div>
 
       <div class="pt-1.5">
-        <p class="m-0 text-body-lg text-ink">
-          When someone mentions Los Angeles, you might think "film." But then, you might
-          also think rockets, aircraft, and games. The city's habit is taking on things
-          that don't work yet and building them anyway...
-        </p>
+        {/* The ellipsis is the truncation, so it lives here and not in the
+            constant: it is a fact about this block, not about the sentence. */}
+        <p class="m-0 text-body-lg text-ink">{aboutOpening.lead}...</p>
         <a href={routes.about} class="btn-quiet mt-8">Read more about us →</a>
       </div>
     </div>

@@ -32,7 +32,7 @@ import SectionHeader from '../components/SectionHeader.astro';
 import PhotoFrame from '../components/PhotoFrame.astro';
 import SubscribeBand from '../components/SubscribeBand.astro';
 
-import { site } from '../lib/site';
+import { aboutOpening, site } from '../lib/site';
 import { photos, photoPaths } from '../data/photos';
 
 /**
@@ -154,17 +154,12 @@ const proof = [
         </div>
 
         <h1 class="t-display m-0 max-w-[14ch] text-display-2 text-ink">
-          LA has always built the hard stuff.
+          {aboutOpening.headline}
         </h1>
       </div>
 
       <div class="max-w-[56ch] wide:pt-2">
-        <p class="m-0 text-body-lg text-ink">
-          When someone mentions Los Angeles, you might think "film." But then, you might
-          also think rockets, aircraft, and games. The city's habit is taking on things
-          that don't work yet and building them anyway. That hasn't changed. What's changed
-          is who's doing it, and how hard it is to find them.
-        </p>
+        <p class="m-0 text-body-lg text-ink">{aboutOpening.lead + aboutOpening.rest}</p>
         <p class="mt-5 text-body text-ink-muted-aa">
           Emerging LA is where the people building here now find each other. Founders,
           investors and operators, in one place, across a city that doesn't have one.
