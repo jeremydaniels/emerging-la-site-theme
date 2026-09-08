@@ -31,6 +31,26 @@ export const photos = {
     brief: 'Portrait, waist up, natural light, looking to camera',
   },
 
+  /* The band on the About page, between the purpose block and what we do.
+     Three portraits: the crowd, the conversation, the city. All 4/5, so they
+     line up across on wide and stack cleanly on narrow. */
+  aboutBandRoom: {
+    src: null,
+    alt: '',
+    brief:
+      'A full room at an ELA event, wide, shot from the back or side so it reads as a crowd',
+  },
+  aboutBandPeople: {
+    src: null,
+    alt: '',
+    brief: 'Two or three people talking at an event, close, natural light',
+  },
+  aboutBandCity: {
+    src: null,
+    alt: '',
+    brief: 'Los Angeles itself, exterior, recognisable as LA without being a postcard',
+  },
+
   /* The band on the Events page. This is the page most likely to carry real
      event photography, so these three are the ones to fill first. */
   eventsRoom1: {
@@ -54,6 +74,9 @@ export const photos = {
 export const photoPaths = {
   homeHero: '/images/home/hero.jpg',
   aboutPortrait: '/images/about/founder-portrait.jpg',
+  aboutBandRoom: '/images/about/band-room.jpg',
+  aboutBandPeople: '/images/about/band-people.jpg',
+  aboutBandCity: '/images/about/band-city.jpg',
   eventsRoom1: '/images/events/room-1.jpg',
   eventsRoom2: '/images/events/room-2.jpg',
   eventsRoom3: '/images/events/room-3.jpg',

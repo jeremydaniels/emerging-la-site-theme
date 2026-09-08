@@ -99,6 +99,19 @@ const doing = [
   },
 ];
 
+/**
+ * The photo band between 02 and 03. Three 4/5 frames, so they line up across on
+ * wide and stack over each other on narrow. All three are empty slots: the
+ * photographs come later and the frame is already rendering at the final ratio,
+ * so nothing reflows when they land. The stacking itself is .photo-stack in
+ * global.css.
+ */
+const band = [
+  { slot: photos.aboutBandRoom, path: photoPaths.aboutBandRoom },
+  { slot: photos.aboutBandPeople, path: photoPaths.aboutBandPeople },
+  { slot: photos.aboutBandCity, path: photoPaths.aboutBandCity },
+];
+
 /** A part is a slot when it is wrapped in the bracket marker. */
 const isSlot = (part: string) => part.startsWith('[SLOT:');
 
@@ -192,6 +205,35 @@ const proof = [
               {statement.label}
             </h2>
             <p class="t-title m-0 max-w-[38ch] text-display-5 text-ink">{statement.text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* -------------------------------------------------------- photo band --- */}
+  {/*
+    Unnumbered, the way the proof strip is: it is a breath between two blocks
+    of argument, not an argument of its own.
+
+    Three across on wide. On narrow the three frames stack over each other in
+    one slot as the page scrolls, which is CSS only and lives entirely in
+    .photo-stack. The wrapper divs are what sticks: PhotoFrame's own figure
+    carries `m-0`, and a utility beats a component class, so centring the frame
+    has to happen on something outside it.
+  */}
+  <section class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section">
+    <div class="photo-stack">
+      {
+        band.map((photo) => (
+          <div>
+            <PhotoFrame
+              variant="portrait"
+              src={photo.slot.src}
+              alt={photo.slot.alt}
+              brief={photo.slot.brief}
+              path={photo.path}
+            />
           </div>
         ))
       }

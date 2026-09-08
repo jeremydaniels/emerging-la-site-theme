@@ -310,6 +310,80 @@
     color: var(--ela-slot-ink-faint);
   }
 
+  /* --- The photo stack -------------------------------------------------- */
+
+  /* The About page's photo band. Three frames.
+
+     Wide: three across on the same rhythm as the what-we-do columns below it.
+     Those columns carry 26px of inset either side of their divider, so the
+     gutter between two of them is 52px, and this is that gutter.
+
+     Narrow: the three frames stack over each other in one slot as the page
+     scrolls. Each frame is sticky against the same offset, so the first holds
+     under the nav while the second arrives over it, then the third over that,
+     and the band releases into the next section. Later frames paint over
+     earlier ones because they come later in the document and the mat is
+     opaque, so there is no z-index here and there should not be one.
+
+     Nothing here is animated and nothing touches the scroll. The page moves at
+     its own rate throughout; the frames only decline to move with it.
+
+     Three things keep it out of trouble:
+
+     - No vh anywhere. A runway measured in vh is what makes this pattern jump
+       on mobile Safari, because the unit changes value as the address bar
+       collapses and the runway relayouts mid-gesture. The runway is px, so the
+       bar can do what it likes.
+     - The frame is capped at 380px, so a stuck frame is always shorter than
+       the viewport holding it. An element taller than its viewport cannot be
+       scrolled past while it is stuck, and that is a scroll trap.
+     - A height gate, so a landscape phone (short, and under 900px wide) gets
+       the plain stack rather than a frame it cannot see the bottom of.
+
+     It degrades to a plain stack three ways: no sticky support, reduced
+     motion, or a viewport too short. In all three the frames sit one under the
+     other at the standard narrow grid gap and nothing else changes. */
+  .photo-stack {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  @media (min-width: 900px) {
+    .photo-stack {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 52px;
+    }
+  }
+
+  @supports (position: sticky) {
+    @media (max-width: 899.98px) and (min-height: 600px) and (prefers-reduced-motion: no-preference) {
+      .photo-stack {
+        /* Runway between the frames. This also sets how long each one holds
+           before the next arrives over it, and it is what keeps the whole band
+           under three viewports of scrolling on a phone. */
+        gap: calc(var(--spacing-section) + var(--spacing-section-sm));
+      }
+
+      /* Runway after the LAST frame, so it holds for a beat before the band
+         lets go, and an empty row rather than padding on the stack. A sticky
+         element is constrained to its containing block's content box, and
+         padding sits outside that: padded, the third frame reaches its offset
+         at the exact moment the band releases and never holds at all. An empty
+         row is inside the content box, so it is runway the frame can use. */
+      .photo-stack::after {
+        content: '';
+      }
+
+      .photo-stack > * {
+        position: sticky;
+        top: calc(var(--spacing-navbar) + var(--spacing-gutter-sm));
+        max-width: 380px;
+        margin-inline: auto;
+      }
+    }
+  }
+
   /* --- Chips ------------------------------------------------------------ */
 
   .chip {
