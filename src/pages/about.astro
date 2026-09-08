@@ -10,11 +10,13 @@
  * Desktop and mobile are two layouts, not one that reflows. Every section
  * below pairs a stacked mobile arrangement with a deliberate wide one:
  *
- *   header      headline over prose      →  headline left, prose right
- *   purpose     label over statement     →  label left, statement right
- *   what we do  three stacked blocks     →  three ruled columns
- *   note        portrait over the note   →  portrait left, note right
- *   proof       2 x 2                    →  four across
+ *   01 header   headline over prose      →  headline left, prose right
+ *   02 purpose  label over statement     →  label left, statement right
+ *      photos   frames stacking in place →  three across
+ *   03 what     three stacked blocks     →  three ruled columns
+ *   04 numbers  2 x 2                    →  four across
+ *   05 note     portrait over the note   →  portrait left, note right
+ *   06 subscribe
  *
  * Nothing here has a fixed height. Prose is capped in ch so the line length
  * stays sane whatever the copy does, and the three-column grid draws its
@@ -213,7 +215,7 @@ const proof = [
 
   {/* -------------------------------------------------------- photo band --- */}
   {/*
-    Unnumbered, the way the proof strip is: it is a breath between two blocks
+    The one unnumbered section on the page: it is a breath between two blocks
     of argument, not an argument of its own.
 
     Three across on wide. On narrow the three frames stack over each other in
@@ -284,6 +286,54 @@ const proof = [
 
   {/* ------------------------------------------------------------------ 04 */}
   {/*
+    The numbers under what we do, so they sit against the thing they are
+    evidence for rather than under the note, which they say nothing about.
+
+    Home's proof strip is unnumbered and runs to the page gutter rather than
+    the content column, because there it is a sill under the hero with no label
+    of its own. This one carries an eyebrow, so it takes the standard section
+    container and its rules line up with every other rule on the page. That is
+    the only difference between the two, and the cells are identical.
+
+    A standalone eyebrow with no H2, the way the purpose block above does it. A
+    heading here would only say in the display face what the label already says
+    in mono.
+
+    Two by two on mobile, four across on wide.
+  */}
+  <section class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section">
+    <div class="t-mono mb-[22px] flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
+      <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
+      <span>04 · By the numbers</span>
+    </div>
+
+    <div class="border-y border-rule">
+      <div class="grid grid-cols-2 wide:grid-cols-4">
+        {
+          proof.map((cell, i) => (
+            <div
+              class:list={[
+                'px-[22px] py-[26px]',
+                i < proof.length - 1 && 'wide:border-r wide:border-rule',
+                i % 2 === 0 && 'border-r border-rule wide:border-r',
+                i < 2 && 'border-b border-rule wide:border-b-0',
+              ]}
+            >
+              <div
+                class:list={['t-display text-stat', cell.real ? 'text-ink' : 'text-ink-faint']}
+              >
+                {cell.value}
+              </div>
+              <div class="t-mono mt-2 text-mono-meta text-ink-muted">{cell.label}</div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------------ 05 */}
+  {/*
     Same shape as the purpose rows above: a fixed column on the left, the text
     beside it on a measure it can be read at, and the right edge left open. The
     page has already established that shape twice by the time you reach it.
@@ -317,7 +367,7 @@ const proof = [
     id="note"
     class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
   >
-    <SectionHeader number="04" eyebrow="Note" title="A note from Brandon" class="mb-[34px]" />
+    <SectionHeader number="05" eyebrow="Note" title="A note from Brandon" class="mb-[34px]" />
 
     <div
       class="grid grid-cols-1 items-start gap-7 wide:grid-cols-[240px_minmax(0,1fr)] wide:gap-14"
@@ -342,37 +392,6 @@ const proof = [
     </div>
   </section>
 
-  {/* ------------------------------------------------------ proof strip --- */}
-  {/*
-    Unnumbered, the way home's is: it is evidence under the page, not an
-    argument of its own. Two by two on mobile, four across on wide.
-  */}
-  <section class="px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section">
-    <div class="mx-auto max-w-page border-y border-rule">
-      <div class="grid grid-cols-2 wide:grid-cols-4">
-        {
-          proof.map((cell, i) => (
-            <div
-              class:list={[
-                'px-[22px] py-[26px]',
-                i < proof.length - 1 && 'wide:border-r wide:border-rule',
-                i % 2 === 0 && 'border-r border-rule wide:border-r',
-                i < 2 && 'border-b border-rule wide:border-b-0',
-              ]}
-            >
-              <div
-                class:list={['t-display text-stat', cell.real ? 'text-ink' : 'text-ink-faint']}
-              >
-                {cell.value}
-              </div>
-              <div class="t-mono mt-2 text-mono-meta text-ink-muted">{cell.label}</div>
-            </div>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  {/* ------------------------------------------------------------------ 05 */}
-  <SubscribeBand number="05" />
+  {/* ------------------------------------------------------------------ 06 */}
+  <SubscribeBand number="06" />
 </SiteLayout>
