@@ -32,8 +32,9 @@ export const photos = {
   },
 
   /* The band on the About page, between the purpose block and what we do.
-     Three portraits: the crowd, the conversation, the city. All 4/5, so they
-     line up across on wide and stack cleanly on narrow. */
+     The crowd, the conversation, the city. All 3/2 landscape, the same preset
+     the events band uses, so they line up across on wide and stack cleanly on
+     narrow. The founder portrait above is the page's only 4/5 frame. */
   aboutBandRoom: {
     src: null,
     alt: '',

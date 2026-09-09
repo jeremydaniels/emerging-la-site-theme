@@ -328,7 +328,7 @@
      Nothing here is animated and nothing touches the scroll. The page moves at
      its own rate throughout; the frames only decline to move with it.
 
-     Three things keep it out of trouble:
+     Four things keep it out of trouble:
 
      - No vh anywhere. A runway measured in vh is what makes this pattern jump
        on mobile Safari, because the unit changes value as the address bar
@@ -339,6 +339,18 @@
        scrolled past while it is stuck, and that is a scroll trap.
      - A height gate, so a landscape phone (short, and under 900px wide) gets
        the plain stack rather than a frame it cannot see the bottom of.
+     - A fixed metadata rail, so the three frames are the same height and each
+       one covers the one before it completely. See .photo-stack figcaption.
+
+     The cap and the gate were both sized against a 4/5 frame and are worth
+     re-reading now the band is 3/2. At the cap a 3/2 frame stands 321px, so a
+     stuck frame reaches 78 + 321 = 399px and clears the 600px gate by 201px.
+     The 4/5 frame stood 528px and reached 606px, which overran a 600px
+     viewport by 6px: the tightest gated case, 899 x 600, was a genuine scroll
+     trap and is not one any more. Both numbers therefore stay as they are. The
+     cap is now the looser of the two constraints by a wide margin, so if these
+     frames ever want to be bigger on a tablet it is the cap that can move, and
+     it can move a long way before the gate starts to bind.
 
      It degrades to a plain stack three ways: no sticky support, reduced
      motion, or a viewport too short. In all three the frames sit one under the
@@ -380,6 +392,23 @@
         top: calc(var(--spacing-navbar) + var(--spacing-gutter-sm));
         max-width: 380px;
         margin-inline: auto;
+      }
+
+      /* The metadata bar is a fixed rail here, and that is what makes the
+         frames sit flush over each other. Left to its copy the bar is as tall
+         as the brief it holds: below about 400px the room brief wraps to three
+         lines while the other two take two, so the first frame stands 16.8px
+         taller than the frames meant to cover it and a strip of its caption
+         shows out of the bottom of the stack. Four rows is the worst case
+         measured down to a 320px viewport, one for the label and three for the
+         longest brief. 1.6 is the mono leading, 4px the flex row gap between
+         the label and the brief, and 17px the bar's own padding, which counts
+         because the reset is border-box.
+
+         A brief long enough to wrap to a fourth line would break the rail
+         again. That is the number to raise if one ever does. */
+      .photo-stack figcaption {
+        min-height: calc(4 * var(--text-mono-meta-tight) * 1.6 + 4px + 17px);
       }
     }
   }

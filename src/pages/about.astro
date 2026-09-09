@@ -102,11 +102,11 @@ const doing = [
 ];
 
 /**
- * The photo band between 02 and 03. Three 4/5 frames, so they line up across on
- * wide and stack over each other on narrow. All three are empty slots: the
- * photographs come later and the frame is already rendering at the final ratio,
- * so nothing reflows when they land. The stacking itself is .photo-stack in
- * global.css.
+ * The photo band between 02 and 03. Three 3/2 frames on the `band` preset, the
+ * same one the events band uses, so they line up across on wide and stack over
+ * each other on narrow. All three are empty slots: the photographs come later
+ * and the frame is already rendering at the final ratio, so nothing reflows
+ * when they land. The stacking itself is .photo-stack in global.css.
  */
 const band = [
   { slot: photos.aboutBandRoom, path: photoPaths.aboutBandRoom },
@@ -225,7 +225,7 @@ const proof = [
         band.map((photo) => (
           <div>
             <PhotoFrame
-              variant="portrait"
+              variant="band"
               src={photo.slot.src}
               alt={photo.slot.alt}
               brief={photo.slot.brief}
