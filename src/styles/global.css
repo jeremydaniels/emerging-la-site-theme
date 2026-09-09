@@ -182,10 +182,25 @@
 
   /* --- Photo frame ------------------------------------------------------ */
 
+  /* The mat. Even on all four sides, and the caption bar is what makes the
+     bottom one when there is a caption: its own padding sits inside the mat
+     rather than under it, so a frame that draws one takes no padding-bottom of
+     its own. PhotoFrame only draws a caption on an empty slot (or one handed a
+     meta slot), which is why this has to key off the caption actually being
+     there and not off the variant: the same variant renders both ways
+     depending on whether its src is null.
+
+     Without the second rule a filled frame runs the photo flush into the
+     bottom border and reads as pushed out of its mat. `.frame-sm` solves the
+     same problem in markup, with the 5px spacer PhotoFrame renders after the
+     well, so it is already even and is left alone. */
   .frame {
     background: var(--ela-paper);
     border: 1px solid var(--ela-rule);
-    padding: 12px 12px 0;
+    padding: 12px;
+  }
+  .frame:has(figcaption) {
+    padding-bottom: 0;
   }
 
   .frame-sm {

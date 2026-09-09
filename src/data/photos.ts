@@ -24,7 +24,13 @@ export interface PhotoSlot {
   src: string | null;
   /** Required once src is set. */
   alt: string;
-  /** What the photo should be. Shown on the empty slot's caption bar. */
+  /**
+   * The photo. On a filled slot this describes the one that is in there; on an
+   * empty slot it describes the one that should go in, and renders on the slot's
+   * caption bar. Emptying a filled slot therefore turns its brief back into a
+   * spec for the replacement, which is why these are kept true to the picture
+   * rather than to the original wish list.
+   */
   brief: string;
 }
 
@@ -45,42 +51,48 @@ export const photos = {
   },
 
   /* The band on the About page, between the purpose block and what we do.
-     The crowd, the conversation, the city. All 3/2 landscape, the same preset
-     the events band uses, so they line up across on wide and stack cleanly on
-     narrow. The founder portrait above is the page's only 4/5 frame. */
+     All 3/2 landscape, the same preset the events band uses, so they line up
+     across on wide and stack cleanly on narrow. The founder portrait above is
+     the page's only 4/5 frame.
+
+     The keys were named for what was specified, the crowd, the conversation
+     and the city. Two of the three photos that landed are something else, and
+     aboutBandCity in particular holds a group at a doorway and no city at all.
+     The briefs below describe the pictures; the keys and the file names still
+     describe the wish list. Renaming them is a rename of the files, these
+     keys, photoPaths and about.astro together, so it has not been done here. */
   aboutBandRoom: {
     src: '/images/about/band-room.jpeg',
     alt: '',
-    brief:
-      'A full room at an ELA event, wide, shot from the back or side so it reads as a crowd',
+    brief: 'A large group posed together indoors, warm light, the group filling the frame',
   },
   aboutBandPeople: {
     src: '/images/about/band-people.jpg',
     alt: '',
-    brief: 'Two or three people talking at an event, close, natural light',
+    brief: 'A long table mid-meal, people talking down both sides, daylight from the garden behind',
   },
   aboutBandCity: {
     src: '/images/about/band-city.jpg',
     alt: '',
-    brief: 'Los Angeles itself, exterior, recognisable as LA without being a postcard',
+    brief: 'Five people posed in a doorway, red lanterns overhead, greenery behind them',
   },
 
-  /* The band on the Events page. This is the page most likely to carry real
-     event photography, so these three are the ones to fill first. */
+  /* The band on the Events page. All three are posed group photographs rather
+     than the candids that were specified. The briefs say so. */
   eventsRoom1: {
     src: '/images/events/room-1.jpg',
     alt: '',
-    brief: 'Candid, full room at a dinner, low light, nobody posing',
+    brief: 'A large group posed outdoors around a fire pit, daylight, hedge behind',
   },
   eventsRoom2: {
     src: '/images/events/room-2.jpeg',
     alt: '',
-    brief: 'Candid, someone mid-sentence in a small group, low light',
+    brief: 'A large group posed together at a bar, warm indoor light',
   },
   eventsRoom3: {
     src: '/images/events/room-3.jpg',
     alt: '',
-    brief: 'Candid, arrivals or the doorway, low light, nobody posing',
+    brief: 'Three people posed in black tie, dark room, red uplight, a crowd behind them',
   },
 } as const satisfies Record<string, PhotoSlot>;
 
