@@ -128,23 +128,36 @@ Rule of thumb: if it is a sentence somebody would read aloud, it is `.t-title`.
 | `wordmark` | `19px` | `1` | `0.01em` | Nav wordmark (text fallback) |
 
 `display-1` is sized to the hero headline it carries, not chosen for its own sake. The headline
-sets as three lines, HOME TO LA'S / MOST AMBITIOUS / [rotating word], and the middle line is the
-constraint: "MOST AMBITIOUS" is 6.854em of Riegal, so the step has to stay under the width of the
-hero text column divided by that.
+carries **no hard line breaks**. It wraps to the content width, and where it lands is a function of
+the step, so the step and the breaks have to be read together.
 
-One point binds it now: **320px**, where the clamp floor governs and the middle line measures
-274px in a 284px column, 3.5% of headroom. That is the whole budget, so the floor is not free to
-move.
+**MOST AMBITIOUS is one unit.** The two words are joined by a non-breaking space, because the
+natural break puts MOST alone at the end of the first line at every common phone width, and that is
+the exact failure the step was chosen to avoid. The nbsp is load bearing typography, not a typo.
+With it the headline sets as:
 
-It used to be three. The hero once split into two columns at 900px and the text column dropped
-from 863px to 473px, which was the tightest of them; the hero is now a single full-width stack
-with the photo underneath, so the middle line sits in 840px at 900px and 1300px from 1440px up,
-around 46% of headroom at both. Those two stopped binding when the layout changed, not because the
-type changed. Restore any two-column hero and they bind again.
+| Viewport | Lines | Set as |
+| --- | --- | --- |
+| 320px to 504px | 3 | HOME TO LA'S / MOST AMBITIOUS / [rotating word] |
+| 505px and up | 2 | HOME TO LA'S MOST AMBITIOUS / [rotating word] |
 
-The earlier `clamp(46px, 8.4vw, 124px)` broke the middle line at 320px and everywhere from 900px
-up, leaving MOST alone on a line. Changing this step, or that line of copy, means re-checking
-320px first.
+Three binding points, and none of them has much room:
+
+| Where | Longest line | Column | Slack |
+| --- | --- | --- | --- |
+| 320px, clamp floor governs | 274px | 284px | 3.5% |
+| 900px, the gutter widens from 18px to 30px | 828px | 840px | 1.5% |
+| 1440px and up, container caps at 1360px | 1280px | 1300px | 1.5% |
+
+The two 1.5% rows are the real budget, and they are tighter than anything this step has had before,
+because from 505px up the whole of HOME TO LA'S MOST AMBITIOUS has to hold one line. 900px is tight
+for a reason worth knowing: the line grows with the viewport but the column *shrinks* there, since
+the page gutter steps from 18px to 30px at the breakpoint. Just under it, at 899px, the same line
+has 4.2% of slack.
+
+The earlier `clamp(46px, 8.4vw, 124px)` broke the line at 320px and everywhere from 900px up.
+Changing this step, the nbsp, the page gutter, the container cap, or that line of copy means
+re-measuring all three rows above.
 
 ### Body scale (Manrope)
 
@@ -193,6 +206,7 @@ Do not round these to a 4px or 8px grid; the half-steps are load-bearing on the 
 | Thing | Value |
 | --- | --- |
 | Content max width | `1360px` |
+| Home hero photo max width | `460px` (≥900px only; below that it fills the column) |
 | Page gutter, desktop | `30px` |
 | Page gutter, ≤900px | `18px` |
 | Top strip height | `7px` vertical padding |
@@ -283,8 +297,10 @@ thumbnails come with their own rails, marks and metadata baked into the artwork,
 draws no marks of its own; ours on top of theirs is a doubled border. Both places render the same
 `IssueCard`, so this is one ratio in one component.
 
-**ADDED:** the band (`3/2`, exported 1800 x 1200), for a standalone photo running the full content
-width: a run of them across a page, as on About and Events, or a single one, as in the home hero.
+**ADDED:** the band (`3/2`, exported 1800 x 1200), for a standalone photo across a page: a run of
+them, as on About and Events, or a single one, as in the home hero. A run fills the content width.
+The single hero one is capped at `--container-hero-photo`, because 3/2 at the full 1300px is 849px
+of well and the hero stopped fitting a laptop screen.
 **KEPT:** the portrait (`4/5`), now only for a photo of a person in a column beside text, which on
 this site is the founder portrait in About 05. The home hero used it while the photo sat in the
 hero's right column; that column is gone. Both keep all four marks.

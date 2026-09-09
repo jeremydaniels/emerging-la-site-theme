@@ -251,6 +251,16 @@
 
   --container-page: 1360px;
 
+  /* The home hero photo's cap. The frame runs the full content width until it
+     hits this, which on a 1360px page is a little under 40% of the column.
+     3/2 at the full 1300px is 849px of well, most of a laptop viewport, and it
+     pushed the proof strip to 1.83 viewports at 1440 x 900. Capping the width
+     is the only lever that keeps the ratio and the delivered file honest: a
+     max-height would crop a 1800 x 1200 export instead of fitting it. Below
+     the 900px breakpoint this never applies, so the phone layout is untouched.
+     Changing it moves where the proof strip lands; see design-system.md. */
+  --container-hero-photo: 460px;
+
   /* Display scale — Riegal, uppercase */
   --text-display-1: clamp(40px, 7.4vw, 103px);
   --text-display-1--line-height: 0.86;

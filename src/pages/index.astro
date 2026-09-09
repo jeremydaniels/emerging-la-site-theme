@@ -54,16 +54,25 @@ const proof = [
     no wide: on the grid any more because there is nothing to re-arrange, and
     the two layouts differ only in the values below.
 
-    The text keeps its own measure inside the full width. A headline set to the
-    full 1300px would run to about 25 words a line at display-1, so the h1
-    carries the line breaks it has always carried and the lead keeps its 62ch
-    cap. Full width is what the block occupies, not what the sentences stretch
-    to.
+    The headline carries no hard breaks and wraps to the column: three lines
+    below 505px, two from there up. The one thing holding it together is the
+    non-breaking space in "most&nbsp;ambitious". Left to itself the line breaks
+    after MOST at every common phone width, which splits the phrase and is the
+    break design-system.md §2 sized this step to avoid. The lead keeps its 62ch
+    cap, so full width is what the block occupies, not what the sentences
+    stretch to.
 
-    The frame is `band`, 3/2, the same preset the About and events bands use.
-    At the top of the page it is the one photo, so it keeps the four crop marks
-    and loads eager: it is the largest paint under the fold on a phone and the
-    only image above it on a laptop.
+    The frame is `band`, 3/2, the same preset the About and events bands use,
+    capped at --container-hero-photo from 900px up. Uncapped it is 849px of
+    well at the 1360px page, which put the proof strip 1.83 viewports down a
+    1440 x 900 laptop; capped it is 289px of well and 1.25. The cap is on the
+    width because the ratio and the 1800 x 1200 export have to stay honest, and
+    a max-height would crop the file rather than fit it. Below 900px the cap
+    never binds and the frame fills the column, so the phone layout is the same
+    as it was before the cap existed.
+
+    It keeps the four crop marks and loads eager: it is the largest paint under
+    the fold on a phone and the only image above it on a laptop.
   */}
   <section class="mx-auto max-w-page px-gutter-sm wide:px-gutter">
     <div class="grid grid-cols-1 gap-gutter pt-10 pb-9 wide:gap-section-sm wide:pt-[52px]">
@@ -74,7 +83,7 @@ const proof = [
         </div>
 
         <h1 class="t-display m-0 text-display-1 text-ink">
-          Home to LA's<br />most ambitious<br />
+          Home to LA's most&nbsp;ambitious{' '}
           {/*
             The rotating word, and the wash behind it. Both live in
             RotatingWord, measurements included: the reserved width, the em
@@ -83,8 +92,11 @@ const proof = [
             right row of measurements, because the display steps track
             differently and the words come out different widths.
 
-            It carries its own reserved width, and nothing sits to the right of
-            it on the line, so the swap moves nothing.
+            It carries its own reserved width, sized to the longest of the
+            four words, so the box is the same width whichever one is showing
+            and the swap moves nothing. That is what lets the headline wrap
+            naturally around it: the line breaks are computed against a
+            constant box, not against the word currently in it.
           */}
           <RotatingWord step="display-1" />
         </h1>
@@ -102,6 +114,7 @@ const proof = [
 
       <PhotoFrame
         variant="band"
+        class="wide:max-w-hero-photo"
         src={photos.homeHero.src}
         alt={photos.homeHero.alt}
         brief={photos.homeHero.brief}
