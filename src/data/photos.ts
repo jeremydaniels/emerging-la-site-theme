@@ -35,9 +35,16 @@ export interface PhotoSlot {
 }
 
 export const photos = {
-  /* The hero photo, full content width under the headline block. 3/2 on the
-     `band` preset, the same one the About and events bands use, so one export
-     size covers every standalone photo on the site. */
+  /* The hero photo, in the hero's right column beside the headline. 4/5 on the
+     `portrait` preset, exported 1200 x 1500.
+
+     THE FILE HERE IS STILL THE 3/2 CROP, 1280 x 853. The frame went back to
+     4/5 with the two-column hero; a 4/5 crop to match had not landed at the
+     path when that happened, so object-fit is centre-cropping the landscape
+     file and throwing away 47% of its width, 299px off each side. The brief
+     below describes the 3/2 file that is actually in the slot, because that is
+     what is on the page. Replacing hero.jpg with a 4/5 export fixes the crop
+     and makes the brief the thing to rewrite. */
   homeHero: {
     src: '/images/home/hero.jpg',
     alt: '',
@@ -56,11 +63,10 @@ export const photos = {
      the page's only 4/5 frame.
 
      The keys were named for what was specified, the crowd, the conversation
-     and the city. Two of the three photos that landed are something else, and
-     aboutBandCity in particular holds a group at a doorway and no city at all.
-     The briefs below describe the pictures; the keys and the file names still
-     describe the wish list. Renaming them is a rename of the files, these
-     keys, photoPaths and about.astro together, so it has not been done here. */
+     and the city. The photographs that landed are not those three, so the
+     briefs describe the pictures rather than the wish list, and the third slot
+     is aboutBandDoorway rather than aboutBandCity because no city arrived.
+     The other two keys still read straight against their photos. */
   aboutBandRoom: {
     src: '/images/about/band-room.jpeg',
     alt: '',
@@ -71,8 +77,8 @@ export const photos = {
     alt: '',
     brief: 'A long table mid-meal, people talking down both sides, daylight from the garden behind',
   },
-  aboutBandCity: {
-    src: '/images/about/band-city.jpg',
+  aboutBandDoorway: {
+    src: '/images/about/band-doorway.jpg',
     alt: '',
     brief: 'Five people posed in a doorway, red lanterns overhead, greenery behind them',
   },
@@ -102,7 +108,7 @@ export const photoPaths = {
   aboutPortrait: '/images/about/founder-portrait.jpg',
   aboutBandRoom: '/images/about/band-room.jpeg',
   aboutBandPeople: '/images/about/band-people.jpg',
-  aboutBandCity: '/images/about/band-city.jpg',
+  aboutBandDoorway: '/images/about/band-doorway.jpg',
   eventsRoom1: '/images/events/room-1.jpg',
   eventsRoom2: '/images/events/room-2.jpeg',
   eventsRoom3: '/images/events/room-3.jpg',

@@ -44,38 +44,34 @@ const proof = [
 
   {/* ------------------------------------------------------------------ 01 */}
   {/*
-    Hero. The headline block takes the whole content width and the photo runs
-    the whole content width under it, so the page opens as two stacked bands
-    rather than a text column beside a picture.
+    Hero. Two columns on wide: the headline block on the left, the photo in a
+    4/5 portrait frame on the right. Changed from the mockup, where the right
+    column is an "in this issue" list; the mockup's full-width photo band below
+    the hero is not built.
 
-    This is one order on both breakpoints, which is the point: the headline is
-    the proposition and it is first on every screen, so the largest paint above
-    the fold is a block of text and the photo is the payoff under it. There is
-    no wide: on the grid any more because there is nothing to re-arrange, and
-    the two layouts differ only in the values below.
+    On mobile the photo sits BELOW the headline and the CTA. The headline is
+    the whole proposition and it should be the first thing on a small screen,
+    and it keeps the largest paint a block of text rather than an image. The
+    grid is one column there, so the order is document order.
 
-    The headline carries no hard breaks and wraps to the column: three lines
-    below 505px, two from there up. The one thing holding it together is the
-    non-breaking space in "most&nbsp;ambitious". Left to itself the line breaks
-    after MOST at every common phone width, which splits the phrase and is the
-    break design-system.md §2 sized this step to avoid. The lead keeps its 62ch
-    cap, so full width is what the block occupies, not what the sentences
-    stretch to.
+    items-start, not items-end. The portrait frame is taller than the text
+    column, so bottom aligning them pushed the eyebrow down the page and the
+    hero read as half rendered. Top aligned, the eyebrow's box is flush with
+    the frame's top border and its ink lands 2px under it, which needs no
+    optical correction at 11px. The About story grid pairs a text column with
+    a portrait frame the same way. On mobile this changes nothing: every row is
+    the height of its own item.
 
-    The frame is `band`, 3/2, the same preset the About and events bands use,
-    capped at --container-hero-photo from 900px up. Uncapped it is 849px of
-    well at the 1360px page, which put the proof strip 1.83 viewports down a
-    1440 x 900 laptop; capped it is 383px of well and 1.33. The cap is on the
-    width because the ratio and the 1800 x 1200 export have to stay honest, and
-    a max-height would crop the file rather than fit it. Below 900px the cap
-    never binds and the frame fills the column, so the phone layout is the same
-    as it was before the cap existed.
-
-    It keeps the four crop marks and loads eager: it is the largest paint under
-    the fold on a phone and the only image above it on a laptop.
+    The headline carries no hard breaks and wraps to whatever column it is in,
+    which is now the 1.15fr left one rather than the full page. The
+    non-breaking space in "most&nbsp;ambitious" is what stops the phrase
+    splitting after MOST, and in this column it is doing more work than it did
+    at full width, not less: see design-system.md §2 for the widths.
   */}
   <section class="mx-auto max-w-page px-gutter-sm wide:px-gutter">
-    <div class="grid grid-cols-1 gap-gutter pt-10 pb-9 wide:gap-section-sm wide:pt-[52px]">
+    <div
+      class="grid grid-cols-1 items-start gap-9 pt-10 pb-9 wide:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] wide:pt-[52px]"
+    >
       <div>
         <div class="t-mono mb-[22px] flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
           <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
@@ -113,8 +109,7 @@ const proof = [
       </div>
 
       <PhotoFrame
-        variant="band"
-        class="wide:max-w-hero-photo"
+        variant="portrait"
         src={photos.homeHero.src}
         alt={photos.homeHero.alt}
         brief={photos.homeHero.brief}
