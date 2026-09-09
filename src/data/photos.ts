@@ -19,10 +19,13 @@ export interface PhotoSlot {
 }
 
 export const photos = {
+  /* The hero photo, full content width under the headline block. 3/2 on the
+     `band` preset, the same one the About and events bands use, so one export
+     size covers every standalone photo on the site. */
   homeHero: {
     src: null,
     alt: '',
-    brief: 'Room at a dinner or a mixer, low light, nobody posing',
+    brief: 'A full room at an event, shot wide, people mid-conversation, nobody posing',
   },
 
   aboutPortrait: {

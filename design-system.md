@@ -130,12 +130,21 @@ Rule of thumb: if it is a sentence somebody would read aloud, it is `.t-title`.
 `display-1` is sized to the hero headline it carries, not chosen for its own sake. The headline
 sets as three lines, HOME TO LA'S / MOST AMBITIOUS / [rotating word], and the middle line is the
 constraint: "MOST AMBITIOUS" is 6.854em of Riegal, so the step has to stay under the width of the
-hero text column divided by that. Three points bind it, and all three have 3 to 6% of headroom at
-the values above: 320px, where the floor governs; 900px, where the hero splits into two columns
-and the text column drops from 863px to 473px; and 1440px and up, where the page container caps at
-1360px while the viewport keeps growing. The earlier `clamp(46px, 8.4vw, 124px)` broke the middle
-line at 320px and everywhere from 900px up, leaving MOST alone on a line. Changing this step, or
-the hero grid ratio, or that line of copy, means re-checking the other two.
+hero text column divided by that.
+
+One point binds it now: **320px**, where the clamp floor governs and the middle line measures
+274px in a 284px column, 3.5% of headroom. That is the whole budget, so the floor is not free to
+move.
+
+It used to be three. The hero once split into two columns at 900px and the text column dropped
+from 863px to 473px, which was the tightest of them; the hero is now a single full-width stack
+with the photo underneath, so the middle line sits in 840px at 900px and 1300px from 1440px up,
+around 46% of headroom at both. Those two stopped binding when the layout changed, not because the
+type changed. Restore any two-column hero and they bind again.
+
+The earlier `clamp(46px, 8.4vw, 124px)` broke the middle line at 320px and everywhere from 900px
+up, leaving MOST alone on a line. Changing this step, or that line of copy, means re-checking
+320px first.
 
 ### Body scale (Manrope)
 
@@ -202,7 +211,7 @@ Do not round these to a 4px or 8px grid; the half-steps are load-bearing on the 
 | Body → button row | `30px` |
 | Grid gap, cards | `26px` |
 | Grid gap, two-column prose | `56px` |
-| Grid gap, hero | `36px` |
+| Hero headline block → hero photo | `30px` (≤900px) · `54px` (desktop) |
 | Grid gap, ≤900px (all) | `16px` |
 | Footer top / bottom | `58px` / `34px` |
 
@@ -274,9 +283,11 @@ thumbnails come with their own rails, marks and metadata baked into the artwork,
 draws no marks of its own; ours on top of theirs is a doubled border. Both places render the same
 `IssueCard`, so this is one ratio in one component.
 
-**ADDED:** the portrait hero (`4/5`), because the home page hero puts the photo in the right column
-beside the headline rather than in a band underneath. **ADDED:** the band (`3/2`), for a run of
-standalone photos across a page, as on About. Both keep all four marks.
+**ADDED:** the band (`3/2`, exported 1800 x 1200), for a standalone photo running the full content
+width: a run of them across a page, as on About and Events, or a single one, as in the home hero.
+**KEPT:** the portrait (`4/5`), now only for a photo of a person in a column beside text, which on
+this site is the founder portrait in About 05. The home hero used it while the photo sat in the
+hero's right column; that column is gone. Both keep all four marks.
 
 The image itself carries `filter: contrast(1.05) saturate(0.96)` and is overlaid with
 `linear-gradient(rgba(217,96,14,0.07), rgba(28,28,28,0.05))` at `mix-blend-mode: multiply`.

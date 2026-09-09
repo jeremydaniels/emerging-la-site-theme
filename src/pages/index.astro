@@ -44,27 +44,29 @@ const proof = [
 
   {/* ------------------------------------------------------------------ 01 */}
   {/*
-    Hero. Changed from the mockup: the right column is the photo, not an "in
-    this issue" list, and the mockup's full-width photo band below the hero is
-    gone. One photo, in the four-crop-mark hero frame, portrait so it holds its
-    own against the headline column.
+    Hero. The headline block takes the whole content width and the photo runs
+    the whole content width under it, so the page opens as two stacked bands
+    rather than a text column beside a picture.
 
-    On mobile the photo sits BELOW the headline and the CTA. The headline is
-    the whole proposition and it should be the first thing on a small screen,
-    and it keeps the largest paint a block of text rather than an image.
+    This is one order on both breakpoints, which is the point: the headline is
+    the proposition and it is first on every screen, so the largest paint above
+    the fold is a block of text and the photo is the payoff under it. There is
+    no wide: on the grid any more because there is nothing to re-arrange, and
+    the two layouts differ only in the values below.
 
-    items-start, not items-end. The portrait frame is taller than the text
-    column, so bottom aligning them pushed the eyebrow down the page and the
-    hero read as half rendered. Top aligned, the eyebrow's box is flush with
-    the frame's top border and its ink lands 2px under it, which needs no
-    optical correction at 11px. The About story grid pairs a text column with
-    a portrait frame the same way. On mobile this changes nothing: the grid is
-    one column there, so every row is the height of its own item.
+    The text keeps its own measure inside the full width. A headline set to the
+    full 1300px would run to about 25 words a line at display-1, so the h1
+    carries the line breaks it has always carried and the lead keeps its 62ch
+    cap. Full width is what the block occupies, not what the sentences stretch
+    to.
+
+    The frame is `band`, 3/2, the same preset the About and events bands use.
+    At the top of the page it is the one photo, so it keeps the four crop marks
+    and loads eager: it is the largest paint under the fold on a phone and the
+    only image above it on a laptop.
   */}
   <section class="mx-auto max-w-page px-gutter-sm wide:px-gutter">
-    <div
-      class="grid grid-cols-1 items-start gap-9 pt-10 pb-9 wide:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] wide:pt-[52px]"
-    >
+    <div class="grid grid-cols-1 gap-gutter pt-10 pb-9 wide:gap-section-sm wide:pt-[52px]">
       <div>
         <div class="t-mono mb-[22px] flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
           <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
@@ -99,7 +101,7 @@ const proof = [
       </div>
 
       <PhotoFrame
-        variant="portrait"
+        variant="band"
         src={photos.homeHero.src}
         alt={photos.homeHero.alt}
         brief={photos.homeHero.brief}
