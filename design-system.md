@@ -206,7 +206,7 @@ Do not round these to a 4px or 8px grid; the half-steps are load-bearing on the 
 | Thing | Value |
 | --- | --- |
 | Content max width | `1360px` |
-| Home hero photo max width | `460px` (≥900px only; below that it fills the column) |
+| Home hero photo max width | `600px` (≥900px only; below that it fills the column) |
 | Page gutter, desktop | `30px` |
 | Page gutter, ≤900px | `18px` |
 | Top strip height | `7px` vertical padding |
@@ -300,7 +300,8 @@ draws no marks of its own; ours on top of theirs is a doubled border. Both place
 **ADDED:** the band (`3/2`, exported 1800 x 1200), for a standalone photo across a page: a run of
 them, as on About and Events, or a single one, as in the home hero. A run fills the content width.
 The single hero one is capped at `--container-hero-photo`, because 3/2 at the full 1300px is 849px
-of well and the hero stopped fitting a laptop screen.
+of well and the hero stopped fitting a laptop screen. At the 600px cap the well is 574 x 383 and
+the proof strip lands 1.33 viewports down a 1440 x 900 laptop.
 **KEPT:** the portrait (`4/5`), now only for a photo of a person in a column beside text, which on
 this site is the founder portrait in About 05. The home hero used it while the photo sat in the
 hero's right column; that column is gone. Both keep all four marks.
