@@ -503,11 +503,13 @@
   }
 
   /* On orange, small text goes near-black. Same inversion as .on-accent, for
-     the same reason: cream on this orange is 3.28:1. */
+     the same reason: cream on this orange is 3.28:1. The values are not the
+     band's, though: this sits on the gradient rather than a flat fill, so it
+     takes full-strength ink. See the slot tokens in tokens.css. */
   .grid-showcase [data-accent] .slot {
-    --ela-slot-line: var(--palette-line-on-accent);
-    --ela-slot-ink: var(--palette-ink-on-accent);
-    --ela-slot-ink-faint: var(--palette-ink-on-accent-faint);
+    --ela-slot-line: var(--palette-slot-line-on-accent);
+    --ela-slot-ink: var(--palette-slot-ink-on-accent);
+    --ela-slot-ink-faint: var(--palette-slot-ink-faint-on-accent);
   }
 
   /* The warm multiply is for photographs. Over a flat gradient it just muddies,

@@ -588,7 +588,7 @@ Two files, both trimmed to the glyph bounding box so they scale predictably:
 | File | Fill | Ground it goes on |
 | --- | --- | --- |
 | `public/logo/wordmark-black.svg` | `#000000` | Ground `#F5F0EB`, Paper `#FFFDFA`, and any photo lighter than mid |
-| `public/logo/wordmark-cream.svg` | `#F5F0EB` | Ink `#1C1C1C`, Well `#15130F`, orange `#FF4B33`, and any photo darker than mid |
+| `public/logo/wordmark-cream.svg` | `#FFFDFA` | Ink `#1C1C1C`, Well `#15130F`, orange `#FF4B33`, and any photo darker than mid |
 
 Intrinsic aspect ratio **5.34 : 1** (viewBox `166 957 1912 358`). The lockup is two lines:
 `emerging` over `LOS ANGELES`.
@@ -597,11 +597,11 @@ Intrinsic aspect ratio **5.34 : 1** (viewBox `166 957 1912 358`). The lockup is 
 
 - Cream wordmark on Ground, Paper, or any tint of them — **forbidden**, it vanishes.
 - Black wordmark on Ink, Well, or the orange band — **forbidden**, it vanishes.
-- On the orange band (`#FF4B33`), use **cream**. It reads as the same lockup as the band's display
-  headline, which is the reason the rule exists. Note the measurement though: the cream file is
-  `#F5F0EB`, which on this orange is **2.94:1**, just under the 3:1 a logo needs as a non-text
-  graphic. On the previous orange it was 3.32 and cleared. Black would measure 6.31 here but is
-  still forbidden on the band: it reads as a mistake beside the cream type around it.
+- On the orange band (`#FF4B33`), use **cream**. The cream file is `#FFFDFA`, which measures
+  **3.28:1** there and clears the 3:1 a logo needs as a non-text graphic. It was `#F5F0EB` until
+  the palette swap; that measured 3.32 on the old orange and fell to 2.94 on this one, which is
+  why the file moved to paper. Black would measure 6.31 on the band and is still forbidden there:
+  it reads as a mistake beside the cream display type around it.
 - On a photograph, the wordmark needs either a solid backing block (Ink or Paper, `2px` radius) or
   a `≥60%` scrim in the opposing tone. Never place it directly on an unmodified image.
 - The two files are the only two options. Do not recolour the wordmark to orange, to muted ink,
@@ -807,12 +807,17 @@ that reason, so a card never ends up with no orange at all once its photo lands.
 
 ```css
 --ela-well-accent: linear-gradient(155deg,
-  var(--palette-accent-light) 0%, var(--palette-accent) 100%);
+  var(--palette-accent-light) 0%, var(--palette-accent) 45%, var(--palette-accent-dark) 100%);
 ```
 
-The ramp used to run on to `--palette-accent-dark`. It stops at the anchor because the empty
-slot's near-black text sits on the far half of it, and near-black on `#C2240F` is 2.67:1. Light
-to anchor holds 4.58:1 or better across the whole well.
+**The empty slot takes its own ink, not the band's.** The ramp ends on `#C2240F`, and near-black
+against that stop is 2.88:1 at full strength, so the band's `rgba(28,28,28,0.9)` does not carry
+here. The slot's text is centred, which means it spans roughly **34-66%** of the ramp and never
+reaches the deep stop. At full-strength `--palette-ink` the path reads **5.35:1** at the near end
+of that span and **4.12:1** at the far end, against 4.49 and 3.64 at the band's alpha. Nothing
+near-black clears 4.5 across the whole span, so the slot takes the most contrast available
+instead of an alpha, and the secondary lines go to `0.78`. The dashed box and its diagonals do
+cross both ends of the ramp, but they are non-text scaffolding on an `aria-hidden` element.
 
 Three rules go with it.
 

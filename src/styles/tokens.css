@@ -34,12 +34,22 @@
   --palette-wash: rgb(28 28 28 / 0.035); /* row hover */
   --palette-placeholder: rgb(28 28 28 / 0.32);
 
-  /* Near-black on the orange. Both .on-accent and the accent card's empty slot
-     invert to these, so they live here rather than inline in global.css.
-     0.9 is 4.58:1 on the accent, the alpha that clears AA after the swap. */
+  /* Near-black on the orange band, which is a flat fill of --palette-accent.
+     0.9 measures 4.58:1 there; 0.86 was 4.73 on the old orange and only 4.34
+     on this one. */
   --palette-ink-on-accent: rgb(28 28 28 / 0.9);
-  --palette-ink-on-accent-faint: rgb(28 28 28 / 0.6);
-  --palette-line-on-accent: rgb(28 28 28 / 0.32);
+
+  /* The accent card's empty slot gets its own values rather than the band's.
+     It sits on --ela-well-accent, a ramp that runs on to --palette-accent-dark,
+     and near-black is only 2.88:1 against that stop. The slot's text is
+     centred, so it spans roughly 34-66% of the ramp and never reaches the
+     deep stop: at full strength the path reads 5.35:1 at the near end and
+     4.12:1 at the far one, against 4.49 and 3.64 at the band's 0.9. No
+     near-black clears 4.5 across the whole span, so this takes the most
+     contrast available rather than an alpha. See design-system.md §1. */
+  --palette-slot-ink-on-accent: var(--palette-ink);
+  --palette-slot-ink-faint-on-accent: rgb(28 28 28 / 0.78);
+  --palette-slot-line-on-accent: rgb(28 28 28 / 0.32);
 
   --palette-on-dark: rgb(255 253 250 / 1);
   --palette-on-dark-muted: rgb(255 253 250 / 0.62);
@@ -100,15 +110,12 @@
   --ela-crop: var(--palette-crop);
   /* Identical in both modes, like the crop marks, so it is only set here. */
   --ela-frame-wash: linear-gradient(var(--palette-wash-warm), var(--palette-wash-shade));
-  /* The showcase card's well. A fill of real area, so it counts as an anchor.
-     The ramp stops at the anchor and no longer runs on to the dark accent:
-     the empty slot's near-black text sits on the far half of it, and
-     near-black on the dark accent is 2.88:1. Light to anchor holds 4.58:1
-     or better across the whole well. */
+  /* The showcase card's well. A fill of real area, so it counts as an anchor. */
   --ela-well-accent: linear-gradient(
     155deg,
     var(--palette-accent-light) 0%,
-    var(--palette-accent) 100%
+    var(--palette-accent) 45%,
+    var(--palette-accent-dark) 100%
   );
   --ela-slot-line: var(--palette-slot-line);
   --ela-slot-ink: var(--palette-slot-ink);
