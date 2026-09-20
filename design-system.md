@@ -24,9 +24,9 @@ Tokens live in exactly one file: `src/styles/tokens.css`. A palette swap is one 
 | Rule | `--ela-rule` | `rgba(28,28,28,0.14)` | `rgba(255,253,250,0.16)` |
 | Hairline (inner rows) | `--ela-hairline` | `rgba(28,28,28,0.08)` | `rgba(255,253,250,0.10)` |
 | Edge (form borders) | `--ela-edge` | `rgba(28,28,28,0.20)` | `rgba(255,253,250,0.24)` |
-| Accent dark | `--ela-accent-dark` | `#D9600E` | `#D9600E` |
-| Accent core | `--ela-accent` | `#FF6218` | `#FF6218` |
-| Accent light | `--ela-accent-light` | `#FF8426` | `#FF8426` |
+| Accent dark | `--ela-accent-dark` | `#C2240F` | `#C2240F` |
+| Accent core | `--ela-accent` | `#FF4B33` | `#FF4B33` |
+| Accent light | `--ela-accent-light` | `#FF705D` | `#FF705D` |
 
 The dark ground is Ink itself (`#1C1C1C`). That is not a coincidence: it is the ground the supplied
 contrast measurements were taken against, confirmed by calculation.
@@ -35,22 +35,27 @@ contrast measurements were taken against, confirmed by calculation.
 
 | Orange | on Ground `#F5F0EB` | on Dark ground `#1C1C1C` |
 | --- | --- | --- |
-| Accent dark `#D9600E` | **3.29:1** | **4.57:1** |
-| Accent core `#FF6218` | **2.64:1** | **5.69:1** |
-| Accent light `#FF8426` | **2.16:1** | **6.96:1** |
+| Accent dark `#C2240F` | **5.22:1** | **2.88:1** |
+| Accent core `#FF4B33` | **2.94:1** | **5.12:1** |
+| Accent light `#FF705D` | **2.40:1** | **6.27:1** |
 
 Rules, non-negotiable:
 
-- **Light mode: orange is never body copy.** 3.29 clears AA-large only (≥24px, or ≥18.66px bold).
-  Orange in light mode is for: section eyebrows, rules, small caps labels sitting next to a
-  non-orange label of the same meaning, and **fills** (orange background + `#FFFDFA` text).
-- Light mode small text that must be readable is `--ela-ink` or `--ela-ink-muted`, never orange.
-- **Dark mode: orange body copy is fine.** All three clear AA at any size. Accent light `#FF8426`
-  is the default orange on dark, which is why the mockup's dark blocks use `#FF8426` and its light
-  blocks use `#D9600E`.
-- On an orange fill (`#FF6218`), text is `#FFFDFA` — 3.32:1, so **fill text is large or bold only**,
+- **Light mode: the dark accent is now body copy.** `#C2240F` measures 5.22:1 on the cream ground,
+  so `--ela-accent-step` clears AA at any size in light mode. The previous palette's 3.29 did not,
+  and every rule that worked around that (orange only for eyebrows, hairlines and fills, small
+  orange labels needing a non-orange sibling) is lifted. Orange stays rationed by the budget in
+  §11, not by contrast.
+- **Core and light are still fills, not light-mode text.** 2.94 and 2.40 fail at every size on
+  cream. They are backgrounds, hairlines and hover states there.
+- **Dark mode: the dark accent no longer works.** `#C2240F` is 2.88:1 on the ink ground, down from
+  4.57. Nothing carrying text on a dark ground may use it. Accent light `#FF705D` (6.27:1) is the
+  dark-mode orange and accent core `#FF4B33` (5.12:1) is the fallback; `--ela-accent-step` already
+  resolves to the light one, and `.on-ink` does the same.
+- On an orange fill (`#FF4B33`), text is `#FFFDFA` — 3.28:1, so **fill text is large or bold only**,
   which is how the mockup uses it (buttons at 15px/700, mono chips at 10px uppercase are decorative
-  labels backed by an adjacent text equivalent).
+  labels backed by an adjacent text equivalent). Near-black on the same fill is 5.12:1, which is
+  why `.on-accent` inverts everything below display size. See §15.
 
 ### Muted ink and AA
 
@@ -254,8 +259,8 @@ Four weights, and that is the whole vocabulary:
 | `1px` | `--ela-hairline` `rgba(28,28,28,0.08)` | Rows *inside* a list or table, card inner divider |
 | `1.5px` | `--ela-edge` `rgba(28,28,28,0.20)` | Form input underline (rest state) |
 | `1.5px` | `rgba(255,253,250,0.70)` | Photo crop marks (on the image, always cream) |
-| `2px` | `--ela-accent` `#FF6218` | Date-block left border, active-state left borders |
-| `2.5px` | `--ela-accent` `#FF6218` | The "you're subscribed" stamp only |
+| `2px` | `--ela-accent` `#FF4B33` | Date-block left border, active-state left borders |
+| `2.5px` | `--ela-accent` `#FF4B33` | The "you're subscribed" stamp only |
 
 `border-radius` is **`2px`**, everywhere, or `0`. Circles (`50%`) exist only for the 6px/9px accent
 dots, which we do not ship (see §10). There is no other radius in the design. Photo frames, image
@@ -319,7 +324,7 @@ The hero photo is column-constrained, so it needs no width cap of its own: at th
 while the hero photo ran the full content width; that layout is gone and so is the token.
 
 The image itself carries `filter: contrast(1.05) saturate(0.96)` and is overlaid with
-`linear-gradient(rgba(217,96,14,0.07), rgba(28,28,28,0.05))` at `mix-blend-mode: multiply`.
+`linear-gradient(rgba(194,36,15,0.07), rgba(28,28,28,0.05))` at `mix-blend-mode: multiply`.
 That warm multiply is what makes every photo on the site look like it was shot on the same night.
 `pointer-events: none` on the overlay.
 
@@ -364,7 +369,7 @@ Swapping a real photo in is one edit at the path the slot prints: an `image` fie
 belong to no data row.
 
 **5. Optional category chip.** Absolutely positioned `left: 0; bottom: 0` on the well, mono `10px`
-`0.16em` uppercase, `padding: 5px 9px`, `pointer-events: none`. Orange fill `#FF6218` with `#FFFDFA`
+`0.16em` uppercase, `padding: 5px 9px`, `pointer-events: none`. Orange fill `#FF4B33` with `#FFFDFA`
 text for a live/featured category; ink fill `#1C1C1C` with `#FFFDFA` for everything else. Only one
 orange chip in view at a time (§1).
 
@@ -390,7 +395,7 @@ Three instances, memorise the shape:
 | Footer legal | `22px 0 0` | copyright | — | links |
 
 The top strip is the one place the design puts mono on `#1C1C1C` full-bleed: text
-`rgba(255,253,250,0.62)`, first item `#FF8426`.
+`rgba(255,253,250,0.62)`, first item `#FF705D`.
 
 ---
 
@@ -453,7 +458,7 @@ number in Riegal `26px` `-0.02em`.
 
 **Row CTA** is mono `11px` `0.14em` uppercase `--ela-accent-dark` with a trailing ` →`.
 
-A featured or live row gets `background: rgba(255,98,24,0.06)` and hover `rgba(255,98,24,0.11)`,
+A featured or live row gets `background: rgba(255,75,51,0.06)` and hover `rgba(255,75,51,0.11)`,
 with the leading number in `--ela-accent-dark`. Only one such row at a time.
 
 **Grid-cell variant** (proof strip): a `repeat(4, 1fr)` grid inside a top-and-bottom-ruled
@@ -521,12 +526,12 @@ mode shadows are suppressed (they read as smudges on `#1C1C1C`); depth comes fro
 
 | Style | Spec |
 | --- | --- |
-| **Primary (anchor orange)** | `background: #FF6218` · `color: #FFFDFA` · Manrope `15px/700` · `padding: 16px 26px` · `radius: 2px` · hover `background: #FF8426` |
+| **Primary (anchor orange)** | `background: #FF4B33` · `color: #FFFDFA` · Manrope `15px/700` · `padding: 16px 26px` · `radius: 2px` · hover `background: #FF705D` |
 | **Primary, nav size** | same, Manrope `14px/700` · `padding: 11px 20px` |
 | **Primary, footer size** | same, Manrope `14px/700` · `padding: 12px 20px` |
 | **Secondary (outline)** | `border: 1px solid rgba(28,28,28,0.30)` · `color: var(--ela-ink)` · transparent · Manrope `14.5px/700` · `padding: 14px 26px` · radius `2px` · hover `background: var(--ela-ink); color: var(--ela-paper); border-color: var(--ela-ink)` |
-| **Ink (form submit)** | `background: #1C1C1C` · `color: #FFFDFA` · Manrope `15.5px/700` · `padding: 17px 24px` · full width · hover `background: #FF6218` |
-| **Quiet link** | Manrope `14.5px/700` · `color: var(--ela-ink)` · `border-bottom: 1.5px solid #FF6218` · `padding-bottom: 2px` · hover `color: var(--ela-accent-dark)` |
+| **Ink (form submit)** | `background: #1C1C1C` · `color: #FFFDFA` · Manrope `15.5px/700` · `padding: 17px 24px` · full width · hover `background: #FF4B33` |
+| **Quiet link** | Manrope `14.5px/700` · `color: var(--ela-ink)` · `border-bottom: 1.5px solid #FF4B33` · `padding-bottom: 2px` · hover `color: var(--ela-accent-dark)` |
 | **Toggle, off** | mono `11px` `0.14em` uppercase · transparent · `color: var(--ela-ink-muted)` · `padding: 10px 18px` |
 | **Toggle, on** | same box · `background: #1C1C1C` · `color: #FFFDFA` |
 | **Toggle group** | `border: 1px solid rgba(28,28,28,0.20)` · `radius: 2px` · `overflow: hidden` · children have `border: 0` |
@@ -543,7 +548,7 @@ being enforced inside a single viewport. Keep it.
 
 `border: 0` with `border-bottom: 1.5px solid rgba(28,28,28,0.20)`, transparent background,
 Courier Prime `17px`, `padding: 9px 2px`, no outline, and on focus the underline becomes
-`#FF6218`. Placeholder is `rgba(28,28,28,0.32)`. Labels above in mono `10px` `0.16em` uppercase
+`#FF4B33`. Placeholder is `rgba(28,28,28,0.32)`. Labels above in mono `10px` `0.16em` uppercase
 `--ela-ink-muted`, `margin-bottom: 8px`.
 
 Focus-visible on everything else is a `2px` `--ela-accent` outline with `2px` offset. **ADDED** —
@@ -556,18 +561,18 @@ the mockup has no keyboard focus states at all, and we are not shipping that.
 Ranked by weight, so the budget is spendable in order:
 
 1. **Anchor fill** — one per viewport. Subscribe button, or the orange section band, or one
-   featured chip. `#FF6218`.
-2. **Section band** — full-bleed `#FF6218` with `#FFFDFA` type. One per page maximum. Everything
+   featured chip. `#FF4B33`.
+2. **Section band** — full-bleed `#FF4B33` with `#FFFDFA` type. One per page maximum. Everything
    inside it (eyebrow rules, muted copy) shifts to `rgba(255,253,250,0.60–0.86)`.
 3. **Structural hairlines** — `26px` eyebrow rule, `2px` date-block left border, card top-border on
-   hover. `#D9600E` in light, `#FF8426` in dark.
-4. **Directional text** — `Read →`, `RSVP →`, `Photos →`, tab labels. `#D9600E` in light (never
-   below 14px in light mode is preferred; the mockup uses 10.5–11.5px mono here, which is
-   AA-large-failing, so **these must be paired with a non-orange sibling label in the same row**,
-   which they always are: the date sits beside them).
-5. **Tints** — featured row `rgba(255,98,24,0.06)`, its hover `rgba(255,98,24,0.11)`, the hero
-   headline highlight `#FF6218` at `opacity: 0.22` behind the last line, the photo multiply
-   `rgba(217,96,14,0.07)`.
+   hover. `#C2240F` in light, `#FF705D` in dark.
+4. **Directional text** — `Read →`, `RSVP →`, `Photos →`, tab labels. `#C2240F` in light, and at
+   5.22:1 the 10.5–11.5px mono the mockup uses here now clears AA on its own. The old palette did
+   not, and these were required to sit beside a non-orange sibling label. They still do, because
+   the date reads better next to them, but it is a layout choice now and not a contrast fix.
+5. **Tints** — featured row `rgba(255,75,51,0.06)`, its hover `rgba(255,75,51,0.11)`, the hero
+   headline highlight `#FF4B33` at `opacity: 0.22` behind the last line, the photo multiply
+   `rgba(194,36,15,0.07)`.
 
 Never orange: body paragraphs in light mode, nav links, footer body links, form input text,
 headlines, the wordmark.
@@ -583,7 +588,7 @@ Two files, both trimmed to the glyph bounding box so they scale predictably:
 | File | Fill | Ground it goes on |
 | --- | --- | --- |
 | `public/logo/wordmark-black.svg` | `#000000` | Ground `#F5F0EB`, Paper `#FFFDFA`, and any photo lighter than mid |
-| `public/logo/wordmark-cream.svg` | `#F5F0EB` | Ink `#1C1C1C`, Well `#15130F`, orange `#FF6218`, and any photo darker than mid |
+| `public/logo/wordmark-cream.svg` | `#F5F0EB` | Ink `#1C1C1C`, Well `#15130F`, orange `#FF4B33`, and any photo darker than mid |
 
 Intrinsic aspect ratio **5.34 : 1** (viewBox `166 957 1912 358`). The lockup is two lines:
 `emerging` over `LOS ANGELES`.
@@ -592,8 +597,11 @@ Intrinsic aspect ratio **5.34 : 1** (viewBox `166 957 1912 358`). The lockup is 
 
 - Cream wordmark on Ground, Paper, or any tint of them — **forbidden**, it vanishes.
 - Black wordmark on Ink, Well, or the orange band — **forbidden**, it vanishes.
-- On the orange band (`#FF6218`), use **cream**. Black on orange is 3.9:1 and reads as a mistake
-  next to the cream body type in the same band.
+- On the orange band (`#FF4B33`), use **cream**. It reads as the same lockup as the band's display
+  headline, which is the reason the rule exists. Note the measurement though: the cream file is
+  `#F5F0EB`, which on this orange is **2.94:1**, just under the 3:1 a logo needs as a non-text
+  graphic. On the previous orange it was 3.32 and cleared. Black would measure 6.31 here but is
+  still forbidden on the band: it reads as a mistake beside the cream type around it.
 - On a photograph, the wordmark needs either a solid backing block (Ink or Paper, `2px` radius) or
   a `≥60%` scrim in the opposing tone. Never place it directly on an unmodified image.
 - The two files are the only two options. Do not recolour the wordmark to orange, to muted ink,
@@ -647,8 +655,8 @@ blinking dot; v2 removed both, and v2 is the source of truth. All of the above i
 ground and ink swapped, using the tokens in §1. Specifics that are not a straight swap:
 
 - **Shadows off.** `--ela-shadow-card` and friends resolve to `none`. Depth is rules only.
-- **Orange steps up.** `--ela-accent-dark` (`#D9600E`) is the light-mode structural orange;
-  `--ela-accent-light` (`#FF8426`) is the dark-mode one. `--ela-accent-step` resolves to the right
+- **Orange steps up.** `--ela-accent-dark` (`#C2240F`) is the light-mode structural orange;
+  `--ela-accent-light` (`#FF705D`) is the dark-mode one. `--ela-accent-step` resolves to the right
   one per mode, so components reference `--ela-accent-step`, never the raw value.
 - **Photo wells do not change.** `#15130F` → `#0F0E0C` is a small deepening only; crop marks,
   multiply overlay and image filter are identical in both modes. A photograph looks the same in
@@ -671,13 +679,15 @@ right. There are three, and between them they cover every ground on the site.
 | Class | Ground | Ink | Where |
 | --- | --- | --- | --- |
 | `.on-ink` | Ink `#1C1C1C` | cream | Top strip, footer |
-| `.on-accent` | Accent `#FF6218` | see below | The subscribe band |
+| `.on-accent` | Accent `#FF4B33` | see below | The subscribe band |
 | `.on-paper` | Ground / Paper, light palette, never inverts | ink | Panels sitting on the band |
 
-**`.on-accent` inverts what "muted" means.** Cream on this orange is 3.32:1, which is large text
-only. So `ink` stays cream and is for display sizes and the wordmark, while `ink-muted` (4.73:1)
-and `ink-muted-aa` (5.69:1) are **near-black**. On orange, the readable colour for body copy and
-small print is the dark one, and the tokens say so rather than leaving it to each element.
+**`.on-accent` inverts what "muted" means.** Cream on this orange is 3.28:1, which is large text
+only. So `ink` stays cream and is for display sizes and the wordmark, while `ink-muted` (4.58:1)
+and `ink-muted-aa` (5.12:1) are **near-black**. `ink-muted` is `rgba(28,28,28,0.9)`; it was 0.86,
+which measured 4.73 on the old orange and only 4.34 on this one. On orange, the readable
+colour for body copy and small print is the dark one, and the tokens say so rather than leaving
+it to each element.
 
 **`.on-paper` exists because `.on-accent` re-points `paper` to orange.** A form panel inside the
 band would otherwise be orange on orange. `.on-paper` resets a surface to the light palette in
@@ -797,8 +807,12 @@ that reason, so a card never ends up with no orange at all once its photo lands.
 
 ```css
 --ela-well-accent: linear-gradient(155deg,
-  var(--palette-accent-light) 0%, var(--palette-accent) 45%, var(--palette-accent-dark) 100%);
+  var(--palette-accent-light) 0%, var(--palette-accent) 100%);
 ```
+
+The ramp used to run on to `--palette-accent-dark`. It stops at the anchor because the empty
+slot's near-black text sits on the far half of it, and near-black on `#C2240F` is 2.67:1. Light
+to anchor holds 4.58:1 or better across the whole well.
 
 Three rules go with it.
 
@@ -806,7 +820,7 @@ Three rules go with it.
 category chip carries the accent (the home page, and any card with a photo in
 it). Where there is one, the well
 carries it and the chip inverts to near-black, because orange on orange is
-invisible and cream on this orange is 3.32:1. Same inversion as `.on-accent`.
+invisible and cream on this orange is 3.28:1. Same inversion as `.on-accent`.
 The empty slot's text and dashed box invert with it, and the warm multiply is
 switched off: that overlay is for photographs, and over a flat gradient it only
 muddies.

@@ -45,9 +45,9 @@ at the top of that file. **Nothing else in the codebase may contain a hex, rgb o
 | Ink | `#1C1C1C` | `#FFFDFA` |
 | Ink muted | `rgba(28,28,28,0.60)` | `rgba(255,253,250,0.62)` |
 | Rules | `rgba(28,28,28,0.14)` | `rgba(255,253,250,0.16)` |
-| Accent dark | `#D9600E` | `#D9600E` |
-| Accent core | `#FF6218` | `#FF6218` |
-| Accent light | `#FF8426` | `#FF8426` |
+| Accent dark | `#C2240F` | `#C2240F` |
+| Accent core | `#FF4B33` | `#FF4B33` |
+| Accent light | `#FF705D` | `#FF705D` |
 
 Light and dark are both V1, driven **only** by `data-theme` on `<html>`.
 
@@ -63,9 +63,12 @@ first paint. If you add a `@media (prefers-color-scheme: …)` block, you have b
 - Orange is **under roughly 10%** of what is on screen.
 - **One anchor-orange element is live in the viewport at a time.** An anchor is a solid orange fill
   of real area. Hairlines and arrows are not anchors.
-- **Light mode: orange is never body copy.** Measured against the cream ground, dark orange is
-  3.29:1, core is 2.64:1, light is 2.16:1. Large text only, or a fill.
-- **Dark mode: orange body copy is fine.** Against the dark ground it is 4.57, 5.69 and 6.96.
+- **Light mode: dark orange is body copy now.** Measured against the cream ground, dark orange is
+  5.22:1, core is 2.94:1, light is 2.40:1. So `--ela-accent-step` clears AA at any size in light
+  mode, where the previous palette's 3.29 did not. Core and light are still fills and hairlines
+  there, never text.
+- **Dark mode: dark orange no longer works.** Against the dark ground it is 2.88, 5.12 and 6.27.
+  Nothing carrying text on a dark ground may use the dark orange. Light is the dark-mode orange.
 - Components use `--ela-accent-step`, which resolves to the right orange for the current mode.
   Do not reference `--ela-accent-dark` or `--ela-accent-light` directly.
 - `--ela-ink-muted` is 4.30:1 on cream, which is under AA for small text. Muted paragraphs use

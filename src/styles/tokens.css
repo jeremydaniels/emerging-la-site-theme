@@ -19,9 +19,9 @@
   --palette-ink: #1c1c1c;
   --palette-ink-muted: rgb(28 28 28 / 0.6);
   --palette-rule: rgb(28 28 28 / 0.14);
-  --palette-accent-dark: #d9600e;
-  --palette-accent: #ff6218;
-  --palette-accent-light: #ff8426;
+  --palette-accent-dark: #c2240f;
+  --palette-accent: #ff4b33;
+  --palette-accent-light: #ff705d;
 
   /* Derived, all taken from the mockup */
   --palette-well: #15130f; /* backing behind every photo */
@@ -34,6 +34,13 @@
   --palette-wash: rgb(28 28 28 / 0.035); /* row hover */
   --palette-placeholder: rgb(28 28 28 / 0.32);
 
+  /* Near-black on the orange. Both .on-accent and the accent card's empty slot
+     invert to these, so they live here rather than inline in global.css.
+     0.9 is 4.58:1 on the accent, the alpha that clears AA after the swap. */
+  --palette-ink-on-accent: rgb(28 28 28 / 0.9);
+  --palette-ink-on-accent-faint: rgb(28 28 28 / 0.6);
+  --palette-line-on-accent: rgb(28 28 28 / 0.32);
+
   --palette-on-dark: rgb(255 253 250 / 1);
   --palette-on-dark-muted: rgb(255 253 250 / 0.62);
   --palette-on-dark-faint: rgb(255 253 250 / 0.55);
@@ -43,9 +50,14 @@
   --palette-on-dark-wash: rgb(255 253 250 / 0.05);
   --palette-on-dark-placeholder: rgb(255 253 250 / 0.35);
 
-  --palette-accent-tint: rgb(255 98 24 / 0.06); /* featured row */
-  --palette-accent-tint-hover: rgb(255 98 24 / 0.11);
+  --palette-accent-tint: rgb(255 75 51 / 0.06); /* featured row */
+  --palette-accent-tint-hover: rgb(255 75 51 / 0.11);
   --palette-crop: rgb(255 253 250 / 0.7); /* crop marks, never changes */
+
+  /* The two halves of the warm multiply over every photograph. The warm one
+     is the dark accent, so it follows the palette. */
+  --palette-wash-warm: rgb(194 36 15 / 0.07);
+  --palette-wash-shade: rgb(28 28 28 / 0.05);
 
   /* Empty photo slots. Same in both modes: they sit inside the well. */
   --palette-slot-line: rgb(255 253 250 / 0.22);
@@ -78,19 +90,25 @@
   --ela-accent-dark: var(--palette-accent-dark);
   --ela-accent-light: var(--palette-accent-light);
   /* The structural orange for the current mode. Components use this, never a
-     raw accent value. Light ground needs the darkest orange (3.29:1); dark
-     ground can afford the lightest (6.96:1). */
+     raw accent value. Light ground needs the darkest orange (5.22:1); dark
+     ground needs the lightest (6.27:1), because the darkest is only 2.88:1
+     there. Neither mode's step is large-text-only any more. */
   --ela-accent-step: var(--palette-accent-dark);
   --ela-accent-tint: var(--palette-accent-tint);
   --ela-accent-tint-hover: var(--palette-accent-tint-hover);
 
   --ela-crop: var(--palette-crop);
-  /* The showcase card's well. A fill of real area, so it counts as an anchor. */
+  /* Identical in both modes, like the crop marks, so it is only set here. */
+  --ela-frame-wash: linear-gradient(var(--palette-wash-warm), var(--palette-wash-shade));
+  /* The showcase card's well. A fill of real area, so it counts as an anchor.
+     The ramp stops at the anchor and no longer runs on to the dark accent:
+     the empty slot's near-black text sits on the far half of it, and
+     near-black on the dark accent is 2.88:1. Light to anchor holds 4.58:1
+     or better across the whole well. */
   --ela-well-accent: linear-gradient(
     155deg,
     var(--palette-accent-light) 0%,
-    var(--palette-accent) 45%,
-    var(--palette-accent-dark) 100%
+    var(--palette-accent) 100%
   );
   --ela-slot-line: var(--palette-slot-line);
   --ela-slot-ink: var(--palette-slot-ink);
@@ -141,17 +159,17 @@
 /* The orange band never inverts. Anything inside it reads on orange in both
    modes, so it re-points the tokens rather than each child opting out.
 
-   Cream on this orange is 3.32:1, which is large text only. So `ink` stays
+   Cream on this orange is 3.28:1, which is large text only. So `ink` stays
    cream for the display headline and the wordmark, and everything smaller
-   goes near-black instead: `ink-muted` is 4.73:1 and `ink-muted-aa` is
-   5.69:1. That inversion is deliberate. On orange, the readable colour for
+   goes near-black instead: `ink-muted` is 4.58:1 and `ink-muted-aa` is
+   5.12:1. That inversion is deliberate. On orange, the readable colour for
    body copy and small print is the dark one. */
 :where(.on-accent) {
   --ela-ground: var(--palette-accent);
   --ela-paper: var(--palette-accent);
   --ela-ink: var(--palette-paper); /* display sizes only */
-  --ela-ink-muted: rgb(28 28 28 / 0.86); /* 4.73:1 */
-  --ela-ink-muted-aa: var(--palette-ink); /* 5.69:1 */
+  --ela-ink-muted: var(--palette-ink-on-accent); /* 4.58:1 */
+  --ela-ink-muted-aa: var(--palette-ink); /* 5.12:1 */
   --ela-ink-faint: rgb(28 28 28 / 0.7);
   --ela-rule: rgb(255 253 250 / 0.6);
   --ela-hairline: rgb(255 253 250 / 0.3);
