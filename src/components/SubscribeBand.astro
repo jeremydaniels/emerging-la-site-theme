@@ -28,9 +28,9 @@ const { number, class: className = '' }: Props = Astro.props;
 >
   <div class="px-gutter-sm py-16 wide:px-gutter">
     <div class="mx-auto max-w-page">
-      <div class="t-mono mb-5 flex items-center gap-2.5 text-mono-eyebrow text-accent-step">
-        <span class="h-px w-[26px] bg-accent-step" aria-hidden="true"></span>
-        <span>{number} · Subscribe</span>
+      <div class="t-mono mb-5 flex items-center gap-2.5 text-mono-eyebrow text-accent-step" data-draw>
+        <span class="h-px w-[26px] bg-accent-step" aria-hidden="true" data-draw-rule></span>
+        <span data-draw-label>{number} · Subscribe</span>
       </div>
 
       <div

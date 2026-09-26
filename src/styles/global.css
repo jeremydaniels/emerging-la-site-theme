@@ -645,4 +645,55 @@
     background: var(--ela-ink);
     color: var(--ela-ground);
   }
+
+  /*
+    Section header draw-in. design-system.md §23. The behaviour is
+    DrawInScript, rendered once by SiteLayout.
+
+    The HTML is the finished header. The start state below applies only when a
+    script will run and motion is allowed, so no-JS visitors, reduced motion
+    and screen readers all get the finished rule and number, and there is no
+    flash of the finished state before the reset. Opacity and transform leave
+    the label in the accessibility tree, so nothing announced changes.
+
+    States, on [data-draw]:
+      (none)   first paint to script start: start state, and the failsafe
+               finishes it after 2s if the script never runs
+      armed    waiting to come into view: start state, no failsafe
+      run      transitions to the finished state and stays there
+
+    Transform only, never width, so nothing around the eyebrow reflows.
+  */
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    [data-draw]:not([data-draw-state='run']) [data-draw-rule] {
+      transform: scaleX(0);
+    }
+    [data-draw]:not([data-draw-state='run']) [data-draw-label] {
+      opacity: 0;
+      transform: translateX(-6px);
+    }
+    [data-draw]:not([data-draw-state]) [data-draw-rule],
+    [data-draw]:not([data-draw-state]) [data-draw-label] {
+      animation: draw-failsafe 0s 2s forwards;
+    }
+    [data-draw-rule] {
+      transform-origin: left center;
+    }
+    [data-draw-state='run'] [data-draw-rule] {
+      transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1) var(--draw-delay, 0s);
+    }
+    /* Starts 0.5s in, so it lands at 0.8s, as the rule's ease-out settles. */
+    [data-draw-state='run'] [data-draw-label] {
+      transition:
+        opacity 0.3s ease-out calc(var(--draw-delay, 0s) + 0.5s),
+        transform 0.3s ease-out calc(var(--draw-delay, 0s) + 0.5s);
+    }
+  }
+
+  @keyframes draw-failsafe {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }

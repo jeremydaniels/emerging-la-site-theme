@@ -7,6 +7,11 @@
  *   ──────────────────────────────────────────────────────────────────────
  *
  * Numbers are per page and restart at 01 on each page.
+ *
+ * The eyebrow's rule draws in and the number lands after it, the first time
+ * the header is a quarter in view. The data-draw attributes are the hooks; the
+ * behaviour is DrawInScript, rendered once by SiteLayout. See design-system.md
+ * §23. The closing rule under the header does not animate.
  */
 
 interface Props {
@@ -40,10 +45,11 @@ const {
   ]}
 >
   <div>
-    <div class="mb-3 flex items-center gap-2.5">
-      <span class="h-px w-[26px] shrink-0 bg-accent-step" aria-hidden="true"></span>
+    <div class="mb-3 flex items-center gap-2.5" data-draw>
+      <span class="h-px w-[26px] shrink-0 bg-accent-step" aria-hidden="true" data-draw-rule></span>
       <span
         class="t-mono text-mono-eyebrow text-accent-step"
+        data-draw-label
       >{number} · {eyebrow}</span>
     </div>
     {

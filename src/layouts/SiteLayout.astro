@@ -7,6 +7,7 @@ import BaseLayout from './BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import MetaBar from '../components/MetaBar.astro';
+import DrawInScript from '../components/DrawInScript.astro';
 import { site } from '../lib/site';
 
 interface Props {
@@ -47,4 +48,8 @@ const { title, description, suffix, strip = true, noindex } = Astro.props;
   </main>
 
   <Footer />
+
+  {/* The section header draw-in, once per page. In the layout rather than each
+      page so no numbered eyebrow is ever without it: see DrawInScript. */}
+  <DrawInScript />
 </BaseLayout>

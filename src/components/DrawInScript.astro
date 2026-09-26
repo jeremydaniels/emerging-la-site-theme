@@ -1,0 +1,59 @@
+---
+/**
+ * Behaviour for the section header draw-in. See design-system.md §23.
+ *
+ * Rendered ONCE per page, by SiteLayout rather than by each page. Numbered
+ * eyebrows live in SectionHeader and SubscribeBand as well as in pages, and
+ * both can appear on any SiteLayout page, the preview pages included. The CSS
+ * start state applies whenever a script can run, so an eyebrow on a page
+ * without this would sit hidden until the 2s failsafe. Rendering it in the
+ * layout makes that impossible. On a page with no numbered eyebrow it finds
+ * nothing and stops.
+ *
+ * Inline with no imports, like CountUpScript, so the build still emits no
+ * `.js` file. It is separate from CountUpScript rather than sharing an
+ * observer with it: the thresholds differ (a quarter here, half there), the
+ * count-up is only on two pages, and a shared script would carry the count-up
+ * onto every page.
+ *
+ * Load bearing:
+ *   - Under prefers-reduced-motion: reduce nothing runs, and the CSS never
+ *     applies the start state, so the finished eyebrow shows.
+ *   - Each eyebrow runs once per page load, the first time it is a quarter in
+ *     view, and is then unobserved. It does not replay.
+ *   - Eyebrows that come into view together, including everything in view on
+ *     load, are staggered 0.15s apart in document order.
+ *   - The timings live in the CSS. This only sets the state and the delay.
+ */
+---
+
+<script>
+  const heads = document.querySelectorAll<HTMLElement>('[data-draw]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (heads.length && !reduce && 'IntersectionObserver' in window) {
+    const STAGGER = 150;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // One callback can report several at once, in the order they were
+        // observed, which is document order. Those are the ones to stagger.
+        let i = 0;
+        for (const entry of entries) {
+          if (entry.intersectionRatio < 0.25) continue;
+          const head = entry.target as HTMLElement;
+          observer.unobserve(head);
+          head.style.setProperty('--draw-delay', `${i * STAGGER}ms`);
+          head.dataset.drawState = 'run';
+          i += 1;
+        }
+      },
+      { threshold: 0.25 },
+    );
+
+    heads.forEach((head) => {
+      head.dataset.drawState = 'armed';
+      observer.observe(head);
+    });
+  }
+</script>

@@ -41,17 +41,19 @@ component, inline with no imports, so the build ships no `.js` file. Section num
 | Hero map: the looping sector map of LA | `/` hero, right column | `SectorMap` | §21 |
 | Count-up: the 15K+ stat counts 1 to 15 once, when it is half in view | `/` proof strip, `/about` By the numbers | `CountUp` + `CountUpScript` | §22 |
 | Archive category filters: chips that filter the issue grid, move the accent card, and show an empty state with no matches | `/archive` | `archive.astro` | §18 (the accent), §19 (the empty state) |
+| Section eyebrow draw-in: the 26px eyebrow rule draws in and the `NN · Name` label lands after it, once, when a quarter in view | Every numbered section header: `/`, `/about`, `/archive`, `/events`, the Subscribe band on `/privacy` and `/terms`, and `/preview/*` | `DrawInScript`, rendered once by `SiteLayout`; hooks are `data-draw`, `data-draw-rule`, `data-draw-label` | §23 |
 | Subscribe role picker: single-select role chips that fill a hidden field; the form submits without it | The orange band on `/`, `/about`, `/archive`, `/events`, `/privacy`, `/terms`, and the form on `/subscribe` | `SubscribeForm` | §10 (role chips) |
 
 `/events` has **no** interactivity: Upcoming and Past render one after the other, and there is no
 toggle between them. `/thanks` and `/404` carry only what their layout brings.
 
-The rotating word, the hero map and the count-up are motion, not controls. All three do nothing
+The rotating word, the hero map, the count-up and the draw-in are motion, not controls. All four do nothing
 under `prefers-reduced-motion`. The rotating word and the map also stop while the tab is hidden.
 
 **Shared behaviour goes in its own script component, rendered once per page.** Where the same
 behaviour is used on several pages, the markup is one component and the script is a second one
-(`RotatingWordScript`, `CountUpScript`) rendered once at the end of each page that needs it. That
+(`RotatingWordScript`, `CountUpScript`) rendered once at the end of each page that needs it, or
+once in the layout when the markup can appear on any page (`DrawInScript` in `SiteLayout`). That
 keeps the script out of headings and stats, and keeps it inline with no imports. A script with an
 import is a module Vite emits as a file, and the build goes from zero `.js` files to one per page.
 

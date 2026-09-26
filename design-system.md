@@ -436,6 +436,9 @@ On the orange band, the eyebrow rule becomes `rgba(255,253,250,0.60)` and the la
 (`Read the archive →`, the events tab group) is pushed right with `margin-left: auto` and drops to
 `margin-left: 0` at ≤900px.
 
+The eyebrow's `26px` rule draws in and the number lands after it the first time the header comes
+into view. See §23. The closing rule under the header block does not animate.
+
 Homepage numbering as built: `01 · Start here`, `02 · About`, `03 · Newsletter`, `04 · Events`,
 `05 · Subscribe`. Numbers are per page and restart at `01` on each page.
 
@@ -682,14 +685,16 @@ Almost none, and that is the design.
 | Rotating hero word | `opacity .2s ease` crossfade every `2s`, the wash's width with it |
 | Hero map | a loop, see §21 |
 | Community stat | counts 1 to 15 once, `1.2s` ease-out, see §22 |
+| Section eyebrows | rule draws in once, `0.7s` ease-out, number lands `0.3s`, see §23 |
 | Everything else | none |
 
 **ADDED:** the two hero rows are the only motion on the site that runs on its own. Both stop while
 the tab is hidden, neither runs at all under `prefers-reduced-motion`, and neither can move
 anything outside its own box.
 
-The community stat's count-up (§22) is the one thing that starts on scroll, and it runs once.
-Otherwise: no scroll animation, no reveals, no parallax, no other counters. The v1 mockup had a marquee and a
+Two things start on scroll, and each runs once: the community stat's count-up (§22) and the
+section eyebrows' draw-in (§23). Otherwise: no scroll animation, no reveals, no parallax, no other
+counters. The v1 mockup had a marquee and a
 blinking dot; v2 removed both, and v2 is the source of truth. All of the above is wrapped in
 `@media (prefers-reduced-motion: reduce)` to `transition: none`.
 
@@ -1125,4 +1130,72 @@ position on every frame, and the finished stat renders pixel for pixel where it 
 at the end of each page that uses it, the same split as `RotatingWord`. The script is inline and has
 no imports, so the build still emits no `.js` file. It adds 784 bytes of inline script to `/` and
 `/about` (about 360 bytes gzipped) and nothing to any other page.
+
+---
+
+## 23. The section eyebrow draw-in
+
+**ADDED.** The first time a numbered section header comes into view, its eyebrow rule (the `26px`
+line in §7) draws from left to right, and the `NN · Name` label fades in and settles into place at
+the end of it as the line finishes.
+
+**What animates.** Only the eyebrow rule and the label beside it, on numbered eyebrows. The closing
+`1px` rule under a header block, ruled tables, the events table rows, ruled lists, card borders,
+the nav and footer hairlines and the crop marks do not.
+
+| Page | Eyebrows |
+| --- | --- |
+| `/` | `01 · Start here`, `02 · About`, `03 · Newsletter`, `04 · Events`, `05 · Subscribe` |
+| `/about` | `01 · About`, `02 · Purpose`, `03 · What we do`, `04 · By the numbers`, `05 · Note`, `06 · Subscribe` |
+| `/archive` | `01 · Newsletter`, `02 · Filter`, `03 · Subscribe` |
+| `/events` | `01 · Events`, then `Upcoming`, `Past`, `In the room`, `How it works`, `Subscribe`, numbered from what renders |
+| `/privacy`, `/terms` | the band's `NN · Subscribe`, numbered after the clauses |
+| `/preview/*` | whatever `SectionHeader`s the preview uses |
+
+Unnumbered eyebrows do not animate: `Legal` on `/privacy` and `/terms`, `Newsletter` on
+`/subscribe`, `404`, and the issue line at the top of a preview.
+
+The eyebrows are built three ways, and all three carry the same hooks: `SectionHeader`, the
+Subscribe band's eyebrow in `SubscribeBand`, and eyebrows written into a page by hand (the
+opening eyebrow of each page, `/`'s `02 · About`, and `/about`'s `02 · Purpose` and
+`04 · By the numbers`). The hooks are three attributes: `data-draw` on the eyebrow,
+`data-draw-rule` on the rule, `data-draw-label` on the label. A new numbered eyebrow written by
+hand needs all three, or it will not animate.
+
+**Motion.**
+
+| Thing | Value |
+| --- | --- |
+| Rule | `transform: scaleX(0)` to none, from the left edge, `0.7s`, `cubic-bezier(0.25, 1, 0.5, 1)` |
+| Label | `opacity 0` and `translateX(-6px)` to rest, `0.3s` ease-out, starting `0.5s` in, so it lands at `0.8s` |
+| Trigger | the first time the eyebrow is a quarter in view; at once if it already is on load |
+| Stagger | eyebrows that come into view together, including all of those in view on load, start `0.15s` apart in document order |
+| Repeats | never. It runs once per page load and does not replay on scrolling back |
+| Reduced motion | none. The finished rule and label show and nothing runs |
+
+Transform and opacity only, never width, so nothing reflows: every box on every page keeps the
+same layout on every frame, and the finished eyebrow renders where it did before.
+
+**Colour** is untouched. The rule and label keep `--ela-accent-step` in both modes, and on the
+orange band they keep the `.on-accent` values in §7. The draw-in adds no orange.
+
+**Numbering** is untouched. The script never reads or writes a label, so numbers computed from what
+renders, like the Events page's, work exactly as before.
+
+**Fallbacks.** The same pattern as the count-up (§22).
+
+- **No JS** gets the finished eyebrow in the HTML.
+- **No flash.** The start state applies only under `@media (scripting: enabled)` with motion
+  allowed, so it is in place from first paint rather than applied after a finished frame. If the
+  script never arrives, a CSS failsafe finishes the eyebrow after `2s`.
+- **Screen readers** announce exactly what they did before. The rule was already `aria-hidden`, and
+  opacity and transform leave the label in the accessibility tree.
+
+**Budget.** The start state and timings are CSS in `global.css`. The behaviour is
+`DrawInScript.astro`, rendered once per page by `SiteLayout`, because numbered eyebrows come from
+components that can appear on any `SiteLayout` page. Rendering it per page would let a page with an
+eyebrow miss the script and sit hidden until the failsafe. It is inline with no imports, so the
+build still emits no `.js` file. It adds 450 bytes of inline script to every `SiteLayout` page and
+nothing to `/subscribe` or `/thanks`. It does not share an observer with the count-up: the
+thresholds differ, and sharing would carry the count-up onto every page.
 
