@@ -7,11 +7,12 @@
  * Anchor orange, one live per viewport, in scroll order:
  *   hero CTA  →  featured issue chip  →  featured event row tint  →  the band.
  * Nothing else on this page carries a solid orange fill. The nav's Subscribe
- * is deliberately the outline button.
+ * is deliberately the outline button, and the hero map beside the CTA lights
+ * its sectors in the structural orange, never the anchor.
  */
 import SiteLayout from '../layouts/SiteLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
-import PhotoFrame from '../components/PhotoFrame.astro';
+import SectorMap from '../components/SectorMap.astro';
 import RotatingWord from '../components/RotatingWord.astro';
 import RotatingWordScript from '../components/RotatingWordScript.astro';
 import IssueCard from '../components/IssueCard.astro';
@@ -22,7 +23,6 @@ import { aboutOpening, site } from '../lib/site';
 import { routes } from '../lib/links';
 import { getLatestIssues } from '../data/issues';
 import { upcomingEvents } from '../data/events';
-import { photos, photoPaths } from '../data/photos';
 
 const issues = await getLatestIssues(3);
 const upcoming = upcomingEvents();
@@ -44,14 +44,19 @@ const proof = [
 
   {/* ------------------------------------------------------------------ 01 */}
   {/*
-    Hero. Two columns on wide: the headline block on the left, the photo in a
-    4/5 portrait frame on the right. Changed from the mockup, where the right
-    column is an "in this issue" list; the mockup's full-width photo band below
-    the hero is not built.
+    Hero. Two columns on wide: the headline block on the left, the sector map
+    in a 4/5 portrait frame on the right. Changed from the mockup, where the
+    right column is an "in this issue" list; the mockup's full-width photo band
+    below the hero is not built.
 
-    On mobile the photo sits BELOW the headline and the CTA. The headline is
+    The map replaced a photo in this slot and kept its frame exactly: same mat,
+    same 4/5 well, same four crop marks, so the columns, the headline's
+    wrapping and everything below measure the same as they did. The photo slot
+    is still in photos.ts for when a hero photo is wanted back.
+
+    On mobile the map sits BELOW the headline and the CTA. The headline is
     the whole proposition and it should be the first thing on a small screen,
-    and it keeps the largest paint a block of text rather than an image. The
+    and it keeps the largest paint a block of text rather than a drawing. The
     grid is one column there, so the order is document order.
 
     items-start, not items-end. The portrait frame is taller than the text
@@ -108,14 +113,7 @@ const proof = [
         </div>
       </div>
 
-      <PhotoFrame
-        variant="portrait"
-        src={photos.homeHero.src}
-        alt={photos.homeHero.alt}
-        brief={photos.homeHero.brief}
-        path={photoPaths.homeHero}
-        loading="eager"
-      />
+      <SectorMap />
     </div>
   </section>
 

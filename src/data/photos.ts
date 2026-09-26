@@ -35,7 +35,11 @@ export interface PhotoSlot {
 }
 
 export const photos = {
-  /* The hero photo, in the hero's right column beside the headline. 4/5 on the
+  /* NOT RENDERED AT THE MOMENT. The home hero's right column holds the sector
+     map now (SectorMap.astro), in a frame of the same size. This slot and its
+     file are kept so a hero photo can go back without redoing any of this.
+
+     The hero photo, in the hero's right column beside the headline. 4/5 on the
      `portrait` preset, exported 1200 x 1500.
 
      THE FILE HERE IS STILL THE 3/2 CROP, 1280 x 853. The frame went back to

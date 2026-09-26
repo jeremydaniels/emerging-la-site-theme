@@ -1,0 +1,497 @@
+---
+/**
+ * The home hero's map: a line drawing of LA that lights up one sector at a
+ * time. See design-system.md §21.
+ *
+ * It sits in the frame the hero photo used, at the same size: the portrait
+ * preset's mat, 4/5 well and four crop marks, so swapping it in moved nothing
+ * in the hero. Two frame tokens assume a photograph and are re-pointed below:
+ * the well takes the page's ground and the crop marks take ink, because this
+ * is a drawing on the page, not a picture in a well.
+ *
+ * The sectors come from src/data/sectors.ts and nothing in here names one.
+ * The geometry below is drawn for the map's 340 x 300 viewBox and is not a
+ * real projection, which is the point: it is a sketch of the city, not a map
+ * anyone should navigate by.
+ *
+ * Load bearing:
+ *
+ *   - The server renders the FINISHED map: every dot on, every line drawn,
+ *     the "Los Angeles" caption. That is what a visitor gets with reduced
+ *     motion or no JavaScript, and it is where the loop enters, at the start
+ *     of its hold, so nothing flashes and nothing is reset on load.
+ *   - Every moving part is absolutely positioned inside a well with a fixed
+ *     aspect ratio and overflow hidden. Nothing the animation does can change
+ *     the size of anything outside the frame.
+ *   - The SVG carries role="img" and a label that lists every sector, built
+ *     from the data. The caption and the neighbourhood labels repeat what the
+ *     label already says, so both are aria-hidden and a screen reader never
+ *     hears them change.
+ *   - The script is inline and import free, the same as RotatingWordScript, so
+ *     it stays in the HTML and the build ships no .js file. Keep it that way:
+ *     Astro only inlines a script with no imports under 4KB.
+ */
+import { mapFinale, sectors, type Place } from '../data/sectors';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' }: Props = Astro.props;
+
+/** Milliseconds. The CSS and the script both read these, from the markup. */
+const TIMING = {
+  /** How long each sector is lit. */
+  sector: 2800,
+  /** Between one dot appearing and the next, inside a sector. */
+  stagger: 250,
+  /** One line drawing in. */
+  draw: 1000,
+  /** One pulse of a lit dot's ring. Loops while its sector is lit. */
+  pulse: 2200,
+  /** The finished map, before it fades. */
+  hold: 3200,
+  /** The fade out, after which the loop restarts. */
+  fade: 600,
+} as const;
+
+/** The viewBox. Coordinates in sectors.ts are in these units. */
+const W = 340;
+const H = 300;
+/** Dot radius, in viewBox units. */
+const R = 3.5;
+/** How far above the midpoint a line's control point sits, in viewBox units. */
+const LIFT = 12;
+
+const COAST =
+  'M0 94 C20 90 40 95 60 108 C78 120 88 134 96 146 C102 158 108 172 116 188 ' +
+  'C124 204 128 220 132 236 C128 248 120 256 124 266 C132 276 150 278 168 272 ' +
+  'C190 266 208 268 222 276 C250 286 290 290 340 294';
+
+const FREEWAYS = [
+  'M60 30 C100 100 130 170 150 240',
+  'M100 150 C150 156 190 152 212 152 C250 150 300 140 340 130',
+  'M110 50 C150 88 182 112 212 152',
+  'M212 152 C215 190 218 230 222 262',
+  'M198 72 C230 70 250 80 268 90 C290 95 320 90 340 86',
+];
+
+const dist = (a: Place, b: Place) => Math.hypot(a.x - b.x, a.y - b.y);
+
+/**
+ * Each dot after the first is joined to the NEAREST dot already on in its
+ * sector, not simply to the one before it. Chaining in list order runs
+ * Burbank to Culver City straight through the Hollywood dot; nearest-placed
+ * gives a hub at Hollywood there and a chain everywhere else, and it keeps
+ * doing something sensible when the list changes.
+ */
+const model = sectors.map((sector) => ({
+  ...sector,
+  links: sector.places.slice(1).map((to, n) => {
+    const from = sector.places
+      .slice(0, n + 1)
+      .reduce((best, p) => (dist(p, to) < dist(best, to) ? p : best));
+    const cx = (from.x + to.x) / 2;
+    const cy = (from.y + to.y) / 2 - LIFT;
+    // Drawn from the dot already on toward the one arriving, starting as the
+    // new dot appears: same index, same delay.
+    return { i: n + 1, d: `M${from.x} ${from.y} Q${cx} ${cy} ${to.x} ${to.y}` };
+  }),
+}));
+
+/** "A, B and C". */
+const and = (names: string[]) =>
+  names.length < 2 ? names.join('') : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
+
+const label =
+  'Line map of Los Angeles by sector. ' +
+  sectors.map((s) => `${s.name}: ${and(s.places.map((p) => p.name))}.`).join(' ') +
+  ` ${mapFinale.line}.`;
+
+/**
+ * One caption per sector, then the finale. Every space but the one after each
+ * middot is non-breaking, so a narrow caption wraps only between names: never
+ * inside "Culver City", and never with a middot starting the next line.
+ */
+const NBSP = '\u00a0';
+const captions = [
+  ...sectors.map((s) => [
+    s.name,
+    s.places.map((p) => p.name.replaceAll(' ', NBSP)).join(`${NBSP}· `),
+  ]),
+  [mapFinale.name, mapFinale.line],
+];
+
+const pct = (v: number, of: number) => `${+((v / of) * 100).toFixed(3)}%`;
+
+/** The nth dot in a sector appears n staggers in; its line, ring and label with it. */
+const delay = (n: number) => `--d:${n * TIMING.stagger}ms`;
+---
+
+<div
+  class:list={['frame map', className]}
+  style={`--crop-size:16px;--crop-inset:14px;--draw:${TIMING.draw}ms;--pulse:${TIMING.pulse}ms;--fade:${TIMING.fade}ms`}
+  data-sector-map
+  data-timing={`${TIMING.sector} ${TIMING.hold} ${TIMING.fade}`}
+  data-captions={JSON.stringify(captions)}
+>
+  {/* @container: the type below is sized in cqi, against the well's width. */}
+  <div class="frame-well @container" style="aspect-ratio:4/5">
+    <div class="absolute inset-x-0 top-[4%] aspect-[340/300]">
+      <svg class="block size-full" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label}>
+        {FREEWAYS.map((d) => <path class="map-road" d={d} />)}
+        <path class="map-coast" d={COAST} />
+
+        <g class="map-layer">
+          {
+            model.map((sector, s) => (
+              <g data-sector={s} data-state="settled">
+                {sector.links.map((link) => (
+                  <path class="map-link" d={link.d} pathLength="1" style={delay(link.i)} />
+                ))}
+                {sector.places.map((p, i) => (
+                  <circle class="map-ring" cx={p.x} cy={p.y} r={R} style={delay(i)} />
+                ))}
+                {sector.places.map((p, i) => (
+                  <circle class="map-dot" cx={p.x} cy={p.y} r={R} style={delay(i)} />
+                ))}
+              </g>
+            ))
+          }
+        </g>
+      </svg>
+
+      {/* HTML rather than SVG text so the labels hold a readable size while
+          the drawing scales from 258px wide on a phone to 837px on a tablet. */}
+      <div class="map-layer pointer-events-none absolute inset-0" aria-hidden="true">
+        {
+          model.map((sector, s) => (
+            <div data-sector={s} data-state="settled">
+              {sector.places.map((p, i) => (
+                <span
+                  class="map-label absolute font-body text-[length:clamp(10.5px,2.5cqi,12.5px)] leading-[1.15] font-semibold text-ink-muted"
+                  data-side={p.label}
+                  style={`--x:${pct(p.x, W)};--y:${pct(p.y, H)};${delay(i)}`}
+                >
+                  {p.name}
+                </span>
+              ))}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    {/* Tucked inside the bottom-left mark: 34px is the mark's 14px inset plus
+        its 16px arm plus 4px, and 32px puts it just above the mark. It sits
+        clear of the bottom-right mark too, so it can run to the 14px inset. */}
+    <div class="map-layer absolute right-[14px] bottom-[32px] left-[34px]" aria-hidden="true">
+      <p class="map-caption m-0 font-body" data-caption>
+        <span
+          class="block text-[length:clamp(17px,4.6cqi,22px)] leading-[1.15] font-bold tracking-[-0.01em] text-accent-step"
+          data-caption-name>{mapFinale.name}</span
+        >
+        <span
+          class="mt-2 block text-[length:clamp(13.5px,3.1cqi,15px)] leading-[1.35] font-medium text-balance text-ink-muted-aa"
+          data-caption-line>{mapFinale.line}</span
+        >
+      </p>
+    </div>
+
+    <span class="crop crop-tl" aria-hidden="true"></span>
+    <span class="crop crop-tr" aria-hidden="true"></span>
+    <span class="crop crop-bl" aria-hidden="true"></span>
+    <span class="crop crop-br" aria-hidden="true"></span>
+  </div>
+</div>
+
+<style>
+  /* The drawing sits on the page, so the well takes the ground rather than the
+     photo well, and the marks take ink rather than the cream that only reads
+     on a photograph. Both follow the mode. */
+  .map {
+    --ela-well: var(--ela-ground);
+    --ela-crop: var(--ela-linework);
+  }
+
+  /* Layout and type are Tailwind utilities in the markup. What is here is what
+     utilities are awkward for: SVG paint, the three sector states and the
+     loop. It is kept under the 4KB Astro inlines, so the home page does not
+     pick up a second stylesheet request. */
+
+  /* --- The base drawing. Ink at low alpha, and a constant hairline at every
+     size the map renders at. --------------------------------------------- */
+
+  .map-coast,
+  .map-road {
+    fill: none;
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
+  }
+
+  .map-coast {
+    stroke: var(--ela-linework);
+    stroke-width: 1.25px;
+  }
+
+  .map-road {
+    stroke: var(--ela-rule);
+    stroke-width: 1px;
+  }
+
+  /* --- Sectors. Three states, set on the group by the script: off, active,
+     settled. The server renders every sector settled.
+
+     Every transition carries the element's own --d, so a sector lights up
+     one dot at a time and settles one dot at a time in the same order. ---- */
+
+  .map-dot {
+    fill: var(--ela-accent-step);
+    opacity: 0;
+    transition:
+      opacity 0.3s var(--d),
+      fill 0.6s var(--d);
+  }
+
+  /* pathLength="1" on each line, so one dash of length 1 is the whole line
+     and the offset runs 1 to 0 whatever its real length. The gap is 2, not
+     1: with a gap of 1 the next dash starts exactly at the line's end, and
+     rounding shows it as a speck on every line that is meant to be off. */
+  .map-link {
+    fill: none;
+    stroke: var(--ela-accent-step);
+    stroke-width: 1;
+    stroke-dasharray: 1 2;
+    stroke-dashoffset: 1;
+    transition:
+      stroke-dashoffset var(--draw) ease-in-out var(--d),
+      stroke 0.6s var(--d);
+  }
+
+  [data-state='active'] > .map-dot,
+  [data-state='settled'] > .map-dot {
+    opacity: 1;
+  }
+
+  [data-state='active'] > .map-link,
+  [data-state='settled'] > .map-link {
+    stroke-dashoffset: 0;
+  }
+
+  [data-state='settled'] > .map-dot {
+    fill: var(--ela-accent-soft);
+  }
+
+  [data-state='settled'] > .map-link {
+    stroke: var(--ela-accent-soft);
+  }
+
+  /* No fill mode: through its delay the ring keeps the base style, which is
+     invisible, so a ring never shows before its dot. */
+  .map-ring {
+    fill: none;
+    stroke: var(--ela-accent-step);
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  [data-state='active'] > .map-ring {
+    animation: sector-map-pulse var(--pulse) ease-out var(--d) infinite;
+  }
+
+  .map[data-paused] .map-ring {
+    animation-play-state: paused;
+  }
+
+  @keyframes sector-map-pulse {
+    from {
+      opacity: 0.7;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(4.5);
+    }
+  }
+
+  /* --- Labels. Placed in percent of the drawing, offset by the dot's radius
+     (3.5 of 340 across, 3.5 of 300 down) plus a fixed gap. ---------------- */
+
+  /* The halo is the ground under the label, so a road or a line running
+     behind a name is knocked back rather than struck through it. */
+  .map-label {
+    top: var(--y);
+    transform: translateY(-50%);
+    text-shadow:
+      0 0 2px var(--ela-well),
+      0 0 4px var(--ela-well);
+    opacity: 0;
+    transition: opacity 0.3s var(--d);
+  }
+
+  [data-state='active'] > .map-label {
+    opacity: 1;
+  }
+
+  .map-label:is([data-side='top'], [data-side='bottom']) {
+    left: var(--x);
+    white-space: nowrap;
+  }
+
+  .map-label[data-side='top'] {
+    top: calc(var(--y) - 1.17% - 3px);
+    transform: translate(-50%, -100%);
+  }
+
+  .map-label[data-side='bottom'] {
+    top: calc(var(--y) + 1.17% + 3px);
+    transform: translateX(-50%);
+  }
+
+  /* Side labels are capped at the room between the dot and the edge, less
+     8px, so a long name near the edge wraps onto two lines instead of running
+     into the frame. Santa Monica does this below about 350px. */
+  .map-label[data-side='right'] {
+    left: calc(var(--x) + 1.03% + 5px);
+    max-width: calc(100% - var(--x) - 1.03% - 13px);
+  }
+
+  .map-label[data-side='left'] {
+    right: calc(100% - var(--x) + 1.03% + 5px);
+    max-width: calc(var(--x) - 1.03% - 13px);
+    text-align: right;
+  }
+
+  /* --- Caption. A crossfade on every change, the same 0.2s as the rotating
+     word. ----------------------------------------------------------------- */
+
+  .map-caption {
+    transition: opacity 0.2s ease;
+  }
+
+  .map-caption[data-state='out'] {
+    opacity: 0;
+  }
+
+  /* --- The loop. ---------------------------------------------------------- */
+
+  .map-layer {
+    transition: opacity var(--fade) ease;
+  }
+
+  .map[data-phase='fade'] .map-layer {
+    opacity: 0;
+  }
+
+  /* One frame with nothing animating, while the script clears the board
+     between the fade and the first sector. */
+  .map[data-phase='reset'] * {
+    transition: none !important;
+    animation: none !important;
+  }
+</style>
+
+<script>
+  /*
+   * The loop: each sector lit in turn, then the finished map, then the fade.
+   * The server rendered the finished map, so the loop enters at its hold.
+   *
+   * It only runs while the map is on screen, the tab is visible and motion is
+   * allowed, and it resumes where it stopped. Under prefers-reduced-motion it
+   * never starts, and switching that on mid loop drops back to the finished
+   * map. The timings, the captions and the sector count all come off the
+   * element, so this holds no copy of the data.
+   */
+  const map = document.querySelector<HTMLElement>('[data-sector-map]');
+
+  if (map) {
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const parts = map.querySelectorAll<HTMLElement | SVGElement>('[data-sector]');
+    const caption = map.querySelector<HTMLElement>('[data-caption]');
+    const name = map.querySelector('[data-caption-name]');
+    const line = map.querySelector('[data-caption-line]');
+    const captions: string[][] = JSON.parse(map.dataset.captions ?? '[]');
+    const [sectorMs, holdMs, fadeMs] = (map.dataset.timing ?? '').split(' ').map(Number);
+
+    /** Steps 0 to last - 1 are the sectors, last is the finished map, last + 1 the fade. */
+    const last = captions.length - 1;
+    let step = last;
+    let left = holdMs;
+    let due = 0;
+    let timer = 0;
+    let swap = 0;
+    let inView = false;
+
+    const show = (next: number) => {
+      step = next;
+      left = next < last ? sectorMs : next === last ? holdMs : fadeMs;
+      if (next > last) {
+        map.dataset.phase = 'fade';
+        return;
+      }
+      if (next === 0) {
+        // Clear the board with nothing animating, then let the first sector
+        // animate in from empty.
+        map.dataset.phase = 'reset';
+        if (caption) caption.dataset.state = 'out';
+        parts.forEach((p) => (p.dataset.state = 'off'));
+        void map.offsetWidth;
+        delete map.dataset.phase;
+      }
+      parts.forEach((p) => {
+        const i = Number(p.dataset.sector);
+        p.dataset.state = i < next ? 'settled' : i === next ? 'active' : 'off';
+      });
+      if (!caption || !name || !line) return;
+      caption.dataset.state = 'out';
+      window.clearTimeout(swap);
+      swap = window.setTimeout(() => {
+        [name.textContent, line.textContent] = captions[next];
+        caption.dataset.state = 'in';
+      }, 200);
+    };
+
+    const running = () => inView && !document.hidden && !motion.matches;
+
+    const play = () => {
+      if (timer || !running()) return;
+      delete map.dataset.paused;
+      due = performance.now() + left;
+      timer = window.setTimeout(() => {
+        timer = 0;
+        show((step + 1) % (last + 2));
+        play();
+      }, left);
+    };
+
+    const pause = () => {
+      if (!timer) return;
+      window.clearTimeout(timer);
+      timer = 0;
+      left = Math.max(0, due - performance.now());
+      map.dataset.paused = '';
+    };
+
+    const sync = () => (running() ? play() : pause());
+
+    new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      sync();
+    }).observe(map);
+
+    document.addEventListener('visibilitychange', sync);
+
+    motion.addEventListener('change', () => {
+      if (motion.matches) {
+        pause();
+        delete map.dataset.phase;
+        delete map.dataset.paused;
+        show(last);
+      }
+      sync();
+    });
+  }
+</script>

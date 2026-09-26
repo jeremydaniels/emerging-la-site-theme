@@ -39,8 +39,14 @@ framework is installed. If one of these ever outgrows a plain script, add `@astr
 make only that component an island. Do not reach for a framework before then, and never add a
 `client:*` directive to something that could be a script.
 
+Two more scripts are motion, not interactivity: the rotating word in the hero headline
+(`RotatingWordScript`) and the hero's sector map (`SectorMap`). Both are inline and import free,
+both do nothing under `prefers-reduced-motion`, and both stop while the tab is hidden.
+
 Check the cost of any change with `npm run build` and then `ls dist/_astro/`. A `.js` file
-appearing there is a regression unless it was a deliberate decision.
+appearing there is a regression unless it was a deliberate decision. Astro inlines a script only
+when it has no imports and is under 4KB, and a CSS chunk only when it is under 4KB; over that, each
+becomes a file and a request of its own. SectorMap's styles once came to 4,252 bytes and did.
 
 ---
 
@@ -82,6 +88,8 @@ first paint. If you add a `@media (prefers-color-scheme: …)` block, you have b
   Nothing carrying text on a dark ground may use the dark orange. Light is the dark-mode orange.
 - Components use `--ela-accent-step`, which resolves to the right orange for the current mode.
   Do not reference `--ela-accent-dark` or `--ela-accent-light` directly.
+- `--ela-accent-soft` is step's inverse, the orange that sits back: light in light mode, dark in
+  dark mode. It is for marks only, never text. The hero map's settled dots are its one use.
 - `--ela-ink-muted` is 4.30:1 on cream, which is under AA for small text. Muted paragraphs use
   `--ela-ink-muted-aa` (5.20:1). Metadata and mono labels can use the plain one.
 
@@ -168,6 +176,8 @@ src/
   components/Footer.astro     Ink ground in both modes, via .on-ink.
   components/Wordmark.astro   Picks black or cream, enforces the 22px height floor.
   components/SectionHeader.astro  Numbered eyebrow + H2 + rule.
+  components/SectorMap.astro      The home hero's animated line map of LA, in the frame the
+                              hero photo used. design-system.md §21.
   components/SubscribeBand.astro  The orange band. Shared by every page that ends with it.
   components/SubscribeForm.astro  The form inside it. There is only one of these.
   components/IssueCard.astro      Issue card, shared by the archive grid and home's
@@ -191,6 +201,9 @@ src/
                               deliberately no `featured` flag: which card carries the
                               accent is a view decision, not a property of an issue.
   data/events.ts              Events. Hand maintained, typed. STATUS IS A MANUAL FLAG.
+  data/sectors.ts             The hero map's sectors, their places and the map's closing
+                              caption. Edit the sectors here, never in SectorMap.
+                              PLACEHOLDERS until Brandon confirms the final list.
   lib/links.ts                Every external URL. All placeholders right now.
   lib/site.ts                 Site constants and the nav link list.
 

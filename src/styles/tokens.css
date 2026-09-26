@@ -95,6 +95,12 @@
   --ela-edge: var(--palette-edge);
   --ela-wash: var(--palette-wash);
   --ela-placeholder: var(--palette-placeholder);
+  /* Ink line work drawn on the ground: the hero map's coastline and its crop
+     marks. Two existing values, paired so the line weighs the same in both
+     modes: 0.30 ink on cream and 0.24 cream on the dark ground both measure
+     about 2:1. ink-faint would not do, because it is tuned for text and goes
+     to 0.55 in dark mode. See design-system.md §21. */
+  --ela-linework: var(--palette-ink-faint);
 
   --ela-accent: var(--palette-accent);
   --ela-accent-dark: var(--palette-accent-dark);
@@ -104,6 +110,12 @@
      ground needs the lightest (6.27:1), because the darkest is only 2.88:1
      there. Neither mode's step is large-text-only any more. */
   --ela-accent-step: var(--palette-accent-dark);
+  /* The inverse of step: the orange that sits back on the current ground.
+     Light on cream (2.40:1), dark on the dark ground (2.88:1). Marks only,
+     never text, because neither clears 3:1. The hero map's settled dots use
+     it, so a lit sector (step) always reads above a settled one in both
+     modes. See design-system.md §21. */
+  --ela-accent-soft: var(--palette-accent-light);
   --ela-accent-tint: var(--palette-accent-tint);
   --ela-accent-tint-hover: var(--palette-accent-tint-hover);
 
@@ -153,8 +165,10 @@
   --ela-edge: var(--palette-on-dark-edge);
   --ela-wash: var(--palette-on-dark-wash);
   --ela-placeholder: var(--palette-on-dark-placeholder);
+  --ela-linework: var(--palette-on-dark-edge);
 
   --ela-accent-step: var(--palette-accent-light);
+  --ela-accent-soft: var(--palette-accent-dark);
 
   --ela-shadow-card: none;
   --ela-shadow-panel: none;
@@ -204,8 +218,10 @@
   --ela-edge: var(--palette-edge);
   --ela-wash: var(--palette-wash);
   --ela-placeholder: var(--palette-placeholder);
+  --ela-linework: var(--palette-ink-faint);
 
   --ela-accent-step: var(--palette-accent-dark);
+  --ela-accent-soft: var(--palette-accent-light);
 
   --ela-shadow-card: 0 22px 40px -34px rgb(28 28 28 / 0.7);
   --ela-shadow-panel: 0 40px 70px -50px rgb(28 28 28 / 0.6);
@@ -226,7 +242,9 @@
   --ela-edge: var(--palette-on-dark-edge);
   --ela-wash: var(--palette-on-dark-wash);
   --ela-placeholder: var(--palette-on-dark-placeholder);
+  --ela-linework: var(--palette-on-dark-edge);
   --ela-accent-step: var(--palette-accent-light);
+  --ela-accent-soft: var(--palette-accent-dark);
   color-scheme: dark;
 }
 
@@ -247,11 +265,13 @@
   --color-rule: var(--ela-rule);
   --color-hairline: var(--ela-hairline);
   --color-edge: var(--ela-edge);
+  --color-linework: var(--ela-linework);
   --color-wash: var(--ela-wash);
   --color-accent: var(--ela-accent);
   --color-accent-dark: var(--ela-accent-dark);
   --color-accent-light: var(--ela-accent-light);
   --color-accent-step: var(--ela-accent-step);
+  --color-accent-soft: var(--ela-accent-soft);
   --color-accent-tint: var(--ela-accent-tint);
   --color-accent-tint-hover: var(--ela-accent-tint-hover);
   --color-crop: var(--ela-crop);

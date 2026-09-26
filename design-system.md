@@ -27,6 +27,15 @@ Tokens live in exactly one file: `src/styles/tokens.css`. A palette swap is one 
 | Accent dark | `--ela-accent-dark` | `#C2240F` | `#C2240F` |
 | Accent core | `--ela-accent` | `#FF4B33` | `#FF4B33` |
 | Accent light | `--ela-accent-light` | `#FF705D` | `#FF705D` |
+| Accent soft (marks that sit back) | `--ela-accent-soft` | `#FF705D` | `#C2240F` |
+| Linework (lines drawn on the ground) | `--ela-linework` | `rgba(28,28,28,0.30)` | `rgba(255,253,250,0.24)` |
+
+**ADDED:** the last two rows are for the hero map (§21) and re-use existing palette values.
+`--ela-accent-soft` is `--ela-accent-step` inverted: the orange with the *least* contrast on the
+current ground, 2.40:1 on cream and 2.88:1 on the dark ground. It is for marks, never text.
+`--ela-linework` pairs 0.30 ink on cream with 0.24 cream on the dark ground, which both measure
+about 2:1, so a drawn line weighs the same in both modes; `--ela-ink-faint` is tuned for text and
+goes to 0.55 in dark mode, which is too heavy for line work.
 
 The dark ground is Ink itself (`#1C1C1C`). That is not a coincidence: it is the ground the supplied
 contrast measurements were taken against, confirmed by calculation.
@@ -313,13 +322,14 @@ thumbnails come with their own rails, marks and metadata baked into the artwork,
 draws no marks of its own; ours on top of theirs is a doubled border. Both places render the same
 `IssueCard`, so this is one ratio in one component.
 
-**ADDED:** the portrait (`4/5`, exported 1200 x 1500), because the home page hero puts the photo in
+**ADDED:** the portrait (`4/5`, exported 1200 x 1500), because the home page hero put the photo in
 the right column beside the headline rather than in a band underneath, and the About note pairs one
-with the founder's portrait. **ADDED:** the band (`3/2`, exported 1800 x 1200), for a run of
+with the founder's portrait. The home hero now holds the sector map (§21) in a frame of exactly
+these proportions; the photo slot is still in `src/data/photos.ts`, unrendered. **ADDED:** the band (`3/2`, exported 1800 x 1200), for a run of
 standalone photos across a page, as on About and Events, which fills the content width. Both keep
 all four marks.
 
-The hero photo is column-constrained, so it needs no width cap of its own: at the 1360px page the
+The hero frame is column-constrained, so it needs no width cap of its own: at the 1360px page the
 0.85fr right column is 545px and the well is 519 x 649. A `--container-hero-photo` token existed
 while the hero photo ran the full content width; that layout is gone and so is the token.
 
@@ -574,6 +584,11 @@ Ranked by weight, so the budget is spendable in order:
    headline highlight `#FF4B33` at `opacity: 0.22` behind the last line, the photo multiply
    `rgba(194,36,15,0.07)`.
 
+The hero map (§21) is structural orange, not an anchor. Its lit sector is `--ela-accent-step`
+because the hero CTA is anchor orange in the same viewport, and its settled sectors are
+`--ela-accent-soft`. Dots of `3.5` viewBox units and `1`-unit lines are marks, not fills of real
+area, so the map adds nothing to the one-anchor count.
+
 Never orange: body paragraphs in light mode, nav links, footer body links, form input text,
 headlines, the wordmark.
 
@@ -664,7 +679,13 @@ Almost none, and that is the design.
 | Card hover | `box-shadow .2s ease, border-color .2s ease` |
 | Table row hover | `background .15s ease` |
 | Chips, toggles | `all .15s ease` |
+| Rotating hero word | `opacity .2s ease` crossfade every `2s`, the wash's width with it |
+| Hero map | a loop, see §21 |
 | Everything else | none |
+
+**ADDED:** the two hero rows are the only motion on the site that runs on its own. Both stop while
+the tab is hidden, neither runs at all under `prefers-reduced-motion`, and neither can move
+anything outside its own box.
 
 No scroll animation, no reveals, no parallax, no counters. The v1 mockup had a marquee and a
 blinking dot; v2 removed both, and v2 is the source of truth. All of the above is wrapped in
@@ -681,6 +702,7 @@ ground and ink swapped, using the tokens in §1. Specifics that are not a straig
 - **Orange steps up.** `--ela-accent-dark` (`#C2240F`) is the light-mode structural orange;
   `--ela-accent-light` (`#FF705D`) is the dark-mode one. `--ela-accent-step` resolves to the right
   one per mode, so components reference `--ela-accent-step`, never the raw value.
+  `--ela-accent-soft` swaps the other way, so a mark meant to sit back still sits back.
 - **Photo wells do not change.** `#15130F` → `#0F0E0C` is a small deepening only; crop marks,
   multiply overlay and image filter are identical in both modes. A photograph looks the same in
   both themes.
@@ -909,3 +931,128 @@ The general rule: `.on-ink`, `.on-accent` and `.on-paper` go on the element that
 owns the ground, or are passed in by whoever put the child on that ground. A
 component that re-points its own tokens is only correct in the one place it was
 first used.
+
+---
+
+## 21. The hero map
+
+**ADDED.** The home hero's right column is an animated line map of LA, `SectorMap.astro`, in the
+slot the hero photo held. It lights up one sector at a time and fills in as it goes. The sectors
+are data, in `src/data/sectors.ts`, and are placeholders until Brandon confirms the final list.
+
+### The frame
+
+The portrait photo frame, unchanged in size: paper mat, `4/5` well, four `16px` crop marks at a
+`14px` inset. The outer box matches the photo frame's to the tenth of a pixel at every width, so
+the hero headline wraps exactly as it did (§2). Two tokens are re-pointed on the component,
+because this is a drawing on the page and not a photograph:
+
+| | Photo frame | Map frame |
+| --- | --- | --- |
+| Well | `--ela-well`, near-black in both modes | `--ela-ground`, follows the mode |
+| Crop marks | `--ela-crop`, cream 0.70 | `--ela-linework` |
+| Warm multiply | yes | none; it is for photographs |
+
+### The drawing
+
+A `340 x 300` viewBox at the full width of the well, 4% down from its top. The caption takes the
+space underneath, which is the ocean. It is a sketch, not a projection: a coastline, five faint
+freeways and the dots.
+
+| Part | Spec |
+| --- | --- |
+| Coastline | `--ela-linework`, `1.25px`, `vector-effect: non-scaling-stroke` |
+| Freeways | `--ela-rule`, `1px`, non-scaling |
+| Dot | `r = 3.5` viewBox units |
+| Line between dots | quadratic, control point at the midpoint lifted `12` units, stroke `1` unit |
+| Ring | `r = 3.5`, `1px` non-scaling, scales to `4.5x` and fades to 0 over `2.2s` |
+
+The coastline and freeways hold a hairline at every size; the dots and lines scale with the map.
+
+**Which dots are joined.** Each dot after the first draws a line from the nearest dot already on in
+its sector. Chaining in list order would run Burbank to Culver City straight through the Hollywood
+dot. Nearest-placed makes a hub at Hollywood there and a chain in the other sectors, and it keeps
+doing something sensible when the list changes. Reordering a sector's places changes its lines.
+
+### Colour
+
+| Element | Token | Light | Dark |
+| --- | --- | --- | --- |
+| Lit dot, line and ring | `--ela-accent-step` | `#C2240F` | `#FF705D` |
+| Settled dot and line | `--ela-accent-soft` | `#FF705D` | `#C2240F` |
+| Caption, sector name | `--ela-accent-step` | `#C2240F`, 5.22:1 | `#FF705D`, 6.27:1 |
+| Caption, places | `--ela-ink-muted-aa` | | |
+| Neighbourhood labels | `--ela-ink-muted`, with a halo in the well colour | | |
+
+**Not the anchor.** The hero CTA is anchor orange and shares the viewport with the map at every
+width, on desktop beside it and on a phone directly above it. So the lit sector takes the dark
+orange, `--ela-accent-step`, and not `--ela-accent`.
+
+**Why the pair flips in dark mode.** On the dark ground the dark orange is 2.88:1 and the light one
+is 6.27:1. Kept as they are in light mode, a lit sector would be dimmer than a settled one, and
+the sector name would be dark orange text on a dark ground, which §1 forbids. Step and soft swap
+with the mode, so the lit sector always reads above the settled ones and the name always clears
+AA.
+
+The labels' halo is two `text-shadow`s in `--ela-well`, which is the ground here, so a freeway or a
+line running behind a name is knocked back rather than struck through it.
+
+### Type
+
+The body face, Manrope, throughout. Sizes are in `cqi` against the well, so they follow the map
+rather than the viewport:
+
+| Text | Size | Weight |
+| --- | --- | --- |
+| Neighbourhood label | `clamp(10.5px, 2.5cqi, 12.5px)`, line height `1.15` | 600 |
+| Caption, sector name | `clamp(17px, 4.6cqi, 22px)`, line height `1.15`, `-0.01em` | 700 |
+| Caption, places | `clamp(13.5px, 3.1cqi, 15px)`, line height `1.35`, balanced | 500 |
+
+The labels are the one place the body face goes under 13.5px (§2). They are map labels, not copy,
+and they are HTML over the SVG rather than SVG text so they hold that size while the drawing
+scales from 258px wide on a phone to 837px on a tablet. Side labels are capped at the room between
+the dot and the edge of the well, less 8px, so a long name wraps instead of meeting the frame:
+Santa Monica goes onto two lines below about 350px. The caption sits inside the bottom-left crop
+mark, `34px` from the left and `32px` from the bottom. Its places are joined with a middot glued to
+the name before it, so a narrow caption wraps only between names.
+
+### The loop
+
+| Beat | Value |
+| --- | --- |
+| Each sector lit | `2.8s` |
+| Between dots in a sector | `250ms`; each dot's line, ring and label start with it |
+| One line drawing in | `1s`, `ease-in-out`, via `pathLength="1"` and the dash offset |
+| Ring pulse | `2.2s`, looping while its sector is lit, paused with the loop |
+| Caption change | `0.2s` crossfade, the same as the rotating word |
+| Finished map | held `3.2s` |
+| Fade out | `0.6s`, then the loop restarts from the first sector |
+
+A sector has three states, set on its group: **off**, **active** (dots, lines, ring pulse, labels,
+the caption names it) and **settled** (dots and lines stay, in the soft orange, no labels). When a
+sector goes active, every one before it is settled. After the last, every sector is settled and the
+caption reads **Los Angeles** over **15K+ builders across every sector**.
+
+**The server renders the finished map.** Every dot on, every line drawn, the Los Angeles caption.
+That is the whole map for a visitor with reduced motion or no JavaScript, and it is where the loop
+enters: at the start of its hold. Nothing flashes and nothing resets on load; the first sector
+lights `3.8s` in, after the hold and the fade.
+
+### Behaviour
+
+- **Reduced motion:** the finished map and nothing else. The script never starts the loop, and
+  switching reduced motion on mid loop drops straight back to the finished map.
+- **Pauses** while the frame is off screen (an `IntersectionObserver` on the frame) and while the
+  tab is hidden, and resumes with the time that was left on the current beat.
+- **Accessibility:** the SVG is `role="img"` with an `aria-label` built from the data, naming every
+  sector and its places. The caption and the labels only repeat it, so both are `aria-hidden` and
+  a screen reader never hears the caption change.
+- **No reflow:** everything that moves is absolutely positioned inside a well with a fixed aspect
+  ratio and `overflow: hidden`. Nothing the loop does can change the size of anything outside it.
+
+### Budget
+
+The script is inline and import free, like the rotating word's, so the build still ships no `.js`
+file. The component's styles stay under the 4KB Astro inlines, which is why its layout and type
+are Tailwind utilities in the markup and only the states, the SVG paint and the loop are in its
+`<style>`. Keep both under their limits, or the home page picks up a request of its own for each.
