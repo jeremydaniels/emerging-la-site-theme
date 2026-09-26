@@ -106,7 +106,7 @@ anywhere on this site, including the favicon.** The mockup pairs the logo with a
 that dot is not shipped.
 
 Two files, `public/logo/emerging-la-logo-black.svg` and `emerging-la-logo-cream.svg`, both one
-compound path trimmed to the glyph bounding box (aspect ratio 5.88:1). Use the `Wordmark`
+compound path trimmed to the glyph bounding box (aspect ratio 5.85:1). Use the `Wordmark`
 component, which picks the right one. Its accessible name is "Emerging LA" everywhere.
 
 The wordmark never sits on a ground it disappears into: cream on Ground or Paper is forbidden,
@@ -151,6 +151,7 @@ public/
   fonts/riegal.woff2          Display face, one weight.
   logo/emerging-la-logo-black.svg  Logo, for light mode and light grounds.
   logo/emerging-la-logo-cream.svg  Logo, for dark mode, the footer and the orange band.
+  logo/emerging-la-logo-white.svg  Logo in pure white. Not used yet; for dark photos.
   favicon.svg                 The previous logo on a cream square. No emblem. Pending.
 
 src/

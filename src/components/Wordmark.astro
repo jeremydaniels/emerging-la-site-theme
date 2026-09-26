@@ -12,10 +12,10 @@
  *   tone="cream" forces cream. Use on Ink, Well, the orange band, or a dark
  *                photo scrim.
  *
- * Sized by HEIGHT, because the lockup is wide (5.88:1) and height is what
+ * Sized by HEIGHT, because the lockup is wide (5.85:1) and height is what
  * keeps it reading the same across contexts. Height has a hard floor of 22px,
  * applied here with max() so a caller cannot go under it. At the floor the
- * mark is 129px wide and the lowercase `emerging` is still 11.7px tall.
+ * mark is 129px wide and the lowercase `emerging` is still 11.6px tall.
  * Pass a clamp() to scale up.
  */
 
@@ -39,8 +39,8 @@ const CREAM = '/logo/emerging-la-logo-cream.svg';
 const ALT = 'Emerging LA';
 
 /** viewBox of both files, trimmed to the glyph bounding box. */
-const VB_W = 12412;
-const VB_H = 2112;
+const VB_W = 3804.12;
+const VB_H = 650.16;
 const RATIO = VB_W / VB_H;
 
 const resolved = `max(22px, ${height})`;
@@ -54,12 +54,12 @@ const tagProps = href ? { href, 'aria-label': ALT } : {};
 <Tag {...tagProps} class:list={['wordmark', `wordmark-${tone}`, className]} style={style}>
   {
     tone !== 'cream' && (
-      <img class="wordmark-black-img" src={BLACK} alt={ALT} width={VB_W} height={VB_H} />
+      <img class="wordmark-black-img" src={BLACK} alt={ALT} width={Math.round(VB_W)} height={Math.round(VB_H)} />
     )
   }
   {
     tone !== 'black' && (
-      <img class="wordmark-cream-img" src={CREAM} alt={ALT} width={VB_W} height={VB_H} />
+      <img class="wordmark-cream-img" src={CREAM} alt={ALT} width={Math.round(VB_W)} height={Math.round(VB_H)} />
     )
   }
 </Tag>

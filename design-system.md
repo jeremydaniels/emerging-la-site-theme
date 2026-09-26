@@ -584,7 +584,9 @@ headlines, the wordmark.
 Logo only. There is no emblem, icon or monogram anywhere on the site, including the favicon.
 
 The logo is one line: `emerging`, a thin vertical divider, then a large `LA`. It is a single
-compound path in each file, with no background, no embedded image and one fill colour. There is no
+compound path in each file, with no background, no embedded image, no metadata and one fill
+colour. The masters are `design/source/emerging-logo-{black,white,cream}.svg` from Claude Design;
+the public files are those paths with the provenance metadata removed and the cream refilled. There is no
 second line and no descriptor.
 
 Two files, both trimmed to the glyph bounding box so they scale predictably:
@@ -593,8 +595,9 @@ Two files, both trimmed to the glyph bounding box so they scale predictably:
 | --- | --- | --- |
 | `public/logo/emerging-la-logo-black.svg` | `#000000` | Light mode. Ground `#F5F0EB`, Paper `#FFFDFA`, and any photo lighter than mid |
 | `public/logo/emerging-la-logo-cream.svg` | `#FFFDFA` | Dark mode, the Ink footer, the orange band `#FF4B33`, Well `#15130F`, and any photo darker than mid |
+| `public/logo/emerging-la-logo-white.svg` | `#FFFFFF` | Not used yet. Reserved for dark photographs, behind a scrim as below |
 
-Intrinsic aspect ratio **5.88 : 1** (viewBox `0 0 12412 2112`). The lowercase `emerging` is 53%
+Intrinsic aspect ratio **5.85 : 1** (viewBox `0 0 3804.12 650.16`). The lowercase `emerging` is 53%
 of the logo's height and `LA` is 72%; the divider runs the full height.
 
 The `Wordmark` component picks the file. `tone="auto"` (the default) shows black in light mode and
@@ -618,9 +621,9 @@ one.
   or to anything else.
 
 **Sizing is by height.** The lockup is wide, so height is what keeps it reading the same from
-context to context, and the width follows from the 5.88 ratio. Minimum height is **22px** (129px
+context to context, and the width follows from the 5.85 ratio. Minimum height is **22px** (129px
 wide) and that minimum is a hard floor, not a target. At the floor the lowercase `emerging` is
-11.7px tall. The `Wordmark` component enforces it with `max(22px, …)`. The mobile bar renders the
+11.6px tall. The `Wordmark` component enforces it with `max(22px, …)`. The mobile bar renders the
 logo at the floor down to a `320px` viewport and it must not be clipped: the logo is
 `flex: 0 0 auto` and the nav's other children shrink. At 320px the bar is an 18px gutter, the 129px logo,
 135px of open space, the 20px menu button and the other gutter. Do not raise the floor: a previous build
@@ -628,11 +631,11 @@ set a higher minimum and clipped the bar below 350px.
 
 | Context | Height | Width |
 | --- | --- | --- |
-| Nav, 780px and up | `32px` | 188px |
-| Nav, 537px to 779px | `clamp(22px, 4.1vw, 32px)`, fluid | 129px to 188px |
+| Nav, 780px and up | `32px` | 187px |
+| Nav, 537px to 779px | `clamp(22px, 4.1vw, 32px)`, fluid | 129px to 187px |
 | Nav, 536px and down | `22px` (floor) | 129px |
-| Focus pages (subscribe, thanks) | `38px`, centred | 223px |
-| Footer | `clamp(40px, 4.9vw, 60px)` | 235px to 353px |
+| Focus pages (subscribe, thanks) | `38px`, centred | 222px |
+| Footer | `clamp(40px, 4.9vw, 60px)` | 234px to 351px |
 
 **Clear space** on all four sides is `0.5 ×` the logo's rendered height. At the `22px` floor
 that is `11px`.
@@ -641,12 +644,13 @@ that is `11px`.
 orange dot. That is an emblem. It is not shipped. Its job, a spot of orange in the nav, is done by
 the Subscribe button instead.
 
-**The previous logo** (`emerging` over a second line) is archived in `design/source/archive-old-logo/`
-and is not referenced anywhere on the site.
+**Archived** in `design/source/archive-old-logo/` and referenced nowhere on the site: the previous
+logo (`emerging` over a second line), the PNG-wrapped first delivery of this logo
+(`*.png-wrapped.svg`) and the stopgap trace made from it (`*.traced.svg`).
 
 **Favicon** is `public/favicon.svg`, and it has **not** moved to the new logo. It still carries
 the previous logo on a `#F5F0EB` square. What goes in the tab is a separate open decision. Note
-that a 5.88:1 lockup in a 16px tab is legible as a shape, not as words; the options that stay
+that a 5.85:1 lockup in a 16px tab is legible as a shape, not as words; the options that stay
 inside the no-emblem rule are cropping to `LA` or to the `e`, which are lettermarks.
 
 ---
