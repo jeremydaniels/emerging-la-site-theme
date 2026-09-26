@@ -28,20 +28,36 @@ not need to ask first, and you do not need to open a pull request to get the wor
 
 ### Interactivity
 
-Three places on this site need it, and only three:
+Every script on the site, as it stands. Each one is a scoped `<script>` inside an `.astro`
+component, inline with no imports, so the build ships no `.js` file. Section numbers point to
+`design-system.md`.
 
-1. the archive category filters
-2. the events upcoming/past toggle
-3. the subscribe form
+| What | Where | Component | Spec |
+| --- | --- | --- | --- |
+| Theme restore: a 106 byte script at the top of `<head>` that applies a stored dark choice before first paint | Every page | `BaseLayout` | §16 |
+| Mode toggle: light/dark switch, saved to `localStorage` under `ela-theme` | Every page with the nav (all but `/subscribe` and `/thanks`): in the bar at 900px and up, in the mobile menu below | `ThemeToggle` | §16 |
+| Mobile menu: the menu button opens and closes the nav list below 900px | Every page with the nav | `Nav` | none of its own; §16 covers the Mode row inside it |
+| Rotating word: the last word of the headline crossfades every 2s | `/` hero H1, `/subscribe` headline | `RotatingWord` + `RotatingWordScript` | §2 (how the headline sets), §13 |
+| Hero map: the looping sector map of LA | `/` hero, right column | `SectorMap` | §21 |
+| Count-up: the 15K+ stat counts 1 to 15 once, when it is half in view | `/` proof strip, `/about` By the numbers | `CountUp` + `CountUpScript` | §22 |
+| Archive category filters: chips that filter the issue grid, move the accent card, and show an empty state with no matches | `/archive` | `archive.astro` | §18 (the accent), §19 (the empty state) |
+| Subscribe role picker: single-select role chips that fill a hidden field; the form submits without it | The orange band on `/`, `/about`, `/archive`, `/events`, `/privacy`, `/terms`, and the form on `/subscribe` | `SubscribeForm` | §10 (role chips) |
 
-They run on **scoped `<script>` tags inside the `.astro` component**, not framework islands. No UI
-framework is installed. If one of these ever outgrows a plain script, add `@astrojs/preact` and
-make only that component an island. Do not reach for a framework before then, and never add a
+`/events` has **no** interactivity: Upcoming and Past render one after the other, and there is no
+toggle between them. `/thanks` and `/404` carry only what their layout brings.
+
+The rotating word, the hero map and the count-up are motion, not controls. All three do nothing
+under `prefers-reduced-motion`. The rotating word and the map also stop while the tab is hidden.
+
+**Shared behaviour goes in its own script component, rendered once per page.** Where the same
+behaviour is used on several pages, the markup is one component and the script is a second one
+(`RotatingWordScript`, `CountUpScript`) rendered once at the end of each page that needs it. That
+keeps the script out of headings and stats, and keeps it inline with no imports. A script with an
+import is a module Vite emits as a file, and the build goes from zero `.js` files to one per page.
+
+No UI framework is installed. If one of these ever outgrows a plain script, add `@astrojs/preact`
+and make only that component an island. Do not reach for a framework before then, and never add a
 `client:*` directive to something that could be a script.
-
-Two more scripts are motion, not interactivity: the rotating word in the hero headline
-(`RotatingWordScript`) and the hero's sector map (`SectorMap`). Both are inline and import free,
-both do nothing under `prefers-reduced-motion`, and both stop while the tab is hidden.
 
 Check the cost of any change with `npm run build` and then `ls dist/_astro/`. A `.js` file
 appearing there is a regression unless it was a deliberate decision. Astro inlines a script only
