@@ -581,54 +581,73 @@ headlines, the wordmark.
 
 ## 12. Logo placement
 
-Wordmark only. There is no emblem, icon or monogram anywhere on the site, including the favicon.
+Logo only. There is no emblem, icon or monogram anywhere on the site, including the favicon.
+
+The logo is one line: `emerging`, a thin vertical divider, then a large `LA`. It is a single
+compound path in each file, with no background, no embedded image and one fill colour. There is no
+second line and no descriptor.
 
 Two files, both trimmed to the glyph bounding box so they scale predictably:
 
-| File | Fill | Ground it goes on |
+| File | Fill | When it is used |
 | --- | --- | --- |
-| `public/logo/wordmark-black.svg` | `#000000` | Ground `#F5F0EB`, Paper `#FFFDFA`, and any photo lighter than mid |
-| `public/logo/wordmark-cream.svg` | `#FFFDFA` | Ink `#1C1C1C`, Well `#15130F`, orange `#FF4B33`, and any photo darker than mid |
+| `public/logo/emerging-la-logo-black.svg` | `#000000` | Light mode. Ground `#F5F0EB`, Paper `#FFFDFA`, and any photo lighter than mid |
+| `public/logo/emerging-la-logo-cream.svg` | `#FFFDFA` | Dark mode, the Ink footer, the orange band `#FF4B33`, Well `#15130F`, and any photo darker than mid |
 
-Intrinsic aspect ratio **5.34 : 1** (viewBox `166 957 1912 358`). The lockup is two lines:
-`emerging` over `LOS ANGELES`.
+Intrinsic aspect ratio **5.88 : 1** (viewBox `0 0 12412 2112`). The lowercase `emerging` is 53%
+of the logo's height and `LA` is 72%; the divider runs the full height.
 
-**Placement rule.** The wordmark never sits on a ground it disappears into:
+The `Wordmark` component picks the file. `tone="auto"` (the default) shows black in light mode and
+cream in dark mode, keyed on `data-theme` only, and switches to cream inside `.on-ink` and
+`.on-accent` in either mode. `tone="black"` and `tone="cream"` force one file. Its accessible name
+is **Emerging LA** everywhere: the `alt` on the image, and the `aria-label` on the link when it is
+one.
 
-- Cream wordmark on Ground, Paper, or any tint of them — **forbidden**, it vanishes.
-- Black wordmark on Ink, Well, or the orange band — **forbidden**, it vanishes.
+**Placement rule.** The logo never sits on a ground it disappears into:
+
+- Cream logo on Ground, Paper, or any tint of them: **forbidden**, it vanishes.
+- Black logo on Ink, Well, or the orange band: **forbidden**, it vanishes.
 - On the orange band (`#FF4B33`), use **cream**. The cream file is `#FFFDFA`, which measures
-  **3.28:1** there and clears the 3:1 a logo needs as a non-text graphic. It was `#F5F0EB` until
-  the palette swap; that measured 3.32 on the old orange and fell to 2.94 on this one, which is
-  why the file moved to paper. Black would measure 6.31 on the band and is still forbidden there:
-  it reads as a mistake beside the cream display type around it.
-- On a photograph, the wordmark needs either a solid backing block (Ink or Paper, `2px` radius) or
+  **3.28:1** there and clears the 3:1 a logo needs as a non-text graphic. `#F5F0EB` would measure
+  2.94 and fail, which is why the file is Paper rather than Ground. Black would measure 6.31 on
+  the band and is still forbidden there: it reads as a mistake beside the cream display type
+  around it.
+- On a photograph, the logo needs either a solid backing block (Ink or Paper, `2px` radius) or
   a `≥60%` scrim in the opposing tone. Never place it directly on an unmodified image.
-- The two files are the only two options. Do not recolour the wordmark to orange, to muted ink,
+- The two files are the only two options. Do not recolour the logo to orange, to muted ink,
   or to anything else.
 
-**Sizing.** Minimum width is **120px** and that minimum is a hard floor, not a target. The mobile
-bar renders the wordmark at `120px` down to a `320px` viewport and it must not be clipped: give the
-wordmark `flex: 0 0 auto` and let the nav's other children shrink. A previous build set a minimum
-above 120px and clipped the bar below 350px. Do not do that again.
+**Sizing is by height.** The lockup is wide, so height is what keeps it reading the same from
+context to context, and the width follows from the 5.88 ratio. Minimum height is **22px** (129px
+wide) and that minimum is a hard floor, not a target. At the floor the lowercase `emerging` is
+11.7px tall. The `Wordmark` component enforces it with `max(22px, …)`. The mobile bar renders the
+logo at the floor down to a `320px` viewport and it must not be clipped: the logo is
+`flex: 0 0 auto` and the nav's other children shrink. At 320px the bar is an 18px gutter, the 129px logo,
+135px of open space, the 20px menu button and the other gutter. Do not raise the floor: a previous build
+set a higher minimum and clipped the bar below 350px.
 
-| Context | Width |
-| --- | --- |
-| Nav, desktop | `168px` |
-| Nav, ≤900px | `120px` (floor) |
-| Focus pages (subscribe, thanks) | `200px`, centred |
-| Footer | `clamp(220px, 26vw, 340px)` |
+| Context | Height | Width |
+| --- | --- | --- |
+| Nav, 780px and up | `32px` | 188px |
+| Nav, 537px to 779px | `clamp(22px, 4.1vw, 32px)`, fluid | 129px to 188px |
+| Nav, 536px and down | `22px` (floor) | 129px |
+| Focus pages (subscribe, thanks) | `38px`, centred | 223px |
+| Footer | `clamp(40px, 4.9vw, 60px)` | 235px to 353px |
 
-**Clear space** on all four sides is `0.5 ×` the wordmark's rendered height. At the `120px` floor
+**Clear space** on all four sides is `0.5 ×` the logo's rendered height. At the `22px` floor
 that is `11px`.
 
-**Dropped from the mockup:** the mockup pairs the wordmark with a `6px` (nav) / `9px` (footer)
-orange dot. That is an emblem. It is not shipped. Its job — a spot of orange in the nav — is done by
+**Dropped from the mockup:** the mockup pairs the logo with a `6px` (nav) / `9px` (footer)
+orange dot. That is an emblem. It is not shipped. Its job, a spot of orange in the nav, is done by
 the Subscribe button instead.
 
-**Favicon** is `public/favicon.svg`: the full wordmark on a `#F5F0EB` square. Note that a 5.34:1
-lockup in a 16px tab is legible as a shape, not as words. The alternative that stays inside the
-no-emblem rule is cropping to the `e`, which is a lettermark; flag it if the tab treatment matters.
+**The previous logo** (`emerging` over a second line) is archived in `design/source/archive-old-logo/`
+and is not referenced anywhere on the site.
+
+**Favicon** is `public/favicon.svg`, and it has **not** moved to the new logo. It still carries
+the previous logo on a `#F5F0EB` square. What goes in the tab is a separate open decision. Note
+that a 5.88:1 lockup in a 16px tab is legible as a shape, not as words; the options that stay
+inside the no-emblem rule are cropping to `LA` or to the `e`, which are lettermarks.
 
 ---
 

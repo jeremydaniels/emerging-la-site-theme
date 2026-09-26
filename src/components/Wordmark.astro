@@ -1,6 +1,7 @@
 ---
 /**
- * The wordmark. There is no emblem, icon or monogram anywhere on this site.
+ * The logo: `emerging`, a thin vertical divider, then `LA`. There is no
+ * emblem, icon or monogram anywhere on this site.
  *
  * Two files exist, black and cream, and the only decision is which ground the
  * mark is sitting on. See design-system.md §12.
@@ -11,36 +12,40 @@
  *   tone="cream" forces cream. Use on Ink, Well, the orange band, or a dark
  *                photo scrim.
  *
- * Width has a hard floor of 120px, applied here with max() so a caller cannot
- * go under it. Do not raise the floor: a previous build set a higher minimum
- * and clipped the mobile bar below 350px. Pass a clamp() to scale up.
+ * Sized by HEIGHT, because the lockup is wide (5.88:1) and height is what
+ * keeps it reading the same across contexts. Height has a hard floor of 22px,
+ * applied here with max() so a caller cannot go under it. At the floor the
+ * mark is 129px wide and the lowercase `emerging` is still 11.7px tall.
+ * Pass a clamp() to scale up.
  */
 
 interface Props {
   tone?: 'auto' | 'black' | 'cream';
-  /** Any CSS width. Anything under the 120px floor is clamped up to it. */
-  width?: string;
+  /** Any CSS height. Anything under the 22px floor is clamped up to it. */
+  height?: string;
   href?: string | null;
   class?: string;
 }
 
 const {
   tone = 'auto',
-  width = '168px',
+  height = '32px',
   href = '/',
   class: className = '',
 }: Props = Astro.props;
 
-const BLACK = '/logo/wordmark-black.svg';
-const CREAM = '/logo/wordmark-cream.svg';
+const BLACK = '/logo/emerging-la-logo-black.svg';
+const CREAM = '/logo/emerging-la-logo-cream.svg';
 const ALT = 'Emerging LA';
 
-/** Intrinsic aspect ratio of the trimmed lockup. */
-const RATIO = 5.34;
+/** viewBox of both files, trimmed to the glyph bounding box. */
+const VB_W = 12412;
+const VB_H = 2112;
+const RATIO = VB_W / VB_H;
 
-const resolved = `max(120px, ${width})`;
-/** Clear space is half the rendered height, on all four sides. */
-const style = `width:${resolved};--wordmark-clear:calc(${resolved} / ${RATIO} / 2)`;
+const resolved = `max(22px, ${height})`;
+/** Width follows height. Clear space is half the rendered height, on all four sides. */
+const style = `height:${resolved};width:calc(${resolved} * ${RATIO.toFixed(4)});--wordmark-clear:calc(${resolved} / 2)`;
 
 const Tag = href ? 'a' : 'span';
 const tagProps = href ? { href, 'aria-label': ALT } : {};
@@ -49,12 +54,12 @@ const tagProps = href ? { href, 'aria-label': ALT } : {};
 <Tag {...tagProps} class:list={['wordmark', `wordmark-${tone}`, className]} style={style}>
   {
     tone !== 'cream' && (
-      <img class="wordmark-black-img" src={BLACK} alt={ALT} width="1912" height="358" />
+      <img class="wordmark-black-img" src={BLACK} alt={ALT} width={VB_W} height={VB_H} />
     )
   }
   {
     tone !== 'black' && (
-      <img class="wordmark-cream-img" src={CREAM} alt={ALT} width="1912" height="358" />
+      <img class="wordmark-cream-img" src={CREAM} alt={ALT} width={VB_W} height={VB_H} />
     )
   }
 </Tag>

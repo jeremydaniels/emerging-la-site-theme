@@ -101,18 +101,20 @@ in `design-system.md` §2.
 
 ## Logo
 
-Wordmark only. **There is no emblem, icon or monogram anywhere on this site, including the
-favicon.** The mockup pairs the wordmark with a small orange dot; that dot is not shipped.
+Logo only: `emerging`, a thin vertical divider, then `LA`. **There is no emblem, icon or monogram
+anywhere on this site, including the favicon.** The mockup pairs the logo with a small orange dot;
+that dot is not shipped.
 
-Two files, `public/logo/wordmark-black.svg` and `wordmark-cream.svg`, both trimmed to the glyph
-bounding box (aspect ratio 5.34:1). Use the `Wordmark` component, which picks the right one.
+Two files, `public/logo/emerging-la-logo-black.svg` and `emerging-la-logo-cream.svg`, both one
+compound path trimmed to the glyph bounding box (aspect ratio 5.88:1). Use the `Wordmark`
+component, which picks the right one. Its accessible name is "Emerging LA" everywhere.
 
 The wordmark never sits on a ground it disappears into: cream on Ground or Paper is forbidden,
 black on Ink, Well or the orange band is forbidden. On a photo it needs a backing block or a scrim.
 
-**Minimum width is 120px and that is a hard floor, not a target.** A previous build set a higher
-minimum and clipped the mobile bar below 350px. The `Wordmark` component enforces the floor with
-`max(120px, …)`. Do not raise it.
+**The logo is sized by height. Minimum height is 22px (129px wide) and that is a hard floor, not
+a target.** A previous build set a higher minimum and clipped the mobile bar below 350px. The
+`Wordmark` component enforces the floor with `max(22px, …)`. Do not raise it.
 
 ---
 
@@ -147,9 +149,9 @@ scripts/check-event-flags.mjs Build time warning for overdue event flags.
 
 public/
   fonts/riegal.woff2          Display face, one weight.
-  logo/wordmark-black.svg     Wordmark, for light grounds.
-  logo/wordmark-cream.svg     Wordmark, for dark grounds and the orange band.
-  favicon.svg                 The wordmark on a cream square. No emblem.
+  logo/emerging-la-logo-black.svg  Logo, for light mode and light grounds.
+  logo/emerging-la-logo-cream.svg  Logo, for dark mode, the footer and the orange band.
+  favicon.svg                 The previous logo on a cream square. No emblem. Pending.
 
 src/
   styles/tokens.css           THE ONLY FILE WITH A COLOUR IN IT. Palette, modes, @theme.
@@ -163,7 +165,7 @@ src/
   components/Nav.astro        Sticky nav. Subscribe here is SECONDARY, not anchor orange.
   components/ThemeToggle.astro    The mode switch. Never orange. Nav + mobile menu.
   components/Footer.astro     Ink ground in both modes, via .on-ink.
-  components/Wordmark.astro   Picks black or cream, enforces the 120px floor.
+  components/Wordmark.astro   Picks black or cream, enforces the 22px height floor.
   components/SectionHeader.astro  Numbered eyebrow + H2 + rule.
   components/SubscribeBand.astro  The orange band. Shared by every page that ends with it.
   components/SubscribeForm.astro  The form inside it. There is only one of these.
