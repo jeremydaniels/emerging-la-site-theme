@@ -1,0 +1,79 @@
+---
+/**
+ * Behaviour for CountUp. Render this ONCE per page that uses one, at the end
+ * of the page template, the same way RotatingWordScript is rendered.
+ *
+ * Inline and import free, so it stays in the HTML and the build still emits
+ * no `.js` file. It holds no numbers: each stat's final value is read off its
+ * own `data-final`, so the one place the number is set stays src/lib/site.ts.
+ *
+ * Load bearing:
+ *   - Under prefers-reduced-motion: reduce nothing runs and the stat keeps the
+ *     final value the server rendered.
+ *   - Each number runs once per page load, the first time it is at least half
+ *     in view, and is then unobserved. It does not replay.
+ *   - A number already half in view on load starts at once: the observer's
+ *     first callback reports it straight away.
+ *   - 1.2s with an ease-out, quick at first and slowing into the final
+ *     number. The shown value is floored, so the final number lands at 1.2s
+ *     exactly. Rounding instead lands it at about 0.8s (0.67 of the run with
+ *     a cubic) and spends the rest standing still, and a cubic with flooring
+ *     sits on 14 for half a second, so this is a quadratic. The DOM is only
+ *     written when the shown integer changes.
+ */
+---
+
+<script>
+  const stats = document.querySelectorAll<HTMLElement>('[data-countup]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (stats.length && !reduce && 'IntersectionObserver' in window) {
+    const DURATION = 1200;
+    const FROM = 1;
+    const ease = (t: number) => 1 - (1 - t) * (1 - t);
+
+    const run = (num: HTMLElement) => {
+      const to = Number(num.dataset.final);
+      // Timed from the first frame's own timestamp. A frame's timestamp can be
+      // earlier than a performance.now() taken just before it, which made t
+      // negative and showed a 0 for one frame.
+      let start = -1;
+      let shown = FROM;
+
+      const frame = (now: number) => {
+        if (start < 0) start = now;
+        const t = Math.min(1, (now - start) / DURATION);
+        const value = Math.floor(FROM + (to - FROM) * ease(t));
+        if (value !== shown) {
+          shown = value;
+          num.dataset.n = String(value);
+        }
+        if (t < 1) requestAnimationFrame(frame);
+      };
+
+      requestAnimationFrame(frame);
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.intersectionRatio < 0.5) continue;
+          observer.unobserve(entry.target);
+          const num = entry.target.querySelector<HTMLElement>('[data-countup-num]');
+          if (num) run(num);
+        }
+      },
+      { threshold: 0.5 },
+    );
+
+    stats.forEach((stat) => {
+      const num = stat.querySelector<HTMLElement>('[data-countup-num]');
+      const to = Number(num?.dataset.final);
+      if (!num || !Number.isInteger(to) || to <= FROM) return;
+      // Reset to the start value and only then let the digits show.
+      num.dataset.n = String(FROM);
+      stat.dataset.countupReady = '';
+      observer.observe(stat);
+    });
+  }
+</script>

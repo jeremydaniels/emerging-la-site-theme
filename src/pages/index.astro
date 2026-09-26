@@ -19,7 +19,9 @@ import IssueCard from '../components/IssueCard.astro';
 import EventsTable from '../components/EventsTable.astro';
 import SubscribeBand from '../components/SubscribeBand.astro';
 
-import { aboutOpening, site } from '../lib/site';
+import { aboutOpening, community, site } from '../lib/site';
+import CountUp from '../components/CountUp.astro';
+import CountUpScript from '../components/CountUpScript.astro';
 import { routes } from '../lib/links';
 import { getLatestIssues } from '../data/issues';
 import { upcomingEvents } from '../data/events';
@@ -32,7 +34,7 @@ const upcoming = upcomingEvents();
  * placeholder, not a guess and not a rounded-down real figure.
  */
 const proof = [
-  { value: site.communitySize, label: 'Community', real: true },
+  { value: site.communitySize, label: 'Community', real: true, count: community },
   { value: '[TBD]', label: 'Issues published', real: false },
   { value: '[TBD]', label: 'Events hosted', real: false },
   { value: '[TBD]', label: 'Companies represented', real: false },
@@ -137,7 +139,7 @@ const proof = [
                   cell.real ? 'text-ink' : 'text-ink-faint',
                 ]}
               >
-                {cell.value}
+                {cell.count ? <CountUp count={cell.count.count} unit={cell.count.unit} /> : cell.value}
               </div>
               <div class="t-mono mt-2 text-mono-meta text-ink-muted">{cell.label}</div>
             </div>
@@ -240,3 +242,6 @@ const proof = [
     script inside that component would render inside the h1: see the note in
     RotatingWordScript. */}
 <RotatingWordScript />
+
+{/* The count-up's behaviour, once per page: see the note in CountUpScript. */}
+<CountUpScript />

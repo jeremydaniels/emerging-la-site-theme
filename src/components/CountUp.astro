@@ -1,0 +1,94 @@
+---
+/**
+ * A stat that counts up from 1 to its final value the first time it is half
+ * in view. The unit ("K+") never moves or changes. See design-system.md §22.
+ *
+ * Standalone display numbers only. Never inside a sentence: a number ticking
+ * in running text reads oddly and can reflow the line.
+ *
+ * The behaviour lives in CountUpScript, rendered once at the end of any page
+ * that uses this, for the same reason RotatingWord splits the same way: the
+ * script stays inline and import free, and a page without it just shows the
+ * final number.
+ *
+ * How it holds still while counting:
+ *
+ *   - Riegal has proportional figures and no `tnum` feature, so tabular-nums
+ *     alone cannot hold the width. The final digits are drawn once as an
+ *     invisible ghost (`::before`), which is what takes up space. The counting
+ *     digits (`::after`) are absolutely positioned over it, right aligned
+ *     against the unit, so no value they pass through can change the layout.
+ *   - Both are generated content from data attributes, so the page's text is
+ *     the sr-only line alone: "15K+" once, for search engines, screen readers
+ *     and reader modes. The visual copy is aria-hidden, so a screen reader
+ *     never hears a tick.
+ *
+ * With no JS, or under reduced motion, `data-n` is already the final value and
+ * the stat renders exactly as it would without any of this.
+ */
+
+interface Props {
+  /** The final number. An integer: the count runs 1, 2, 3 … up to it. */
+  count: number;
+  /** Fixed text after the number, e.g. "K+". */
+  unit?: string;
+}
+
+const { count, unit = '' }: Props = Astro.props;
+const final = String(count);
+---
+
+{/* One line on purpose: any whitespace between these spans renders as a space between "15" and "K+". */}
+<span class="countup" data-countup><span class="sr-only">{final}{unit}</span><span class="countup-visual" aria-hidden="true"><span class="countup-num" data-countup-num data-final={final} data-n={final}></span>{unit && <span class="countup-unit" data-unit={unit}></span>}</span></span>
+
+<style>
+  .countup-visual {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .countup-num {
+    position: relative;
+    display: inline-block;
+  }
+
+  /* The ghost. In flow and invisible: this is the width the number owns. */
+  .countup-num::before {
+    content: attr(data-final);
+    visibility: hidden;
+  }
+
+  /* The digits you see, laid over the ghost and right aligned to it. */
+  .countup-num::after {
+    content: attr(data-n);
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .countup-unit::before {
+    content: attr(data-unit);
+  }
+
+  /*
+    No flash of the final number. The HTML carries the final value, and the
+    script resets it to 1 once it runs. Between first paint and that moment,
+    when a script is going to run and motion is allowed, the digits are hidden
+    rather than shown at 15 and then snapped back to 1.
+
+    The failsafe: if the script never arrives, the digits come back on their
+    own after 2s, still at the final value.
+  */
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    .countup:not([data-countup-ready]) .countup-num::after {
+      visibility: hidden;
+      animation: countup-failsafe 0s 2s forwards;
+    }
+  }
+
+  @keyframes countup-failsafe {
+    to {
+      visibility: visible;
+    }
+  }
+</style>

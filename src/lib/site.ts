@@ -1,9 +1,23 @@
 /** Site-wide constants used by layouts and metadata. */
 
+/**
+ * The one real number we are allowed to state. See CLAUDE.md, copy rules.
+ *
+ * THIS IS THE ONLY PLACE IT IS SET. Every stat, sentence and caption reads it
+ * from here, through `community` or `site.communitySize`. `count` is in
+ * thousands and `unit` is what follows it. A live subscriber count from
+ * Beehiiv on a daily rebuild is a change to `count` alone, for example
+ * `Math.floor(subscribers / 1000)`.
+ */
+export const community = {
+  count: 15,
+  unit: 'K+',
+} as const;
+
 export const site = {
   name: 'Emerging LA',
-  /** The one real number we are allowed to state. See CLAUDE.md, copy rules. */
-  communitySize: '15K+',
+  /** `community` as one string, for running text: "15K+". */
+  communitySize: `${community.count}${community.unit}`,
   location: 'Los Angeles, California',
   description:
     'A newsletter and events for the people building tech in Los Angeles.',

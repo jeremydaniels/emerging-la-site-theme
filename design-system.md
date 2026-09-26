@@ -681,13 +681,15 @@ Almost none, and that is the design.
 | Chips, toggles | `all .15s ease` |
 | Rotating hero word | `opacity .2s ease` crossfade every `2s`, the wash's width with it |
 | Hero map | a loop, see §21 |
+| Community stat | counts 1 to 15 once, `1.2s` ease-out, see §22 |
 | Everything else | none |
 
 **ADDED:** the two hero rows are the only motion on the site that runs on its own. Both stop while
 the tab is hidden, neither runs at all under `prefers-reduced-motion`, and neither can move
 anything outside its own box.
 
-No scroll animation, no reveals, no parallax, no counters. The v1 mockup had a marquee and a
+The community stat's count-up (§22) is the one thing that starts on scroll, and it runs once.
+Otherwise: no scroll animation, no reveals, no parallax, no other counters. The v1 mockup had a marquee and a
 blinking dot; v2 removed both, and v2 is the source of truth. All of the above is wrapped in
 `@media (prefers-reduced-motion: reduce)` to `transition: none`.
 
@@ -1063,3 +1065,64 @@ The script is inline and import free, like the rotating word's, so the build sti
 file. The component's styles stay under the 4KB Astro inlines, which is why its layout and type
 are Tailwind utilities in the markup and only the states, the SVG paint and the loop are in its
 `<style>`. Keep both under their limits, or the home page picks up a request of its own for each.
+
+---
+
+## 22. The community count-up
+
+**ADDED.** The `15K+` community stat counts up the first time it comes into view: the digits tick
+from `1` to `15`, the `K+` stays fixed beside them, and it lands on `15K+`.
+
+**Where it runs.** Only where the number stands alone as a display stat:
+
+| Page | Place | Colour |
+| --- | --- | --- |
+| `/` | Proof strip under the hero, first cell | `text-ink`, unchanged |
+| `/about` | `04 · By the numbers`, first cell | `text-ink`, unchanged |
+
+**Where it does not.** Anywhere the number sits inside a sentence, because a number ticking in
+running text reads oddly and can reflow the line: the `/subscribe` subhead, the orange band's
+"Read by 15K+ founders…" line, and the hero map's closing caption. The `[TBD]` cells beside the
+stat are untouched. The count-up adds no colour; the stat keeps whatever it had.
+
+**One source.** `community` in `src/lib/site.ts` (`count: 15`, `unit: 'K+'`) is the only place the
+number is set. `site.communitySize` is built from it for running text. A live subscriber count from
+Beehiiv on a daily rebuild is a change to `count` alone.
+
+**Motion.**
+
+| Thing | Value |
+| --- | --- |
+| Range | `1` to the final count, integers only |
+| Duration | `1.2s`, landing on the final number at `1.2s` exactly |
+| Easing | ease-out quadratic, `1 - (1 - t)²`, shown value floored |
+| Trigger | the first time the stat is at least half in view; at once if it already is on load |
+| Repeats | never. It runs once per page load and does not replay on scrolling back |
+| Reduced motion | none. The final `15K+` shows and nothing runs |
+
+The easing is a quadratic on purpose. Rounding a cubic lands on the final number at about `0.8s`
+and then stands still. Flooring a cubic sits on `14` for half a second.
+
+**Nothing moves while it counts.** Riegal has proportional figures and no `tnum` feature, so
+`tabular-nums` alone cannot hold the width (it is set anyway, and takes effect if the face ever
+changes). The final digits are drawn once as an invisible ghost that takes up the space, and the
+counting digits are laid over it, right aligned against the unit. No value they pass through can
+change the layout: the stat, its label, the cell and the page keep exactly the same size and
+position on every frame, and the finished stat renders pixel for pixel where it did before.
+
+**Fallbacks.**
+
+- **No JS and search engines** get the final `15K+` in the HTML.
+- **No flash.** The script resets the digits to `1` before it lets them show. Between first paint
+  and that moment, when a script will run (`@media (scripting: enabled)`) and motion is allowed,
+  the digits are hidden rather than shown at `15` and snapped back. If the script never arrives,
+  a CSS failsafe shows them after `2s` at the final value.
+- **Screen readers** hear `15K+` once. The page's text is a visually hidden `15K+`; the visible
+  digits and unit are `aria-hidden` generated content, so no tick is ever announced and the
+  element's text content is `15K+` exactly once.
+
+**Budget.** `CountUp.astro` is the markup and `CountUpScript.astro` is the behaviour, rendered once
+at the end of each page that uses it, the same split as `RotatingWord`. The script is inline and has
+no imports, so the build still emits no `.js` file. It adds 784 bytes of inline script to `/` and
+`/about` (about 360 bytes gzipped) and nothing to any other page.
+
