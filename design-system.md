@@ -1025,7 +1025,8 @@ the name before it, so a narrow caption wraps only between names.
 | One line drawing in | `1s`, `ease-in-out`, via `pathLength="1"` and the dash offset |
 | Ring pulse | `2.2s`, looping while its sector is lit, paused with the loop |
 | Caption change | `0.2s` crossfade, the same as the rotating word |
-| Finished map | held `3.2s` |
+| Finished map, on page load | held `0.9s` (`opening`), once |
+| Finished map, every later loop | held `3.2s` |
 | Fade out | `0.6s`, then the loop restarts from the first sector |
 
 A sector has three states, set on its group: **off**, **active** (dots, lines, ring pulse, labels,
@@ -1035,8 +1036,14 @@ caption reads **Los Angeles** over **15K+ builders across every sector**.
 
 **The server renders the finished map.** Every dot on, every line drawn, the Los Angeles caption.
 That is the whole map for a visitor with reduced motion or no JavaScript, and it is where the loop
-enters: at the start of its hold. Nothing flashes and nothing resets on load; the first sector
-lights `3.8s` in, after the hold and the fade.
+enters. Nothing flashes and nothing resets on load.
+
+**Only the first hold is short.** On page load the finished map holds for `0.9s` rather than the
+full `3.2s`, then fades, so the first sector lights `1.5s` after load (measured 1.49s to 1.51s from
+the load event, at 320px and 1200px). With the full hold it was `3.8s`. Every later hold is the
+full `3.2s`, including the one that runs when reduced motion is switched off mid session. If the
+map is off screen at load, the opening hold waits with the rest of the loop, so the first sector
+lights `1.5s` after the map scrolls into view.
 
 ### Behaviour
 

@@ -18,8 +18,9 @@
  *
  *   - The server renders the FINISHED map: every dot on, every line drawn,
  *     the "Los Angeles" caption. That is what a visitor gets with reduced
- *     motion or no JavaScript, and it is where the loop enters, at the start
- *     of its hold, so nothing flashes and nothing is reset on load.
+ *     motion or no JavaScript, and it is where the loop enters, so nothing
+ *     flashes and nothing is reset on load. The hold it enters on is the
+ *     shorter `opening` one, so the first sector is not a long wait.
  *   - Every moving part is absolutely positioned inside a well with a fixed
  *     aspect ratio and overflow hidden. Nothing the animation does can change
  *     the size of anything outside the frame.
@@ -53,6 +54,12 @@ const TIMING = {
   hold: 3200,
   /** The fade out, after which the loop restarts. */
   fade: 600,
+  /**
+   * The finished map on page load, before the first fade. Only this one hold
+   * is short: with the fade it puts the first sector 1.5s after the loop
+   * starts, where the full hold would be 3.8s. Every later hold is `hold`.
+   */
+  opening: 900,
 } as const;
 
 /** The viewBox. Coordinates in sectors.ts are in these units. */
@@ -132,7 +139,7 @@ const delay = (n: number) => `--d:${n * TIMING.stagger}ms`;
   class:list={['frame map', className]}
   style={`--crop-size:16px;--crop-inset:14px;--draw:${TIMING.draw}ms;--pulse:${TIMING.pulse}ms;--fade:${TIMING.fade}ms`}
   data-sector-map
-  data-timing={`${TIMING.sector} ${TIMING.hold} ${TIMING.fade}`}
+  data-timing={`${TIMING.sector} ${TIMING.hold} ${TIMING.fade} ${TIMING.opening}`}
   data-captions={JSON.stringify(captions)}
 >
   {/* @container: the type below is sized in cqi, against the well's width. */}
@@ -397,7 +404,8 @@ const delay = (n: number) => `--d:${n * TIMING.stagger}ms`;
 <script>
   /*
    * The loop: each sector lit in turn, then the finished map, then the fade.
-   * The server rendered the finished map, so the loop enters at its hold.
+   * The server rendered the finished map, so the loop enters at its hold, on
+   * the shorter opening hold rather than the full one.
    *
    * It only runs while the map is on screen, the tab is visible and motion is
    * allowed, and it resumes where it stopped. Under prefers-reduced-motion it
@@ -414,12 +422,15 @@ const delay = (n: number) => `--d:${n * TIMING.stagger}ms`;
     const name = map.querySelector('[data-caption-name]');
     const line = map.querySelector('[data-caption-line]');
     const captions: string[][] = JSON.parse(map.dataset.captions ?? '[]');
-    const [sectorMs, holdMs, fadeMs] = (map.dataset.timing ?? '').split(' ').map(Number);
+    const [sectorMs, holdMs, fadeMs, openingMs] = (map.dataset.timing ?? '')
+      .split(' ')
+      .map(Number);
 
     /** Steps 0 to last - 1 are the sectors, last is the finished map, last + 1 the fade. */
     const last = captions.length - 1;
     let step = last;
-    let left = holdMs;
+    // The one short hold. show() sets every later one from holdMs.
+    let left = openingMs;
     let due = 0;
     let timer = 0;
     let swap = 0;
