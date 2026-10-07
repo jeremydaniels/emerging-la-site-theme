@@ -604,10 +604,10 @@ favicon. The asterisk is part of the logo, not an add-on.
 
 The logo is **emerging✱LA**: the existing `emerging` wordmark, a six point asterisk, then a bold
 `LA`. It is a single compound path in each file, with no background, no embedded image, no
-metadata and one fill colour. There is no second line and no descriptor.
+metadata and one fill color. There is no second line and no descriptor.
 
 **The single source of truth is `design/logo-pack/`.** Any logo file used anywhere (the site,
-social, print, a deck, a partner kit) must come from that folder. Do not trace, redraw, recolour
+social, print, a deck, a partner kit) must come from that folder. Do not trace, redraw, recolor
 or re-export the mark from anything else. The pack is kept exactly as delivered (`01-transparent`,
 `02-on-backgrounds`, `colors.txt`) and is never edited. `design/` is not under `public/`, so none
 of it is served. The site files below are copies of `01-transparent/svg/` with the fill
@@ -621,12 +621,13 @@ Three files, already trimmed to the glyph bounding box in the pack, so they scal
 | `public/logo/emerging-la-logo-cream.svg` | `#FFFDFA` | Dark mode, the Ink footer, the orange band `#FF4B33`, Well `#15130F`, and any photo darker than mid |
 | `public/logo/emerging-la-logo-white.svg` | `#FFFFFF` | Not used yet. Reserved for dark photographs, behind a scrim as below |
 
-**Colour.** The black logo is pure `#000000`, not the Ink token `#1C1C1C`. The cream logo on the
+**Color.** The black logo is pure `#000000`, not the Ink token `#1C1C1C`. The cream logo on the
 site is `#FFFDFA`, not the pack's `#F5F0EB`, because `#FFFDFA` clears contrast on the orange band.
 The fill is changed in the `public/logo/` copy only; the pack itself is untouched.
 
-**One solid colour, always.** No gradients, no two-tone, no outline. There is no orange logo on
+**One solid color, always.** No gradients, no two-tone, no outline. There is no orange logo on
 the site. The pack ships an orange version for print and partners; it does not go on this site.
+The one exception is the orange short mark used as the favicon, below.
 
 Intrinsic aspect ratio **7.38 : 1** (viewBox `0 0 3023.18 409.71`).
 
@@ -646,7 +647,7 @@ one.
   mistake beside the cream display type around it.
 - On a photograph, the logo needs either a solid backing block (Ink or Paper, `2px` radius) or
   a `>=60%` scrim in the opposing tone. Never place it directly on an unmodified image.
-- The files above are the only options. Do not recolour the logo to orange, to muted ink,
+- The files above are the only options. Do not recolor the logo to orange, to muted ink,
   or to anything else.
 
 **Sizing is by height.** The lockup is wide, so height is what keeps it reading the same from
@@ -683,22 +684,21 @@ spacing match the full logo exactly, and like the full logo it is locked: never 
 the asterisk relative to the `LA`. Intrinsic ratio 2.62 : 1 (viewBox `2066.07 0 957.11 365`).
 The old idea of cropping to the `e` or to a lone `LA` as a lettermark is dead.
 
-The favicon is that mark centred in a square with a little padding:
+The favicon is that mark in orange `#FF4B33`, centered in a square with a little padding, on a
+transparent background. There is no tile or square behind it. One orange fill works on both light
+and dark tabs, so `favicon.svg` has no media query and there is no `prefers-color-scheme` anywhere
+in the codebase (§16).
 
 | File | What it is |
 | --- | --- |
-| `public/favicon.svg` | Black `#000000` on transparent; switches to cream `#F5F0EB` under `prefers-color-scheme: dark` inside the SVG |
-| `public/favicon-32x32.png`, `favicon-16x16.png` | Black mark, transparent background |
+| `public/favicon.svg` | Orange `#FF4B33` on transparent, one fill |
+| `public/favicon-32x32.png`, `favicon-16x16.png` | Orange mark, transparent background |
 | `public/favicon.ico` | The two PNGs above, 16 and 32 |
 | `public/apple-touch-icon.png` | 180x180, black mark on a solid `#F5F0EB` ground with padding, because iOS fills transparency with black |
 
-The `prefers-color-scheme` query in `favicon.svg` is the one deliberate exception to the site's
-no `prefers-color-scheme` rule (§16). It follows the browser tab, not the page, so the site's
-own light and dark toggle is not involved and cannot reach it. The PNG fallbacks and the `.ico`
-are black on transparent and do not adapt.
-
-At 16px the `LA` is still readable as letters but the asterisk is only a soft three pixel
-smudge; at 32px both are clear. The mark was not enlarged or moved to compensate.
+Orange on white is 2.94:1, under the 3:1 a graphic usually needs, so the mark is softer on a light
+tab than on a dark one. At 16px the `LA` is still readable as letters but the asterisk is only a
+soft three pixel smudge; at 32px both are clear. The mark was not enlarged or moved to compensate.
 
 ---
 
@@ -830,9 +830,7 @@ of the menu, under a hairline, with a `Mode` mono label on the left and the swit
 - The choice persists in `localStorage` under `ela-theme`.
 - **The OS preference never moves the mode**, not on first visit and not when it changes mid
   session. The toggle is the only thing that changes it.
-- **There is no `prefers-color-scheme` rule anywhere in the codebase and there must not be one**,
-  with one exception: the query inside `public/favicon.svg`, which only recolours the tab icon.
-  It never touches the site's light/dark toggle.
+- **There is no `prefers-color-scheme` rule anywhere in the codebase and there must not be one.**
 - A 106 byte synchronous script is the first node in `<head>`, before the stylesheet, and restores
   a stored choice before first paint. There is no flash of the wrong mode.
 - `role="switch"` with `aria-checked` and an `aria-label` of `Dark mode`. Real `<button>`, so Space
