@@ -3,13 +3,13 @@
  * else, so the list can be edited here without touching the component.
  *
  * ============================================================================
- *  PLACEHOLDERS. These four sectors and their neighbourhoods are a working
+ *  PLACEHOLDERS. These four sectors and their neighborhoods are a working
  *  list until Brandon confirms the final one. Replace them here when he does.
  * ============================================================================
  *
  * Coordinates are in the map's own 340 x 300 viewBox, not in pixels, so they
  * hold at every size the map renders at. `label` is the side of the dot the
- * neighbourhood name sits on; pick the side that points away from the other
+ * neighborhood name sits on; pick the side that points away from the other
  * dots and from the edge of the map.
  *
  * Sectors light up in the order they are listed, and within a sector the dots

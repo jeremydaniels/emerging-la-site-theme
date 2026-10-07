@@ -70,7 +70,7 @@ Everything on this site is hand maintained in typed files. Nothing is pulled fro
 | Events | `src/data/events.ts` (remember the flag) |
 | External links: Luma, LinkedIn, Beehiiv, socials, email | `src/lib/links.ts` |
 | Site name, description, nav links | `src/lib/site.ts` |
-| Colours | `src/styles/tokens.css`, PALETTE block at the top, and nowhere else |
+| Colors | `src/styles/tokens.css`, PALETTE block at the top, and nowhere else |
 
 All the external URLs in `src/lib/links.ts` are placeholders right now. The real Luma, LinkedIn and
 Beehiiv links go in there when they are ready, and nothing else in the codebase should hardcode an
@@ -157,7 +157,7 @@ what belongs there.
 
 Routes: `/`, `/about`, `/archive`, `/events`, `/subscribe`, `/thanks`, `/privacy`, `/terms`, `404`.
 
-`/subscribe` and `/thanks` use `FocusLayout`: no nav, no footer columns, just a centred wordmark
+`/subscribe` and `/thanks` use `FocusLayout`: no nav, no footer columns, just a centered wordmark
 and a one line footer.
 
 ### `/preview/*` is not part of the site

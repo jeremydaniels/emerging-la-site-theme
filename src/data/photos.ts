@@ -44,7 +44,7 @@ export const photos = {
 
      THE FILE HERE IS STILL THE 3/2 CROP, 1280 x 853. The frame went back to
      4/5 with the two-column hero; a 4/5 crop to match had not landed at the
-     path when that happened, so object-fit is centre-cropping the landscape
+     path when that happened, so object-fit is center-cropping the landscape
      file and throwing away 47% of its width, 299px off each side. The brief
      below describes the 3/2 file that is actually in the slot, because that is
      what is on the page. Replacing hero.jpg with a 4/5 export fixes the crop

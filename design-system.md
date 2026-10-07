@@ -217,7 +217,7 @@ Body copy never goes below `13.5px`. Mono labels do; that is what mono is for.
 
 Every mono step is `text-transform: uppercase` except `mono-input`.
 
-Tracking ladder, memorise it: **`0.10 → 0.12 → 0.13 → 0.14 → 0.16 → 0.18 → 0.20`**. The smaller the
+Tracking ladder, memorize it: **`0.10 → 0.12 → 0.13 → 0.14 → 0.16 → 0.18 → 0.20`**. The smaller the
 type, the wider the tracking. `0.16em` is the workhorse (18 of 47 uses).
 
 ---
@@ -262,7 +262,7 @@ The `@media (max-width: 900px)` breakpoint is the only one in the mockup. One br
 
 Four weights, and that is the whole vocabulary:
 
-| Weight | Colour | Use |
+| Weight | Color | Use |
 | --- | --- | --- |
 | `1px` | `--ela-rule` `rgba(28,28,28,0.14)` | Section headers, card borders, table headers, grid dividers, nav bottom |
 | `1px` | `--ela-hairline` `rgba(28,28,28,0.08)` | Rows *inside* a list or table, card inner divider |
@@ -282,7 +282,7 @@ thicker on hover, it gets darker.
 
 ## 5. The photo frame
 
-The single most recognisable object in the design. Three parts, always all three.
+The single most recognizable object in the design. Three parts, always all three.
 
 ```
 ┌─ paper mat ────────────────┐   background: --ela-paper
@@ -393,10 +393,10 @@ the bottom of cards. Shared anatomy:
 - `display: flex` · `flex-wrap: wrap` · `align-items: baseline`
 - gap `8px 20px` (photo bar) or `18px` (top bar)
 - font: Courier Prime, `10.5px`, `0.13em`–`0.16em`, uppercase
-- colour `--ela-ink-muted`; the **first** item may be `--ela-ink` to act as the title
+- color `--ela-ink-muted`; the **first** item may be `--ela-ink` to act as the title
 - last item pushed right with `margin-left: auto`, which becomes `margin-left: 0` at ≤900px
 
-Three instances, memorise the shape:
+Three instances, memorize the shape:
 
 | Bar | Padding | Left | Middle | Right |
 | --- | --- | --- | --- | --- |
@@ -494,7 +494,7 @@ to be redone every time the column count changes at a breakpoint, and it gets th
 cell of each row wrong. The gap technique is correct at any column count and any cell height.
 
 **Do not put `items-start` on such a grid.** The cells have to stretch to the row height, or the
-ruled ground shows through under the shorter one as a grey block.
+ruled ground shows through under the shorter one as a gray block.
 
 ---
 
@@ -548,7 +548,7 @@ mode shadows are suppressed (they read as smudges on `#1C1C1C`); depth comes fro
 | **Toggle, off** | mono `11px` `0.14em` uppercase · transparent · `color: var(--ela-ink-muted)` · `padding: 10px 18px` |
 | **Toggle, on** | same box · `background: #1C1C1C` · `color: #FFFDFA` |
 | **Toggle group** | `border: 1px solid rgba(28,28,28,0.20)` · `radius: 2px` · `overflow: hidden` · children have `border: 0` |
-| **Role chip, off** | mono `12px` `0.12em` uppercase · `border: 1.5px solid rgba(28,28,28,0.20)` · `color: var(--ela-ink-muted)` · `padding: 13px 10px` · `radius: 2px` · `flex: 1 1 120px` · centred |
+| **Role chip, off** | mono `12px` `0.12em` uppercase · `border: 1.5px solid rgba(28,28,28,0.20)` · `color: var(--ela-ink-muted)` · `padding: 13px 10px` · `radius: 2px` · `flex: 1 1 120px` · centered |
 | **Role chip, on** | `border: 1.5px solid #1C1C1C` · `background: #1C1C1C` · `color: #FFFDFA` |
 
 All state changes are `transition: all .15s ease` (chips, toggles) or `.2s ease` (cards).
@@ -663,7 +663,7 @@ not raise the floor: a previous build set a higher minimum and clipped the bar b
 | Nav, 683px and up | `28px` | 207px |
 | Nav, 537px to 682px | `clamp(22px, 4.1vw, 28px)`, fluid | 162px to 207px |
 | Nav, 536px and down | `22px` (floor) | 162px |
-| Focus pages (subscribe, thanks) | `clamp(22px, 7vw, 32px)`, centred | 162px to 236px |
+| Focus pages (subscribe, thanks) | `clamp(22px, 7vw, 32px)`, centered | 162px to 236px |
 | Footer | `clamp(28px, 4.9vw, 44px)` | 207px to 325px |
 
 The new mark is wider than the one it replaced at the same height, so every height above was
@@ -767,7 +767,7 @@ right. There are three, and between them they cover every ground on the site.
 only. So `ink` stays cream and is for display sizes and the wordmark, while `ink-muted` (4.58:1)
 and `ink-muted-aa` (5.12:1) are **near-black**. `ink-muted` is `rgba(28,28,28,0.9)`; it was 0.86,
 which measured 4.73 on the old orange and only 4.34 on this one. On orange, the readable
-colour for body copy and small print is the dark one, and the tokens say so rather than leaving
+color for body copy and small print is the dark one, and the tokens say so rather than leaving
 it to each element.
 
 **`.on-paper` exists because `.on-accent` re-points `paper` to orange.** A form panel inside the
@@ -799,7 +799,7 @@ the page is hairlines, hard corners and mono markings.
 | Track hover | `border-color: var(--ela-ink)`. Darker, never thicker. |
 | Position markings | Courier Prime `10px` `0.10em` uppercase `--ela-ink-muted-aa`, one per half |
 | Knob | `40 × 22px` at `top/left: 1px` · `background: var(--ela-ink)` · radius **`0`** |
-| Knob grip | `9 × 8px` centred, `repeating-linear-gradient(90deg, var(--ela-ground) 0 1px, transparent 1px 4px)` |
+| Knob grip | `9 × 8px` centered, `repeating-linear-gradient(90deg, var(--ela-ground) 0 1px, transparent 1px 4px)` |
 | Throw | `translateX(42px)` (82px inner width minus the 40px knob) |
 | Easing | `transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1)` |
 
@@ -807,7 +807,7 @@ Three things carry the design:
 
 - **The tick scale.** A printed rule across the track, the way a measuring scale is printed onto a
   physical control. It is what stops the track reading as an empty pill.
-- **The milled grip.** Cut in the ground colour, so it reads as machined out of the knob rather
+- **The milled grip.** Cut in the ground color, so it reads as machined out of the knob rather
   than drawn on it.
 - **The knob is a solid block of the current ink.** Dark on the cream ground, cream on the dark
   one. The switch shows you the ink the page is currently set in.
@@ -823,7 +823,7 @@ that viewport. The only orange it ever shows is the site's standard `2px` focus 
 `--ela-rule` hairline, so the control and the action read as separate things. Mobile: the last row
 of the menu, under a hairline, with a `Mode` mono label on the left and the switch on the right.
 
-### Behaviour
+### Behavior
 
 - **Light is the default for everyone.** A first-time visitor on a phone set to dark still gets the
   light site. `data-theme="light"` is written into the markup, so this holds with JavaScript off.
@@ -894,7 +894,7 @@ that reason, so a card never ends up with no orange at all once its photo lands.
 
 **The empty slot takes its own ink, not the band's.** The ramp ends on `#C2240F`, and near-black
 against that stop is 2.88:1 at full strength, so the band's `rgba(28,28,28,0.9)` does not carry
-here. The slot's text is centred, which means it spans roughly **34-66%** of the ramp and never
+here. The slot's text is centered, which means it spans roughly **34-66%** of the ramp and never
 reaches the deep stop. At full-strength `--palette-ink` the path reads **5.35:1** at the near end
 of that span and **4.12:1** at the far end, against 4.49 and 3.64 at the band's alpha. Nothing
 near-black clears 4.5 across the whole span, so the slot takes the most contrast available
@@ -1011,7 +1011,7 @@ its sector. Chaining in list order would run Burbank to Culver City straight thr
 dot. Nearest-placed makes a hub at Hollywood there and a chain in the other sectors, and it keeps
 doing something sensible when the list changes. Reordering a sector's places changes its lines.
 
-### Colour
+### Color
 
 | Element | Token | Light | Dark |
 | --- | --- | --- | --- |
@@ -1019,7 +1019,7 @@ doing something sensible when the list changes. Reordering a sector's places cha
 | Settled dot and line | `--ela-accent-soft` | `#FF705D` | `#C2240F` |
 | Caption, sector name | `--ela-accent-step` | `#C2240F`, 5.22:1 | `#FF705D`, 6.27:1 |
 | Caption, places | `--ela-ink-muted-aa` | | |
-| Neighbourhood labels | `--ela-ink-muted`, with a halo in the well colour | | |
+| Neighborhood labels | `--ela-ink-muted`, with a halo in the well color | | |
 
 **Not the anchor.** The hero CTA is anchor orange and shares the viewport with the map at every
 width, on desktop beside it and on a phone directly above it. So the lit sector takes the dark
@@ -1041,7 +1041,7 @@ rather than the viewport:
 
 | Text | Size | Weight |
 | --- | --- | --- |
-| Neighbourhood label | `clamp(10.5px, 2.5cqi, 12.5px)`, line height `1.15` | 600 |
+| Neighborhood label | `clamp(10.5px, 2.5cqi, 12.5px)`, line height `1.15` | 600 |
 | Caption, sector name | `clamp(17px, 4.6cqi, 22px)`, line height `1.15`, `-0.01em` | 700 |
 | Caption, places | `clamp(13.5px, 3.1cqi, 15px)`, line height `1.35`, balanced | 500 |
 
@@ -1082,7 +1082,7 @@ full `3.2s`, including the one that runs when reduced motion is switched off mid
 map is off screen at load, the opening hold waits with the rest of the loop, so the first sector
 lights `1.5s` after the map scrolls into view.
 
-### Behaviour
+### Behavior
 
 - **Reduced motion:** the finished map and nothing else. The script never starts the loop, and
   switching reduced motion on mid loop drops straight back to the finished map.
@@ -1110,7 +1110,7 @@ from `1` to `15`, the `K+` stays fixed beside them, and it lands on `15K+`.
 
 **Where it runs.** Only where the number stands alone as a display stat:
 
-| Page | Place | Colour |
+| Page | Place | Color |
 | --- | --- | --- |
 | `/` | Proof strip under the hero, first cell | `text-ink`, unchanged |
 | `/about` | `04 · By the numbers`, first cell | `text-ink`, unchanged |
@@ -1118,7 +1118,7 @@ from `1` to `15`, the `K+` stays fixed beside them, and it lands on `15K+`.
 **Where it does not.** Anywhere the number sits inside a sentence, because a number ticking in
 running text reads oddly and can reflow the line: the `/subscribe` subhead, the orange band's
 "Read by 15K+ founders…" line, and the hero map's closing caption. The `[TBD]` cells beside the
-stat are untouched. The count-up adds no colour; the stat keeps whatever it had.
+stat are untouched. The count-up adds no color; the stat keeps whatever it had.
 
 **One source.** `community` in `src/lib/site.ts` (`count: 15`, `unit: 'K+'`) is the only place the
 number is set. `site.communitySize` is built from it for running text. A live subscriber count from
@@ -1156,7 +1156,7 @@ position on every frame, and the finished stat renders pixel for pixel where it 
   digits and unit are `aria-hidden` generated content, so no tick is ever announced and the
   element's text content is `15K+` exactly once.
 
-**Budget.** `CountUp.astro` is the markup and `CountUpScript.astro` is the behaviour, rendered once
+**Budget.** `CountUp.astro` is the markup and `CountUpScript.astro` is the behavior, rendered once
 at the end of each page that uses it, the same split as `RotatingWord`. The script is inline and has
 no imports, so the build still emits no `.js` file. It adds 784 bytes of inline script to `/` and
 `/about` (about 360 bytes gzipped) and nothing to any other page.
@@ -1206,7 +1206,7 @@ hand needs all three, or it will not animate.
 Transform and opacity only, never width, so nothing reflows: every box on every page keeps the
 same layout on every frame, and the finished eyebrow renders where it did before.
 
-**Colour** is untouched. The rule and label keep `--ela-accent-step` in both modes, and on the
+**Color** is untouched. The rule and label keep `--ela-accent-step` in both modes, and on the
 orange band they keep the `.on-accent` values in §7. The draw-in adds no orange.
 
 **Numbering** is untouched. The script never reads or writes a label, so numbers computed from what
@@ -1221,7 +1221,7 @@ renders, like the Events page's, work exactly as before.
 - **Screen readers** announce exactly what they did before. The rule was already `aria-hidden`, and
   opacity and transform leave the label in the accessibility tree.
 
-**Budget.** The start state and timings are CSS in `global.css`. The behaviour is
+**Budget.** The start state and timings are CSS in `global.css`. The behavior is
 `DrawInScript.astro`, rendered once per page by `SiteLayout`, because numbered eyebrows come from
 components that can appear on any `SiteLayout` page. Rendering it per page would let a page with an
 eyebrow miss the script and sit hidden until the failsafe. It is inline with no imports, so the

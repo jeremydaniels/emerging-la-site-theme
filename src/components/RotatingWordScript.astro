@@ -1,6 +1,6 @@
 ---
 /**
- * Behaviour for RotatingWord. Render this ONCE per page that uses one, and
+ * Behavior for RotatingWord. Render this ONCE per page that uses one, and
  * render it OUTSIDE the heading, at the end of the page template.
  *
  * Why it is a second component rather than a script inside RotatingWord:
@@ -15,7 +15,7 @@
  *     build goes from zero `.js` files to one chunk per page. Inline and
  *     import-free is what keeps it in the HTML.
  *
- * So: the markup is one component, the behaviour is this one, and neither is
+ * So: the markup is one component, the behavior is this one, and neither is
  * copied per page. It holds no measurements and no copy. The words and their
  * em widths are read off each element, so it serves any type step and any word
  * list, and a page that renders the markup without this simply never rotates,

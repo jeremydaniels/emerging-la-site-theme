@@ -3,7 +3,7 @@
 
 /* ----------------------------------------------------------------------------
    Faces
-   Riegal is supplied locally and ships ONE static weight. Never synthesise a
+   Riegal is supplied locally and ships ONE static weight. Never synthesize a
    bold or a stretch from it. See design-system.md §2.
    Manrope and Courier Prime are loaded from Google Fonts in BaseLayout.astro.
    -------------------------------------------------------------------------- */
@@ -647,7 +647,7 @@
   }
 
   /*
-    Section header draw-in. design-system.md §23. The behaviour is
+    Section header draw-in. design-system.md §23. The behavior is
     DrawInScript, rendered once by SiteLayout.
 
     The HTML is the finished header. The start state below applies only when a

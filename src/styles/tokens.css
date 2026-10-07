@@ -1,7 +1,7 @@
 /* ============================================================================
    Emerging LA — design tokens
 
-   THIS IS THE ONLY FILE THAT CONTAINS A COLOUR VALUE.
+   THIS IS THE ONLY FILE THAT CONTAINS A COLOR VALUE.
    A palette swap is one edit, in the PALETTE block directly below. Nothing else
    in the codebase may hardcode a hex, rgb or hsl value.
 
@@ -42,7 +42,7 @@
   /* The accent card's empty slot gets its own values rather than the band's.
      It sits on --ela-well-accent, a ramp that runs on to --palette-accent-dark,
      and near-black is only 2.88:1 against that stop. The slot's text is
-     centred, so it spans roughly 34-66% of the ramp and never reaches the
+     centered, so it spans roughly 34-66% of the ramp and never reaches the
      deep stop: at full strength the path reads 5.35:1 at the near end and
      4.12:1 at the far one, against 4.49 and 3.64 at the band's 0.9. No
      near-black clears 4.5 across the whole span, so this takes the most
@@ -183,7 +183,7 @@
    Cream on this orange is 3.28:1, which is large text only. So `ink` stays
    cream for the display headline and the wordmark, and everything smaller
    goes near-black instead: `ink-muted` is 4.58:1 and `ink-muted-aa` is
-   5.12:1. That inversion is deliberate. On orange, the readable colour for
+   5.12:1. That inversion is deliberate. On orange, the readable color for
    body copy and small print is the dark one. */
 :where(.on-accent) {
   --ela-ground: var(--palette-accent);
@@ -253,7 +253,7 @@
    -------------------------------------------------------------------------- */
 
 @theme inline {
-  /* Colours */
+  /* Colors */
   --color-ground: var(--ela-ground);
   --color-paper: var(--ela-paper);
   --color-well: var(--ela-well);

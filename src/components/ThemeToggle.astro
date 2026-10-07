@@ -10,7 +10,7 @@
  * The knob covers the position it is currently in, so the marking you can read
  * is the one you are about to switch to.
  *
- * Behaviour lives in two places on purpose:
+ * Behavior lives in two places on purpose:
  *   1. A blocking inline script in BaseLayout restores the stored choice
  *      before first paint, so there is no flash of the wrong mode.
  *   2. The module script below wires the clicks and keeps every instance of
@@ -120,7 +120,7 @@ const { showLabel = false, class: className = '' }: Props = Astro.props;
     transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
-  /* Milled grip, in the ground colour so it reads as cut into the knob. */
+  /* Milled grip, in the ground color so it reads as cut into the knob. */
   .tog-knob::after {
     content: '';
     position: absolute;

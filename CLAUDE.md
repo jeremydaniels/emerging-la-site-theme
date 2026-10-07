@@ -50,8 +50,8 @@ toggle between them. `/thanks` and `/404` carry only what their layout brings.
 The rotating word, the hero map, the count-up and the draw-in are motion, not controls. All four do nothing
 under `prefers-reduced-motion`. The rotating word and the map also stop while the tab is hidden.
 
-**Shared behaviour goes in its own script component, rendered once per page.** Where the same
-behaviour is used on several pages, the markup is one component and the script is a second one
+**Shared behavior goes in its own script component, rendered once per page.** Where the same
+behavior is used on several pages, the markup is one component and the script is a second one
 (`RotatingWordScript`, `CountUpScript`) rendered once at the end of each page that needs it, or
 once in the layout when the markup can appear on any page (`DrawInScript` in `SiteLayout`). That
 keeps the script out of headings and stats, and keeps it inline with no imports. A script with an
@@ -192,12 +192,12 @@ public/
   apple-touch-icon.png        Black mark on a solid cream square (iOS fills transparency).
 
 src/
-  styles/tokens.css           THE ONLY FILE WITH A COLOUR IN IT. Palette, modes, @theme.
+  styles/tokens.css           THE ONLY FILE WITH A COLOR IN IT. Palette, modes, @theme.
   styles/global.css           Font face, base styles, component classes (.btn, .card, .frame…).
 
   layouts/BaseLayout.astro    Document shell, head, fonts.
   layouts/SiteLayout.astro    Strip + nav + content + footer. Every route except the two below.
-  layouts/FocusLayout.astro   Stripped chrome: centred wordmark, content, one line footer, no nav.
+  layouts/FocusLayout.astro   Stripped chrome: centered wordmark, content, one line footer, no nav.
                               Used by /subscribe and /thanks only.
 
   components/Nav.astro        Sticky nav. Subscribe here is SECONDARY, not anchor orange.
