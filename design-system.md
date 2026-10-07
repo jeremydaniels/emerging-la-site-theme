@@ -830,6 +830,9 @@ of the menu, under a hairline, with a `Mode` mono label on the left and the swit
 - The choice persists in `localStorage` under `ela-theme`.
 - **The OS preference never moves the mode**, not on first visit and not when it changes mid
   session. The toggle is the only thing that changes it.
+- **There is no `prefers-color-scheme` rule anywhere in the codebase and there must not be one**,
+  with one exception: the query inside `public/favicon.svg`, which only recolours the tab icon.
+  It never touches the site's light/dark toggle.
 - A 106 byte synchronous script is the first node in `<head>`, before the stylesheet, and restores
   a stored choice before first paint. There is no flash of the wrong mode.
 - `role="switch"` with `aria-checked` and an `aria-label` of `Dark mode`. Real `<button>`, so Space
