@@ -1,0 +1,14 @@
+Emerging LA logo colors
+
+Black   #000000   RGB 0 0 0
+White   #FFFFFF   RGB 255 255 255
+Cream   #F5F0EB   RGB 245 240 235
+Orange  #FF4B33   RGB 255 75 51
+
+Which file to use
+SVG  web, Figma, Canva, most design tools
+PDF  print, Illustrator, sending to printers
+EPS  older print shops and sign makers
+PNG  anywhere that won't take the files above (email, slides, social)
+
+Transparent files have no background. Use these for flyers and partner logos.

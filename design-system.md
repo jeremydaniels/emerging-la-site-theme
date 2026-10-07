@@ -599,15 +599,21 @@ headlines, the wordmark.
 
 ## 12. Logo placement
 
-Logo only. There is no emblem, icon or monogram anywhere on the site, including the favicon.
+Logo only. There is no separate emblem, icon or monogram anywhere on the site, including the
+favicon. The asterisk is part of the logo, not an add-on.
 
-The logo is one line: `emerging`, a thin vertical divider, then a large `LA`. It is a single
-compound path in each file, with no background, no embedded image, no metadata and one fill
-colour. The masters are `design/source/emerging-logo-{black,white,cream}.svg` from Claude Design;
-the public files are those paths with the provenance metadata removed and the cream refilled. There is no
-second line and no descriptor.
+The logo is **emerging✱LA**: the existing `emerging` wordmark, a six point asterisk, then a bold
+`LA`. It is a single compound path in each file, with no background, no embedded image, no
+metadata and one fill colour. There is no second line and no descriptor.
 
-Two files, both trimmed to the glyph bounding box so they scale predictably:
+**The single source of truth is `design/logo-pack/`.** Any logo file used anywhere (the site,
+social, print, a deck, a partner kit) must come from that folder. Do not trace, redraw, recolour
+or re-export the mark from anything else. The pack is kept exactly as delivered (`01-transparent`,
+`02-on-backgrounds`, `colors.txt`) and is never edited. `design/` is not under `public/`, so none
+of it is served. The site files below are copies of `01-transparent/svg/` with the fill
+changed where the site needs a different one.
+
+Three files, already trimmed to the glyph bounding box in the pack, so they scale predictably:
 
 | File | Fill | When it is used |
 | --- | --- | --- |
@@ -615,8 +621,14 @@ Two files, both trimmed to the glyph bounding box so they scale predictably:
 | `public/logo/emerging-la-logo-cream.svg` | `#FFFDFA` | Dark mode, the Ink footer, the orange band `#FF4B33`, Well `#15130F`, and any photo darker than mid |
 | `public/logo/emerging-la-logo-white.svg` | `#FFFFFF` | Not used yet. Reserved for dark photographs, behind a scrim as below |
 
-Intrinsic aspect ratio **5.85 : 1** (viewBox `0 0 3804.12 650.16`). The lowercase `emerging` is 53%
-of the logo's height and `LA` is 72%; the divider runs the full height.
+**Colour.** The black logo is pure `#000000`, not the Ink token `#1C1C1C`. The cream logo on the
+site is `#FFFDFA`, not the pack's `#F5F0EB`, because `#FFFDFA` clears contrast on the orange band.
+The fill is changed in the `public/logo/` copy only; the pack itself is untouched.
+
+**One solid colour, always.** No gradients, no two-tone, no outline. There is no orange logo on
+the site. The pack ships an orange version for print and partners; it does not go on this site.
+
+Intrinsic aspect ratio **7.38 : 1** (viewBox `0 0 3023.18 409.71`).
 
 The `Wordmark` component picks the file. `tone="auto"` (the default) shows black in light mode and
 cream in dark mode, keyed on `data-theme` only, and switches to cream inside `.on-ink` and
@@ -630,45 +642,42 @@ one.
 - Black logo on Ink, Well, or the orange band: **forbidden**, it vanishes.
 - On the orange band (`#FF4B33`), use **cream**. The cream file is `#FFFDFA`, which measures
   **3.28:1** there and clears the 3:1 a logo needs as a non-text graphic. `#F5F0EB` would measure
-  2.94 and fail, which is why the file is Paper rather than Ground. Black would measure 6.31 on
-  the band and is still forbidden there: it reads as a mistake beside the cream display type
-  around it.
+  2.94 and fail. Black would measure 6.31 on the band and is still forbidden there: it reads as a
+  mistake beside the cream display type around it.
 - On a photograph, the logo needs either a solid backing block (Ink or Paper, `2px` radius) or
-  a `≥60%` scrim in the opposing tone. Never place it directly on an unmodified image.
-- The two files are the only two options. Do not recolour the logo to orange, to muted ink,
+  a `>=60%` scrim in the opposing tone. Never place it directly on an unmodified image.
+- The files above are the only options. Do not recolour the logo to orange, to muted ink,
   or to anything else.
 
 **Sizing is by height.** The lockup is wide, so height is what keeps it reading the same from
-context to context, and the width follows from the 5.85 ratio. Minimum height is **22px** (129px
-wide) and that minimum is a hard floor, not a target. At the floor the lowercase `emerging` is
-11.6px tall. The `Wordmark` component enforces it with `max(22px, …)`. The mobile bar renders the
-logo at the floor down to a `320px` viewport and it must not be clipped: the logo is
-`flex: 0 0 auto` and the nav's other children shrink. At 320px the bar is an 18px gutter, the 129px logo,
-135px of open space, the 20px menu button and the other gutter. Do not raise the floor: a previous build
-set a higher minimum and clipped the bar below 350px.
+context to context, and the width follows from the 7.38 ratio. Minimum height is **22px** (162px
+wide) and that minimum is a hard floor, not a target. The `Wordmark` component enforces it with
+`max(22px, ...)`. The mobile bar renders the logo at the floor at 320px and it must not be
+clipped: the logo is `flex: 0 0 auto` and the nav's other children shrink. At 320px the bar is an
+18px gutter, the 162px logo, 82px of open space, the 40px menu button and the other gutter. Do
+not raise the floor: a previous build set a higher minimum and clipped the bar below 350px.
 
 | Context | Height | Width |
 | --- | --- | --- |
-| Nav, 780px and up | `32px` | 187px |
-| Nav, 537px to 779px | `clamp(22px, 4.1vw, 32px)`, fluid | 129px to 187px |
-| Nav, 536px and down | `22px` (floor) | 129px |
-| Focus pages (subscribe, thanks) | `38px`, centred | 222px |
-| Footer | `clamp(40px, 4.9vw, 60px)` | 234px to 351px |
+| Nav, 683px and up | `28px` | 207px |
+| Nav, 537px to 682px | `clamp(22px, 4.1vw, 28px)`, fluid | 162px to 207px |
+| Nav, 536px and down | `22px` (floor) | 162px |
+| Focus pages (subscribe, thanks) | `clamp(22px, 7vw, 32px)`, centred | 162px to 236px |
+| Footer | `clamp(28px, 4.9vw, 44px)` | 207px to 325px |
 
-**Clear space** on all four sides is `0.5 ×` the logo's rendered height. At the `22px` floor
+The new mark is wider than the one it replaced at the same height, so every height above was
+reduced to keep the width in the range the layout was built for.
+
+**Clear space** on all four sides is `0.5 x` the logo's rendered height. At the `22px` floor
 that is `11px`.
 
-**Dropped from the mockup:** the mockup pairs the logo with a `6px` (nav) / `9px` (footer)
-orange dot. That is an emblem. It is not shipped. Its job, a spot of orange in the nav, is done by
-the Subscribe button instead.
-
-**Archived** in `design/source/archive-old-logo/` and referenced nowhere on the site: the previous
-logo (`emerging` over a second line), the PNG-wrapped first delivery of this logo
-(`*.png-wrapped.svg`) and the stopgap trace made from it (`*.traced.svg`).
+**Archived** in `design/source/archive-old-logo/` and `design/source/emerging-logo-*.svg`, and
+referenced nowhere on the site: the previous logo files and the earlier lockups. They are not
+sources for anything new.
 
 **Favicon** is `public/favicon.svg`, and it has **not** moved to the new logo. It still carries
 the previous logo on a `#F5F0EB` square. What goes in the tab is a separate open decision. Note
-that a 5.85:1 lockup in a 16px tab is legible as a shape, not as words; the options that stay
+that a 7.38:1 lockup in a 16px tab is legible as a shape, not as words; the options that stay
 inside the no-emblem rule are cropping to `LA` or to the `e`, which are lettermarks.
 
 ---

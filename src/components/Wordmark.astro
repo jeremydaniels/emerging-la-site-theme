@@ -1,6 +1,6 @@
 ---
 /**
- * The logo: `emerging`, a thin vertical divider, then `LA`. There is no
+ * The logo: emerging, a six point asterisk, then a bold LA. Files come from design/logo-pack/. There is no
  * emblem, icon or monogram anywhere on this site.
  *
  * Two files exist, black and cream, and the only decision is which ground the
@@ -12,10 +12,10 @@
  *   tone="cream" forces cream. Use on Ink, Well, the orange band, or a dark
  *                photo scrim.
  *
- * Sized by HEIGHT, because the lockup is wide (5.85:1) and height is what
+ * Sized by HEIGHT, because the lockup is wide (7.38:1) and height is what
  * keeps it reading the same across contexts. Height has a hard floor of 22px,
  * applied here with max() so a caller cannot go under it. At the floor the
- * mark is 129px wide and the lowercase `emerging` is still 11.6px tall.
+ * mark is 162px wide.
  * Pass a clamp() to scale up.
  */
 
@@ -39,8 +39,8 @@ const CREAM = '/logo/emerging-la-logo-cream.svg';
 const ALT = 'Emerging LA';
 
 /** viewBox of both files, trimmed to the glyph bounding box. */
-const VB_W = 3804.12;
-const VB_H = 650.16;
+const VB_W = 3023.18;
+const VB_H = 409.71;
 const RATIO = VB_W / VB_H;
 
 const resolved = `max(22px, ${height})`;

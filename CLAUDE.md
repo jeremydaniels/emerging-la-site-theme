@@ -127,18 +127,23 @@ in `design-system.md` §2.
 
 ## Logo
 
-Logo only: `emerging`, a thin vertical divider, then `LA`. **There is no emblem, icon or monogram
-anywhere on this site, including the favicon.** The mockup pairs the logo with a small orange dot;
+The mark is **emerging✱LA**: the `emerging` wordmark, a six point asterisk, then a bold `LA`.
+**There is no separate emblem, icon or monogram anywhere on this site, including the favicon**
+(which has not moved to the new mark yet). The mockup pairs the logo with a small orange dot;
 that dot is not shipped.
 
-Two files, `public/logo/emerging-la-logo-black.svg` and `emerging-la-logo-cream.svg`, both one
-compound path trimmed to the glyph bounding box (aspect ratio 5.85:1). Use the `Wordmark`
+**`design/logo-pack/` is the single source of truth for every logo file.** Any logo file used
+anywhere must come from it, and the pack itself is never edited. `design/` is not served.
+`public/logo/emerging-la-logo-{black,cream,white}.svg` are copies of the pack's
+`01-transparent/svg/` files with only the fill changed: black is pure `#000000` (not the ink
+token), cream is `#FFFDFA` (the pack's `#F5F0EB` fails contrast on the orange band). The logo is
+always one solid colour: no gradients, and no orange logo on the site. Use the `Wordmark`
 component, which picks the right one. Its accessible name is "Emerging LA" everywhere.
 
 The wordmark never sits on a ground it disappears into: cream on Ground or Paper is forbidden,
 black on Ink, Well or the orange band is forbidden. On a photo it needs a backing block or a scrim.
 
-**The logo is sized by height. Minimum height is 22px (129px wide) and that is a hard floor, not
+**The logo is sized by height. Minimum height is 22px (162px wide) and that is a hard floor, not
 a target.** A previous build set a higher minimum and clipped the mobile bar below 350px. The
 `Wordmark` component enforces the floor with `max(22px, …)`. Do not raise it.
 
