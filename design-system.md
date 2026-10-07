@@ -675,10 +675,30 @@ that is `11px`.
 referenced nowhere on the site: the previous logo files and the earlier lockups. They are not
 sources for anything new.
 
-**Favicon** is `public/favicon.svg`, and it has **not** moved to the new logo. It still carries
-the previous logo on a `#F5F0EB` square. What goes in the tab is a separate open decision. Note
-that a 7.38:1 lockup in a 16px tab is legible as a shape, not as words; the options that stay
-inside the no-emblem rule are cropping to `LA` or to the `e`, which are lettermarks.
+**Short mark and favicon.** For spaces too small for the full logo (favicons, profile pictures)
+the pack carries a short mark: the asterisk and `LA` only, with `emerging` removed from the path
+data. It lives in `design/logo-pack/03-short-mark/` (`svg/` and `png/` at 1000px and 3000px, in
+black, cream, white and orange). It is cut from the full logo's own paths, so its shapes and
+spacing match the full logo exactly, and like the full logo it is locked: never resize or move
+the asterisk relative to the `LA`. Intrinsic ratio 2.62 : 1 (viewBox `2066.07 0 957.11 365`).
+The old idea of cropping to the `e` or to a lone `LA` as a lettermark is dead.
+
+The favicon is that mark centred in a square with a little padding:
+
+| File | What it is |
+| --- | --- |
+| `public/favicon.svg` | Black `#000000` on transparent; switches to cream `#F5F0EB` under `prefers-color-scheme: dark` inside the SVG |
+| `public/favicon-32x32.png`, `favicon-16x16.png` | Black mark, transparent background |
+| `public/favicon.ico` | The two PNGs above, 16 and 32 |
+| `public/apple-touch-icon.png` | 180x180, black mark on a solid `#F5F0EB` ground with padding, because iOS fills transparency with black |
+
+The `prefers-color-scheme` query in `favicon.svg` is the one deliberate exception to the site's
+no `prefers-color-scheme` rule (§16). It follows the browser tab, not the page, so the site's
+own light and dark toggle is not involved and cannot reach it. The PNG fallbacks and the `.ico`
+are black on transparent and do not adapt.
+
+At 16px the `LA` is still readable as letters but the asterisk is only a soft three pixel
+smudge; at 32px both are clear. The mark was not enlarged or moved to compensate.
 
 ---
 

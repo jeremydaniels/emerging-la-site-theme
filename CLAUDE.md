@@ -86,7 +86,8 @@ at the top of that file. **Nothing else in the codebase may contain a hex, rgb o
 
 Light and dark are both V1, driven **only** by `data-theme` on `<html>`.
 
-**There is no `prefers-color-scheme` rule anywhere in this codebase and there must not be one.**
+**There is no `prefers-color-scheme` rule anywhere in this codebase and there must not be one**,
+with one exception: the query inside `public/favicon.svg`, which only recolours the tab icon.
 Light is the default for everyone, including a first-time visitor whose OS is set to dark. The
 toggle in the nav is the only thing that ever changes the mode; the choice lives in `localStorage`
 under `ela-theme`, and a 106 byte synchronous script at the top of `<head>` restores it before
@@ -128,8 +129,9 @@ in `design-system.md` §2.
 ## Logo
 
 The mark is **emerging✱LA**: the `emerging` wordmark, a six point asterisk, then a bold `LA`.
-**There is no separate emblem, icon or monogram anywhere on this site, including the favicon**
-(which has not moved to the new mark yet). The mockup pairs the logo with a small orange dot;
+**There is no separate emblem, icon or monogram anywhere on this site.** The favicon is the pack's
+short mark (asterisk and `LA`, no `emerging`), from `design/logo-pack/03-short-mark/`. That is the
+one place the short mark is used, and the old lettermark idea (cropping to the `e`) is dead. The mockup pairs the logo with a small orange dot;
 that dot is not shipped.
 
 **`design/logo-pack/` is the single source of truth for every logo file.** Any logo file used
@@ -183,7 +185,11 @@ public/
   logo/emerging-la-logo-black.svg  Logo, for light mode and light grounds.
   logo/emerging-la-logo-cream.svg  Logo, for dark mode, the footer and the orange band.
   logo/emerging-la-logo-white.svg  Logo in pure white. Not used yet; for dark photos.
-  favicon.svg                 The previous logo on a cream square. No emblem. Pending.
+  favicon.svg                 Short mark (asterisk and LA), black, cream in a dark tab. Inline
+                              prefers-color-scheme is the one allowed use of that query: it
+                              follows the browser tab, not the site toggle.
+  favicon.ico, favicon-16x16.png, favicon-32x32.png, apple-touch-icon.png
+                              Fallbacks. design-system.md §12.
 
 src/
   styles/tokens.css           THE ONLY FILE WITH A COLOUR IN IT. Palette, modes, @theme.

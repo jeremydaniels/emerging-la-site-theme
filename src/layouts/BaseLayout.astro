@@ -52,8 +52,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
 
-    <!-- Wordmark only. There is no emblem or icon anywhere, favicon included. -->
+    <!-- Favicon: the short mark (asterisk and LA) from design/logo-pack/03-short-mark.
+         The .ico is pinned to 32x32 so browsers that prefer it over the SVG do not
+         stretch it; the SVG follows the browser tab's colour scheme. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

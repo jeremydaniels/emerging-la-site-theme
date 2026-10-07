@@ -12,3 +12,5 @@ EPS  older print shops and sign makers
 PNG  anywhere that won't take the files above (email, slides, social)
 
 Transparent files have no background. Use these for flyers and partner logos.
+
+03-short-mark is the asterisk-and-LA mark for small spaces like favicons and profile pictures.
