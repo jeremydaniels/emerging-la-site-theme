@@ -219,7 +219,10 @@ src/
                               Both variants share the layout completely: every
                               difference lives in the VARIANTS table at the top
                               and lands in the trailing cell, plus the year on
-                              a past row's date block.
+                              a past row's date block. Below 900px each event
+                              is its own phone block (wide:hidden) and the
+                              desktop row is hidden there, so neither layout
+                              can leak into the other.
   components/RuledList.astro      Index + name + line rows. About values, Events steps.
   components/PhotoFrame.astro     Mat, well, warm multiply, corner crop marks, metadata bar.
   components/MetaBar.astro        Mono metadata bar.
@@ -303,7 +306,7 @@ Currently: `/preview/event-recap`.
   seconds, the build logs one `[events]` warning and renders with no events: every events section
   hides. It never fails the build. Every build also logs one `[events]` summary: rows that came
   back, how many were kept as upcoming and as past, and each dropped row with its title and reason.
-  Times print in Pacific Time with the zone written out. A row with no `cover_url` renders without
+  Times print in Pacific Time with the zone written out, and as `PT` on the phone's one mono line. A row with no `cover_url` renders without
   a photo, and there is no placeholder box on the live site.
 - **All external links are placeholders.** Real Luma, LinkedIn and Beehiiv URLs land in
   `src/lib/links.ts` later. Nothing else should hardcode an external URL.

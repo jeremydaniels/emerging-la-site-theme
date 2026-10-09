@@ -459,7 +459,7 @@ Used for events, and the pattern any list of records on this site should reuse.
 
 **Column header row** — mono `10px` `0.18em` uppercase `--ela-ink-muted`,
 `padding: 0 0 10px`, `border-bottom: 1px solid var(--ela-rule)`, `gap: 16px`. Hidden entirely at
-≤900px; the rows reflow to stacked cards.
+≤900px, where an event row is its own phone layout (below), not a reflow of the desktop row.
 
 Column widths (events): `46px` No. · `92px` Date · `96px` Photo · `1 1 auto` Event ·
 `200px` Location · `96px` Details, right-aligned.
@@ -485,8 +485,27 @@ and past follow the event's date in Pacific time, so there is no manual status. 
 Pacific Time with the zone written out (`6:30 PM Pacific Time`) because readers may not be in LA.
 The photo cell holds the Luma cover image (Luma's CDN only), lazy loaded. A row with no cover
 renders without a photo: on wide screens the cell stays as a blank 96px spacer so the columns
-line up with the header, and below 900px it is gone. The first row of each upcoming table takes
-the featured tint (`accentFirst`), which is a view decision and not a property of the event.
+line up with the header, and below 900px it is gone. On desktop the first row of each upcoming table
+takes the featured tint (`accentFirst`), which is a view decision and not a property of the event.
+
+**Event rows below 900px.** `EventsTable` renders a separate phone block for each event, hidden from
+900px up, and the desktop row is hidden below it, so neither layout can change the other. The phone
+block is a top row with a text column on the left and the square cover on the right, top-aligned,
+then the RSVP link across the foot of the row.
+
+- **Text column:** one mono line (`10.5px`, `0.1em`, uppercase) of date, time and city, for example
+  `OCT 15 · 5:00 PM PT · LOS ANGELES`, with the date in `--ela-accent-step` and the rest muted. The time
+  is short here (`PT`) because the written out zone has no room on a phone; the desktop column keeps
+  `Pacific Time`. A past row adds the year to the date (`SEP 4, 2025`). Each part is `nowrap`, so at 320px
+  the line wraps between parts and never inside one. Then the title in Riegal at the `body` step
+  (`16px`), `line-height: 1.2`, clamped to three lines, then `Hosted by ...` at the `note` step, clamped
+  to two.
+- **City:** the city only, or `Online`. When the tracker has no venue or city nothing is shown, and
+  "Address on Luma" never appears on a phone.
+- **Cover:** the same small photo frame (`frame-sm`, no marks) at `88px` wide. A row with no cover
+  gives the text column the full width.
+- **RSVP:** the CTA at the left edge, as wide as the card, `44px` tall, so it is easy to tap.
+- **No tint.** Every row is plain and divided by the hairline. The featured tint is desktop only.
 
 **Row CTA** is mono `11px` `0.14em` uppercase `--ela-accent-dark` with a trailing ` →`.
 

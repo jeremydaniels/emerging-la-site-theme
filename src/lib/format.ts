@@ -30,6 +30,12 @@ export function monthShort(iso: string | null): string {
   return p ? MONTHS[p[1] - 1].toUpperCase() : '[MON]';
 }
 
+/** "OCT 5", the month and day for a one line label, or "[DATE]" when there is no date yet. */
+export function monthDayShort(iso: string | null): string {
+  const p = parts(iso);
+  return p ? `${MONTHS[p[1] - 1].toUpperCase()} ${p[2]}` : '[DATE]';
+}
+
 /** "2026", or "" when there is no date yet. */
 export function yearOf(iso: string | null): string {
   const p = parts(iso);

@@ -13,6 +13,12 @@
  * reads `variant`, so the row structure cannot drift between the two. If you
  * ever need a second branch, put it in VARIANTS rather than in the template.
  *
+ * Two layouts, one component. Below 900px each event is the phone block: one mono line of
+ * date, time and city, the title clamped to three lines, the host, a square cover on the right
+ * and the RSVP link across the foot, with no tint on any row. From 900px up it is the ruled
+ * desktop row, which none of that touches: the phone block is `wide:hidden` and the desktop row is
+ * `hidden wide:flex`, so neither can leak into the other.
+ *
  * A row with no `image` renders without a photo: the cell is a blank spacer on
  * wide screens so the columns stay lined up with the header, and it is gone on
  * narrow ones. There is no placeholder box on the live site.
@@ -21,7 +27,7 @@
  * empty list means "hide the whole section" or "show an empty state".
  */
 import PhotoFrame from './PhotoFrame.astro';
-import { monthShort, dayOfMonth, machineDate, yearOf } from '../lib/format';
+import { monthShort, monthDayShort, dayOfMonth, machineDate, yearOf } from '../lib/format';
 import { links } from '../lib/links';
 import type { EventItem } from '../data/events';
 // Callers pass data from getEvents() in src/data/events.ts.
@@ -80,8 +86,68 @@ const v = VARIANTS[variant];
         const href = event.url ?? v.fallback;
         const index = String(i + 1).padStart(2, '0');
 
+        const mobileLine = [
+          `${monthDayShort(event.date)}${v.showYear && event.date ? `, ${yearOf(event.date)}` : ''}`,
+          event.timeShort,
+          event.city,
+        ].filter(Boolean);
+
         return (
-          <div class:list={['row', accentFirst && i === 0 && 'row-featured']}>
+          <Fragment>
+            {/* Phone layout. Hidden from 900px up. */}
+            <div class="border-b border-hairline py-[18px] wide:hidden">
+              <div class="flex items-start gap-4">
+                <div class="min-w-0 flex-1">
+                  {/* One mono line. Each part is kept whole, so on a narrow phone it wraps between
+                      the date, the time and the city and never inside one of them. */}
+                  <div class="t-mono text-mono-meta tracking-[0.1em] text-ink-muted">
+                    <time class="whitespace-nowrap text-accent-step" datetime={machineDate(event.date)}>
+                      {mobileLine[0]}
+                    </time>
+                    {mobileLine.slice(1).map((part) => (
+                      <Fragment>
+                        {' · '}
+                        <span class="whitespace-nowrap">{part}</span>
+                      </Fragment>
+                    ))}
+                  </div>
+                  <h3 class="t-title m-0 mt-1.5 line-clamp-3 text-body leading-[1.2] break-words text-ink">
+                    {event.name}
+                  </h3>
+                  {event.note && (
+                    <div class="mt-1.5 line-clamp-2 text-note text-ink-muted-aa">{event.note}</div>
+                  )}
+                </div>
+
+                {event.image && (
+                  <PhotoFrame
+                    variant="thumb"
+                    src={event.image}
+                    alt={event.imageAlt ?? ''}
+                    loading="lazy"
+                    class="w-[88px] flex-none"
+                  />
+                )}
+              </div>
+
+              {href ? (
+                <a
+                  href={href}
+                  rel="noopener"
+                  target="_blank"
+                  class="t-mono mt-2 flex min-h-11 w-full items-center text-mono-tab text-accent-step transition-opacity hover:opacity-70"
+                >
+                  {v.cta} →
+                </a>
+              ) : (
+                <span class="t-mono mt-2 flex min-h-11 w-full items-center text-mono-tab text-ink-faint">
+                  {v.pending}
+                </span>
+              )}
+            </div>
+
+            {/* Desktop row. Hidden below 900px. */}
+          <div class:list={['row hidden wide:flex', accentFirst && i === 0 && 'row-featured']}>
             <span class="t-mono hidden flex-[0_0_46px] text-mono-index text-ink-faint wide:block">
               {index}
             </span>
@@ -110,12 +176,6 @@ const v = VARIANTS[variant];
             <div class="min-w-0 flex-[1_1_220px]">
               <div class="t-title text-title-2 text-ink">{event.name}</div>
               {event.note && <div class="mt-[5px] text-note text-ink-muted-aa">{event.note}</div>}
-              {/* The location column is hidden below 900px, so it folds in
-                  here. The date is not repeated: the date block above already
-                  carries it. */}
-              <div class="t-mono mt-1.5 text-mono-meta text-ink-muted wide:hidden">
-                {[event.location, event.time].filter(Boolean).join(' · ')}
-              </div>
             </div>
 
             <div class="t-mono hidden flex-[0_0_200px] text-mono-meta-lg text-ink-muted wide:block">
@@ -138,6 +198,7 @@ const v = VARIANTS[variant];
               </span>
             )}
           </div>
+          </Fragment>
         );
       })}
     </div>

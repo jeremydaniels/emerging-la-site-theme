@@ -38,8 +38,15 @@ export interface EventItem {
   date: string | null;
   /** Pacific start time with the zone written out, e.g. "6:30 PM Pacific Time". */
   time: string | null;
+  /** The same time, short, for the phone layout: "6:30 PM PT". */
+  timeShort?: string | null;
   /** Venue and city, or "Online", or "Address on Luma". Never a street. */
   location: string | null;
+  /**
+   * Just the city, for the phone layout, or "Online". Null when the tracker has no venue or city,
+   * and then nothing is shown. Never "Address on Luma".
+   */
+  city?: string | null;
   /** One line under the name. The host, when the tracker has one. */
   note: string | null;
   /** Where RSVP or the recap goes: external_url, else the Luma page. */
@@ -78,6 +85,11 @@ export function pacificTime(when: Date): string {
   return `${timeFormat.format(when)} Pacific Time`;
 }
 
+/** "6:30 PM PT", for the one mono line on a phone. */
+export function pacificTimeShort(when: Date): string {
+  return `${timeFormat.format(when)} PT`;
+}
+
 // ---------------------------------------------------------------------------
 // Location
 // ---------------------------------------------------------------------------
@@ -94,17 +106,8 @@ function looksLikeStreet(part: string): boolean {
   return /^\d+[a-z]?\s/i.test(part) && STREET_WORD.test(part);
 }
 
-/**
- * The venue and city out of a Luma address.
- *
- *   "All Season Brewing Company, 800 S La Brea Ave, Los Angeles, CA 90036, USA"
- *     gives "All Season Brewing Company, Los Angeles"
- *   "11648 San Vicente Blvd, Los Angeles, CA 90049, USA" gives "Los Angeles"
- *
- * The street is left out on purpose. The page says roughly where, and the exact
- * address is on the Luma page behind the RSVP link.
- */
-function venueFromLocation(location: string): string {
+/** An address split on commas with the country, state and ZIP taken off the end. */
+function addressParts(location: string): string[] {
   const parts = location
     .split(',')
     .map((part) => part.trim())
@@ -117,6 +120,32 @@ function venueFromLocation(location: string): string {
     parts.pop();
     parts.pop();
   }
+  return parts;
+}
+
+/**
+ * The city alone, or an empty string. What is left at the end of a Luma address once the country,
+ * state and ZIP are off is the city, so that is what this returns, unless it looks like a street.
+ */
+function cityFromLocation(location: string): string {
+  if (/^https?:\/\//i.test(location)) return '';
+  const parts = addressParts(location);
+  const last = parts[parts.length - 1] ?? '';
+  return last && !looksLikeStreet(last) ? last : '';
+}
+
+/**
+ * The venue and city out of a Luma address.
+ *
+ *   "All Season Brewing Company, 800 S La Brea Ave, Los Angeles, CA 90036, USA"
+ *     gives "All Season Brewing Company, Los Angeles"
+ *   "11648 San Vicente Blvd, Los Angeles, CA 90049, USA" gives "Los Angeles"
+ *
+ * The street is left out on purpose. The page says roughly where, and the exact
+ * address is on the Luma page behind the RSVP link.
+ */
+function venueFromLocation(location: string): string {
+  const parts = addressParts(location);
 
   if (parts.length === 0) return '';
   if (parts.length === 1) return looksLikeStreet(parts[0]) ? '' : parts[0];
@@ -217,7 +246,9 @@ function toEventItem(row: unknown): { item: EventItem } | { drop: DropReason; la
       name: title,
       date: pacificDate(start),
       time: pacificTime(start),
+      timeShort: pacificTimeShort(start),
       location: placeFor(text(r.location), r.is_online === true),
+      city: r.is_online === true ? 'Online' : cityFromLocation(text(r.location)) || null,
       note: hostedBy ? `Hosted by ${hostedBy}` : null,
       url: safeHttpUrl(text(r.external_url)) ?? safeHttpUrl(text(r.event_url)),
       image: safeCoverUrl(text(r.cover_url)),
