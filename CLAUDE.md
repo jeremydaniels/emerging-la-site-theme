@@ -129,8 +129,8 @@ in `design-system.md` §2.
 
 The mark is **emerging✱LA**: the `emerging` wordmark, a six point asterisk, then a bold `LA`.
 **There is no separate emblem, icon or monogram anywhere on this site.** The favicon is the pack's
-short mark (asterisk and `LA`, no `emerging`) in orange `#FF4B33` on a transparent background, from
-`design/logo-pack/03-short-mark/`. That is the one place the short mark is used, and the old lettermark idea (cropping to the `e`) is dead. The mockup pairs the logo with a small orange dot;
+short mark (asterisk and `LA`, no `emerging`) in cream `#FFFDFA` on a solid orange `#FF4B33` tile, with
+square corners and no transparency, from `design/logo-pack/03-short-mark/`. That is the one place the short mark is used, and the old lettermark idea (cropping to the `e`) is dead. The mockup pairs the logo with a small orange dot;
 that dot is not shipped.
 
 **`design/logo-pack/` is the single source of truth for every logo file.** Any logo file used
@@ -138,8 +138,8 @@ anywhere must come from it, and the pack itself is never edited. `design/` is no
 `public/logo/emerging-la-logo-{black,cream,white}.svg` are copies of the pack's
 `01-transparent/svg/` files with only the fill changed: black is pure `#000000` (not the ink
 token), cream is `#FFFDFA` (the pack's `#F5F0EB` fails contrast on the orange band). The logo is
-always one solid color: no gradients, and no orange logo on the site (the orange favicon is the one
-exception, and it is the short mark). Use the `Wordmark`
+always one solid color: no gradients, and no orange logo on the site (the favicon's solid orange tile is the one
+exception. The mark on it is still a solid cream, and it is the short mark). Use the `Wordmark`
 component, which picks the right one. Its accessible name is "Emerging LA" everywhere.
 
 The wordmark never sits on a ground it disappears into: cream on Ground or Paper is forbidden,
@@ -185,10 +185,10 @@ public/
   logo/emerging-la-logo-black.svg  Logo, for light mode and light grounds.
   logo/emerging-la-logo-cream.svg  Logo, for dark mode, the footer and the orange band.
   logo/emerging-la-logo-white.svg  Logo in pure white. Not used yet; for dark photos.
-  favicon.svg                 Short mark (asterisk and LA), orange #FF4B33 on transparent, one
-                              fill for light and dark tabs. No media query.
+  favicon.svg                 Short mark (asterisk and LA), cream #FFFDFA on a solid #FF4B33
+                              tile, one file for light and dark tabs. No media query.
   favicon.ico, favicon-16x16.png, favicon-32x32.png
-                              Orange on transparent fallbacks. design-system.md §12.
+                              Cream on solid orange fallbacks, no transparency. design-system.md §12.
   apple-touch-icon.png        Black mark on a solid cream square (iOS fills transparency).
 
 src/

@@ -627,7 +627,7 @@ The fill is changed in the `public/logo/` copy only; the pack itself is untouche
 
 **One solid color, always.** No gradients, no two-tone, no outline. There is no orange logo on
 the site. The pack ships an orange version for print and partners; it does not go on this site.
-The one exception is the orange short mark used as the favicon, below.
+The one exception is the favicon, which puts the cream short mark on a solid orange tile, below.
 
 Intrinsic aspect ratio **7.38 : 1** (viewBox `0 0 3023.18 409.71`).
 
@@ -684,21 +684,25 @@ spacing match the full logo exactly, and like the full logo it is locked: never 
 the asterisk relative to the `LA`. Intrinsic ratio 2.62 : 1 (viewBox `2066.07 0 957.11 365`).
 The old idea of cropping to the `e` or to a lone `LA` as a lettermark is dead.
 
-The favicon is that mark in orange `#FF4B33`, centered in a square with a little padding, on a
-transparent background. There is no tile or square behind it. One orange fill works on both light
+The favicon is that mark in cream `#FFFDFA`, centered on a full-bleed square tile of solid orange
+`#FF4B33`, with square corners and no transparency. The mark is not altered: its shape, size ratio
+and asterisk position are untouched, and it sits at 92% of its natural size inside the 1100 unit
+tile so about 10% of padding is left on each side. The tile carries the orange, so the mark is not
+an orange logo and the one solid color rule still holds for it. One tile works on both light
 and dark tabs, so `favicon.svg` has no media query and there is no `prefers-color-scheme` anywhere
 in the codebase (§16).
 
 | File | What it is |
 | --- | --- |
-| `public/favicon.svg` | Orange `#FF4B33` on transparent, one fill |
-| `public/favicon-32x32.png`, `favicon-16x16.png` | Orange mark, transparent background |
+| `public/favicon.svg` | Cream `#FFFDFA` mark on a solid `#FF4B33` tile, square corners |
+| `public/favicon-32x32.png`, `favicon-16x16.png` | Cream mark on a solid `#FF4B33` tile, no transparency |
 | `public/favicon.ico` | The two PNGs above, 16 and 32 |
 | `public/apple-touch-icon.png` | 180x180, black mark on a solid `#F5F0EB` ground with padding, because iOS fills transparency with black |
 
-Orange on white is 2.94:1, under the 3:1 a graphic usually needs, so the mark is softer on a light
-tab than on a dark one. At 16px the `LA` is still readable as letters but the asterisk is only a
-soft three pixel smudge; at 32px both are clear. The mark was not enlarged or moved to compensate.
+Cream on `#FF4B33` is about 2.9:1, under the 3:1 a graphic usually needs, but the tile is the
+silhouette and reads on any tab, white or dark. At 16px the `LA` is readable as letters and the
+asterisk is a single soft pixel cluster; at 32px both are clear. The mark was not enlarged or
+moved to compensate.
 
 ---
 
