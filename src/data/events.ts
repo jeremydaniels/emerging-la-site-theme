@@ -227,32 +227,99 @@ const COLUMNS = [
 const LIMIT = 1000;
 const TIMEOUT_MS = 10_000;
 
+// Only the type is declared, so the site needs no @types/node. At build time Node provides it.
+declare const process: { env: Record<string, string | undefined> } | undefined;
+
 function warn(reason: string): void {
-  // Never print the URL or the key, only what went wrong.
-  console.warn(`[events] ${reason} The site builds with no events.`);
+  console.warn(`[events] ${reason.replace(/\.+$/, '')}. The site builds with no events.`);
+}
+
+/**
+ * A build variable, trimmed. import.meta.env does not always carry variables that
+ * exist only in the build environment (Vercel's, for one), so fall back to
+ * process.env. Wrapping quotes are dropped too, since they get pasted in by accident.
+ */
+function readVar(name: 'TRACKER_SUPABASE_URL' | 'TRACKER_SUPABASE_ANON_KEY'): string {
+  const raw = import.meta.env[name] || (typeof process !== 'undefined' ? process.env[name] : '') || '';
+  return String(raw)
+    .trim()
+    .replace(/^(["'])(.*)\1$/s, '$2')
+    .trim();
+}
+
+/** Any secret or address replaced, so no message can carry the URL or the key. */
+function redact(message: string, secrets: string[]): string {
+  let out = message;
+  for (const secret of secrets) if (secret.length > 3) out = out.split(secret).join('[redacted]');
+  return out;
+}
+
+/** "TypeError: fetch failed (cause: Error: getaddrinfo ENOTFOUND [redacted])", redacted. */
+function describeError(error: unknown, secrets: string[]): string {
+  const one = (e: unknown): string =>
+    e instanceof Error
+      ? `${e.name}: ${e.message}${'code' in e && e.code ? ` [${String(e.code)}]` : ''}`
+      : String(e);
+  const cause = error instanceof Error && error.cause ? ` (cause: ${one(error.cause)})` : '';
+  return redact(one(error) + cause, secrets);
+}
+
+type Endpoint = { ok: true; url: string; secrets: string[] } | { ok: false; reason: string };
+
+/**
+ * The REST address, or the reason there isn't one. Trailing slashes are dropped,
+ * and a URL that already ends in /rest/v1 does not get it twice. Nothing in a
+ * reason repeats the value.
+ */
+function endpointFrom(rawUrl: string): Endpoint {
+  const trimmed = rawUrl.replace(/\/+$/, '');
+  let parsed: URL;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    return {
+      ok: false,
+      reason: 'TRACKER_SUPABASE_URL is not a valid URL. It does not parse, so check that it starts with https://.',
+    };
+  }
+  if (parsed.protocol !== 'https:') {
+    return {
+      ok: false,
+      reason: `TRACKER_SUPABASE_URL is not a valid https URL. Its protocol is ${parsed.protocol}`,
+    };
+  }
+  const base = /\/rest\/v1$/i.test(trimmed) ? trimmed : `${trimmed}/rest/v1`;
+  const url =
+    `${base}/events?select=${COLUMNS}&featured=eq.true&order=start_at.asc,luma_uid.asc&limit=${LIMIT}`;
+  return { ok: true, url, secrets: [url, base, trimmed, parsed.host, parsed.hostname] };
 }
 
 async function fetchEvents(): Promise<EventItem[]> {
-  const base = (import.meta.env.TRACKER_SUPABASE_URL ?? '').trim();
-  const key = (import.meta.env.TRACKER_SUPABASE_ANON_KEY ?? '').trim();
+  const rawUrl = readVar('TRACKER_SUPABASE_URL');
+  const key = readVar('TRACKER_SUPABASE_ANON_KEY');
 
-  if (!base || !key) {
-    warn('TRACKER_SUPABASE_URL or TRACKER_SUPABASE_ANON_KEY is not set.');
+  const missing = [!rawUrl && 'TRACKER_SUPABASE_URL', !key && 'TRACKER_SUPABASE_ANON_KEY'].filter(Boolean);
+  if (missing.length > 0) {
+    warn(`${missing.join(' and ')} ${missing.length > 1 ? 'are' : 'is'} not set.`);
     return [];
   }
 
-  try {
-    const url =
-      `${base.replace(/\/+$/, '')}/rest/v1/events` +
-      `?select=${COLUMNS}&featured=eq.true&order=start_at.asc,luma_uid.asc&limit=${LIMIT}`;
+  const endpoint = endpointFrom(rawUrl);
+  if (!endpoint.ok) {
+    warn(endpoint.reason);
+    return [];
+  }
+  const secrets = [key, ...endpoint.secrets];
 
-    const res = await fetch(url, {
+  try {
+    const res = await fetch(endpoint.url, {
       headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: 'application/json' },
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
 
     if (!res.ok) {
-      warn(`The tracker answered ${res.status}.`);
+      const body = redact((await res.text().catch(() => '')).slice(0, 200), secrets);
+      warn(`The tracker answered HTTP ${res.status}: ${body || '(empty body)'}`);
       return [];
     }
 
@@ -274,7 +341,11 @@ async function fetchEvents(): Promise<EventItem[]> {
     return items;
   } catch (error) {
     const timedOut = error instanceof Error && (error.name === 'TimeoutError' || error.name === 'AbortError');
-    warn(timedOut ? `The tracker did not answer within ${TIMEOUT_MS / 1000} seconds.` : 'The tracker could not be reached.');
+    warn(
+      timedOut
+        ? `The request timed out after ${TIMEOUT_MS / 1000} seconds. ${describeError(error, secrets)}.`
+        : `The request threw ${describeError(error, secrets)}.`,
+    );
     return [];
   }
 }

@@ -8,8 +8,8 @@
  *   <EventsTable events={pastEvents(await getEvents())} variant="past" />
  *
  * The two variants share the layout completely. Every difference between them
- * lives in the VARIANTS table below and lands in exactly one place, the
- * trailing cell of each row plus its column heading. Nothing else in the markup
+ * lives in the VARIANTS table below. It lands in the trailing cell of each row
+ * plus its column heading, and, for the year, in the date block of a past row. Nothing else in the markup
  * reads `variant`, so the row structure cannot drift between the two. If you
  * ever need a second branch, put it in VARIANTS rather than in the template.
  *
@@ -21,7 +21,7 @@
  * empty list means "hide the whole section" or "show an empty state".
  */
 import PhotoFrame from './PhotoFrame.astro';
-import { monthShort, dayOfMonth, machineDate } from '../lib/format';
+import { monthShort, dayOfMonth, machineDate, yearOf } from '../lib/format';
 import { links } from '../lib/links';
 import type { EventItem } from '../data/events';
 // Callers pass data from getEvents() in src/data/events.ts.
@@ -49,12 +49,15 @@ const VARIANTS = {
     cta: 'RSVP',
     fallback: links.lumaCalendar as string | null,
     pending: '[LINK]',
+    showYear: false,
   },
   past: {
     heading: 'Recap',
     cta: 'Photos',
     fallback: null as string | null,
     pending: '[SOON]',
+    // A past list spans years, so the date block says which one.
+    showYear: true,
   },
 } as const;
 
@@ -85,7 +88,7 @@ const v = VARIANTS[variant];
 
             <div class="row-date flex-[0_0_92px]">
               <span class="t-mono text-mono-label text-accent-step">
-                {monthShort(event.date)}
+                {monthShort(event.date)}{v.showYear && ` ${yearOf(event.date)}`}
               </span>
               <time class="t-display text-day text-ink" datetime={machineDate(event.date)}>
                 {dayOfMonth(event.date)}

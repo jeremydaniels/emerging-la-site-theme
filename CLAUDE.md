@@ -216,7 +216,8 @@ src/
   components/EventsTable.astro    Ruled events table. variant="upcoming" | "past".
                               Both variants share the layout completely: every
                               difference lives in the VARIANTS table at the top
-                              and lands only in the trailing cell.
+                              and lands in the trailing cell, plus the year on
+                              a past row's date block.
   components/RuledList.astro      Index + name + line rows. About values, Events steps.
   components/PhotoFrame.astro     Mat, well, warm multiply, corner crop marks, metadata bar.
   components/MetaBar.astro        Mono metadata bar.

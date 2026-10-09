@@ -861,10 +861,12 @@ Both came out of building the same pattern on a second and third page.
 
 **A variant must isolate its differences.** `EventsTable` renders the upcoming
 and past tables. Every difference between them lives in one `VARIANTS` object at
-the top of the component and lands in exactly one place: the trailing cell of
-each row, plus that column's heading. Nothing else in the template reads
+the top of the component. It lands in the trailing cell of each row plus that
+column's heading, and in one more place: a past row's date block carries the
+year after the month (`OCT 2025`), because a past list spans years, while an
+upcoming row shows the month alone. Nothing else in the template reads
 `variant`. That is testable, and it is tested: the header signature, the row
-signature with the trailing cell removed, and the rendered column geometry are
+signature with the trailing cell and the year removed, and the rendered column geometry are
 all identical between the two. If a variant ever needs a second difference, it
 goes in `VARIANTS`, not in the markup.
 
