@@ -6,11 +6,10 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "node scripts/check-event-flags.mjs && astro check && astro build",
+    "build": "astro check && astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "astro": "astro",
-    "check:events": "node scripts/check-event-flags.mjs --strict"
+    "astro": "astro"
   },
   "dependencies": {
     "astro": "^5.14.1"

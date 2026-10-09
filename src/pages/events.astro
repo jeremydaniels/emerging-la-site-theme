@@ -18,11 +18,12 @@ import EventsTable from '../components/EventsTable.astro';
 import RuledList from '../components/RuledList.astro';
 import SubscribeBand from '../components/SubscribeBand.astro';
 
-import { upcomingEvents, pastEvents } from '../data/events';
+import { getEvents, upcomingEvents, pastEvents } from '../data/events';
 import { photos, photoPaths } from '../data/photos';
 
-const upcoming = upcomingEvents();
-const past = pastEvents();
+const events = await getEvents();
+const upcoming = upcomingEvents(events);
+const past = pastEvents(events);
 
 /**
  * Sections in document order, minus the ones that are not rendering. `n()`
@@ -105,7 +106,7 @@ const rooms = [
           Anyone can attend. RSVP to hold a spot.
         </p>
 
-        <EventsTable events={upcoming} variant="upcoming" />
+        <EventsTable events={upcoming} variant="upcoming" accentFirst />
 
         {/* Home has a "See all events" link here. This is that page, so the
             note stands on its own. */}

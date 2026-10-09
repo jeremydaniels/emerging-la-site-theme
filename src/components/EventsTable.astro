@@ -4,14 +4,18 @@
  *
  * One component renders both views:
  *
- *   <EventsTable events={upcomingEvents()} variant="upcoming" />
- *   <EventsTable events={pastEvents()} variant="past" />
+ *   <EventsTable events={upcomingEvents(await getEvents())} variant="upcoming" />
+ *   <EventsTable events={pastEvents(await getEvents())} variant="past" />
  *
  * The two variants share the layout completely. Every difference between them
  * lives in the VARIANTS table below and lands in exactly one place, the
  * trailing cell of each row plus its column heading. Nothing else in the markup
  * reads `variant`, so the row structure cannot drift between the two. If you
  * ever need a second branch, put it in VARIANTS rather than in the template.
+ *
+ * A row with no `image` renders without a photo: the cell is a blank spacer on
+ * wide screens so the columns stay lined up with the header, and it is gone on
+ * narrow ones. There is no placeholder box on the live site.
  *
  * Renders nothing at all when the list is empty. The caller decides whether an
  * empty list means "hide the whole section" or "show an empty state".
@@ -20,14 +24,17 @@ import PhotoFrame from './PhotoFrame.astro';
 import { monthShort, dayOfMonth, machineDate } from '../lib/format';
 import { links } from '../lib/links';
 import type { EventItem } from '../data/events';
+// Callers pass data from getEvents() in src/data/events.ts.
 
 interface Props {
   events: EventItem[];
   variant?: 'upcoming' | 'past';
+  /** Tints the first row, the soonest event. A view decision, not a property of an event. */
+  accentFirst?: boolean;
   class?: string;
 }
 
-const { events, variant = 'upcoming', class: className = '' }: Props = Astro.props;
+const { events, variant = 'upcoming', accentFirst = false, class: className = '' }: Props = Astro.props;
 
 /**
  * The whole of the difference between the two tables.
@@ -71,7 +78,7 @@ const v = VARIANTS[variant];
         const index = String(i + 1).padStart(2, '0');
 
         return (
-          <div class:list={['row', event.featured && 'row-featured']}>
+          <div class:list={['row', accentFirst && i === 0 && 'row-featured']}>
             <span class="t-mono hidden flex-[0_0_46px] text-mono-index text-ink-faint wide:block">
               {index}
             </span>
@@ -85,27 +92,31 @@ const v = VARIANTS[variant];
               </time>
             </div>
 
-            <PhotoFrame
-              variant="thumb"
-              src={event.image}
-              alt={event.imageAlt ?? ''}
-              path={`events.ts → ${event.slug}.image`}
-              class="flex-[0_0_96px]"
-            />
+            {event.image ? (
+              <PhotoFrame
+                variant="thumb"
+                src={event.image}
+                alt={event.imageAlt ?? ''}
+                loading="lazy"
+                class="flex-[0_0_96px]"
+              />
+            ) : (
+              <div class="hidden flex-[0_0_96px] wide:block" aria-hidden="true" />
+            )}
 
             <div class="min-w-0 flex-[1_1_220px]">
               <div class="t-title text-title-2 text-ink">{event.name}</div>
-              <div class="mt-[5px] text-note text-ink-muted-aa">{event.note}</div>
+              {event.note && <div class="mt-[5px] text-note text-ink-muted-aa">{event.note}</div>}
               {/* The location column is hidden below 900px, so it folds in
                   here. The date is not repeated: the date block above already
                   carries it. */}
               <div class="t-mono mt-1.5 text-mono-meta text-ink-muted wide:hidden">
-                {event.venue}, {event.neighborhood}{event.time && ` · ${event.time}`}
+                {[event.location, event.time].filter(Boolean).join(' · ')}
               </div>
             </div>
 
             <div class="t-mono hidden flex-[0_0_200px] text-mono-meta-lg text-ink-muted wide:block">
-              {event.venue}, {event.neighborhood}
+              {event.location}
               {event.time && <span class="block">{event.time}</span>}
             </div>
 

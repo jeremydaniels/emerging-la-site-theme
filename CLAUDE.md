@@ -1,7 +1,8 @@
 # Emerging LA
 
 The website for Emerging LA, a newsletter and events organization for the LA tech ecosystem.
-Static site. No accounts, no backend, no database.
+Static site. No accounts, no backend, no database. Events are read from the deal tracker's
+Supabase at build time; nothing is fetched in the browser.
 
 `design-system.md` is the visual spec and it has the real numbers. This file is the working
 brief. When the two disagree, `design-system.md` wins on anything visual.
@@ -178,7 +179,6 @@ CLAUDE.md                     This file.
 README.md                     How to run it, and the events flag warning.
 
 astro.config.mjs              Astro + the Tailwind vite plugin.
-scripts/check-event-flags.mjs Build time warning for overdue event flags.
 
 public/
   fonts/riegal.woff2          Display face, one weight.
@@ -229,7 +229,9 @@ src/
                               any page may read a field outside that shape, and there is
                               deliberately no `featured` flag: which card carries the
                               accent is a view decision, not a property of an issue.
-  data/events.ts              Events. Hand maintained, typed. STATUS IS A MANUAL FLAG.
+  data/events.ts              Events. getEvents() is the one read point and the only code that
+                              talks to the tracker's Supabase, at build time. Upcoming and past
+                              come from the Pacific date. No manual flag.
   data/sectors.ts             The hero map's sectors, their places and the map's closing
                               caption. Edit the sectors here, never in SectorMap.
                               PLACEHOLDERS until Brandon confirms the final list.
@@ -286,9 +288,18 @@ Currently: `/preview/event-recap`.
 
 ## Things that will bite you
 
-- **Event status does not follow the date.** `status: 'upcoming' | 'past'` in `src/data/events.ts`
-  is set by hand. A finished event stays in Upcoming until someone edits the file. The build prints
-  a warning listing overdue ones; it does not fail.
+- **Events come from the deal tracker, and the site rebuilds daily.** `getEvents()` in
+  `src/data/events.ts` reads the tracker's Supabase REST endpoint at build time, with plain `fetch`
+  and no dependency. It takes the rows where `featured` is true (set by hand in the tracker's table
+  editor; the anon key's read policy already limits it to visible LA County events). Upcoming and
+  past are not stored: they come from each event's Pacific date at the moment of the build. A
+  deploy hook rebuilds the site once a day, so an event moves to Past on the first rebuild after its
+  day ends. There is no flag to flip and nothing to edit by hand. The two env vars,
+  `TRACKER_SUPABASE_URL` and `TRACKER_SUPABASE_ANON_KEY`, are read at build time only and must
+  never be given a `PUBLIC_` prefix. If either is missing, or the fetch fails or takes over 10
+  seconds, the build logs one `[events]` warning and renders with no events: every events section
+  hides. It never fails the build. Times print in Pacific Time with the zone written out. A row
+  with no `cover_url` renders without a photo, and there is no placeholder box on the live site.
 - **All external links are placeholders.** Real Luma, LinkedIn and Beehiiv URLs land in
   `src/lib/links.ts` later. Nothing else should hardcode an external URL.
 - **One breakpoint.** The design has exactly one, at 900px, exposed as the `wide:` variant. The

@@ -375,8 +375,9 @@ inside the well, on the photo's ground, not on the page's.
 Thumbs are too small for the text and show only the dashed box and the cross.
 
 Swapping a real photo in is one edit at the path the slot prints: an `image` field on a row in
-`src/data/issues.ts` or `src/data/events.ts`, or an `src` in `src/data/photos.ts` for the slots that
-belong to no data row.
+`src/data/issues.ts`, or an `src` in `src/data/photos.ts` for the slots that belong to no data row.
+Event rows are the exception: their photo is the event's Luma cover image from the tracker
+(`cover_url`), and a row with none renders without a photo cell and never shows this slot.
 
 **5. Optional category chip.** Absolutely positioned `left: 0; bottom: 0` on the well, mono `10px`
 `0.16em` uppercase, `padding: 5px 9px`, `pointer-events: none`. Orange fill `#FF4B33` with `#FFFDFA`
@@ -468,6 +469,16 @@ Nothing else moves. No lift, no shadow, no border change.
 number in Riegal `26px` `-0.02em`.
 
 **Row index** is mono `12px` in `--ela-ink-faint`, zero-padded to two digits (`01`, `02`).
+
+**Where event rows come from.** Events come from the deal tracker's Supabase, read at build time
+by `getEvents()`, and the site rebuilds daily from a deploy hook. Home shows the next three
+upcoming events and `/events` shows all of them, then the past ones, most recent first. Upcoming
+and past follow the event's date in Pacific time, so there is no manual status. A time prints in
+Pacific Time with the zone written out (`6:30 PM Pacific Time`) because readers may not be in LA.
+The photo cell holds the Luma cover image (Luma's CDN only), lazy loaded. A row with no cover
+renders without a photo: on wide screens the cell stays as a blank 96px spacer so the columns
+line up with the header, and below 900px it is gone. The first row of each upcoming table takes
+the featured tint (`accentFirst`), which is a view decision and not a property of the event.
 
 **Row CTA** is mono `11px` `0.14em` uppercase `--ela-accent-dark` with a trailing ` →`.
 

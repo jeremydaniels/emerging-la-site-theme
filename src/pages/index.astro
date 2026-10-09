@@ -2,7 +2,8 @@
 /**
  * Home page.
  *
- * Section numbering runs 01 to 05 and restarts on every page.
+ * Section numbering runs 01 to 05 and restarts on every page. Events is 04 and
+ * disappears when nothing is upcoming, so Subscribe then takes 04 and there is no hole.
  *
  * Anchor orange, one live per viewport, in scroll order:
  *   hero CTA  →  featured issue chip  →  featured event row tint  →  the band.
@@ -24,10 +25,11 @@ import CountUp from '../components/CountUp.astro';
 import CountUpScript from '../components/CountUpScript.astro';
 import { routes } from '../lib/links';
 import { getLatestIssues } from '../data/issues';
-import { upcomingEvents } from '../data/events';
+import { getEvents, upcomingEvents } from '../data/events';
 
 const issues = await getLatestIssues(3);
-const upcoming = upcomingEvents();
+/** The next three. The section is absent when there are none. */
+const upcoming = upcomingEvents(await getEvents()).slice(0, 3);
 
 /**
  * Only 15K+ community is a verified number. Every other cell is a visible
@@ -219,7 +221,7 @@ const proof = [
           Anyone can attend. RSVP to hold a spot.
         </p>
 
-        <EventsTable events={upcoming} variant="upcoming" />
+        <EventsTable events={upcoming} variant="upcoming" accentFirst />
 
         <div class="flex flex-wrap items-center justify-between gap-3.5 pt-[22px]">
           <span class="t-mono text-mono-meta-lg text-ink-muted">
@@ -234,7 +236,7 @@ const proof = [
   }
 
   {/* ------------------------------------------------------------------ 05 */}
-  <SubscribeBand number="05" />
+  <SubscribeBand number={upcoming.length > 0 ? '05' : '04'} />
 
 </SiteLayout>
 

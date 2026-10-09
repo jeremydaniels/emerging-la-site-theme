@@ -9,8 +9,7 @@ The newsletter runs on Beehiiv and the events run on Luma; this site links out t
 
 ## Running it
 
-Requires Node 20.19 or newer (Node 22 recommended, since the event flag check uses Node's built in
-TypeScript support).
+Requires Node 20.19 or newer.
 
 ```bash
 npm install
@@ -20,54 +19,45 @@ npm run dev          # http://localhost:4321
 | Script | What it does |
 | --- | --- |
 | `npm run dev` | Dev server with hot reload |
-| `npm run build` | Checks event flags, type checks, then builds to `dist/` |
+| `npm run build` | Type checks, then builds to `dist/` |
 | `npm run preview` | Serves the built `dist/` locally |
 | `npm run check` | Type check only |
-| `npm run check:events` | Event flag check on its own, exits non-zero if anything is overdue |
 
 The build output in `dist/` is plain static files. Any static host will serve it.
 
 ---
 
-## ⚠️ Events: the upcoming/past flag is manual
+## Events come from the deal tracker
 
-**`status` in `src/data/events.ts` is set by hand. It is not derived from the date.**
+Events are read from the deal tracker's Supabase at build time by `getEvents()` in
+`src/data/events.ts`. The site rebuilds daily from a deploy hook, so an event moves from Upcoming
+to Past on the first rebuild after its day ends (Pacific time). There is nothing to edit by hand.
 
-An event does not move itself from Upcoming to Past when its date passes. After an event happens,
-somebody has to:
+Set two environment variables where the site builds (Vercel project settings, or a local `.env`,
+which is gitignored):
 
-1. open `src/data/events.ts`
-2. change that event's `status: 'upcoming'` to `status: 'past'`
-3. commit and deploy
+| Variable | Value |
+| --- | --- |
+| `TRACKER_SUPABASE_URL` | `https://<project>.supabase.co` |
+| `TRACKER_SUPABASE_ANON_KEY` | The anon (public) key. It can only read what the tracker's read policy allows |
 
-**Until that happens, the site keeps showing a finished event as upcoming.**
+Both are read at build time only and never reach a page. Do not give either a `PUBLIC_` prefix.
 
-This is deliberate. It keeps an event on the page while photos and a recap are still being put
-together, and it means a postponed event does not silently disappear. The cost is that it is a
-manual step and it is easy to forget.
-
-`npm run build` prints a warning listing any event still flagged `upcoming` whose date has passed:
-
-```
-[events] 2 event(s) are still flagged "upcoming" but the date has passed.
-[events] Open src/data/events.ts and change status to "past":
-
-  · 2026-03-04  founders-dinner-march  (Founders dinner)
-  · 2026-03-19  investor-mixer-spring  (Investor mixer)
-```
-
-The warning does not fail the build. Run `npm run check:events` if you want it to.
+An event shows up when the tracker's `featured` column is true for its row. If either variable is
+missing, or the tracker does not answer within 10 seconds, the build logs an `[events]` warning
+and builds with no events. The events sections then hide. The build never fails because of it.
 
 ---
 
 ## Editing content
 
-Everything on this site is hand maintained in typed files. Nothing is pulled from an API.
+Everything on this site is hand maintained in typed files, except events, which come from the deal
+tracker at build time.
 
 | What | Where |
 | --- | --- |
 | Newsletter archive | `src/data/issues.ts` (newest first) |
-| Events | `src/data/events.ts` (remember the flag) |
+| Events | The deal tracker's `events` table, set `featured` there. Read by `src/data/events.ts` |
 | External links: Luma, LinkedIn, Beehiiv, socials, email | `src/lib/links.ts` |
 | Site name, description, nav links | `src/lib/site.ts` |
 | Colors | `src/styles/tokens.css`, PALETTE block at the top, and nowhere else |
@@ -133,14 +123,13 @@ To fill one, put the file under `public/` at the path the slot prints, then set 
 | --- | --- |
 | Home hero | `src` in `src/data/photos.ts` |
 | Issue card | `image` on that row in `src/data/issues.ts` |
-| Event row | `image` on that row in `src/data/events.ts` |
 
 One edit per slot. Set `imageAlt` at the same time.
 
 ## Placeholder content
 
-The home page renders placeholder issues and events so the sections have something in them. They
-are marked `placeholder: true` in `src/data/issues.ts` and `src/data/events.ts`, and their names
+The home page renders placeholder issues so the section has something in it. They
+are marked `placeholder: true` in `src/data/issues.ts`, and their names
 are bracketed on purpose so nobody quotes them back as real.
 
 ```bash
@@ -174,4 +163,4 @@ maintaining it. Nothing on the public site may import from `src/components/previ
 Currently: `/preview/event-recap`.
 
 `EventsTable` already takes a variant, so the events page can render past events from the same
-component: `<EventsTable events={pastEvents()} variant="past" />`.
+component: `<EventsTable events={pastEvents(await getEvents())} variant="past" />`.
