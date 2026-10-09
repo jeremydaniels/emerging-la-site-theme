@@ -5,9 +5,13 @@
  * Same document as home and about: numbering restarts at 01, same eyebrow,
  * same frames, same section rhythm.
  *
- * Section numbers are computed rather than hardcoded, because the Upcoming and
- * Past sections each disappear when their list is empty. Hardcoding would leave
- * a hole in the sequence the first time there is nothing upcoming.
+ * Section numbers are computed rather than hardcoded, so that a section that
+ * stops rendering can never leave a hole in the sequence. Upcoming always
+ * renders: with nothing upcoming it shows a one line note in place of the
+ * table, so the page never reads as empty. Home hides its events section
+ * instead.
+ *
+ * Only upcoming events are on the site. There is no past section.
  *
  * The subscribe band is the only anchor-orange element on this page.
  */
@@ -18,25 +22,14 @@ import EventsTable from '../components/EventsTable.astro';
 import RuledList from '../components/RuledList.astro';
 import SubscribeBand from '../components/SubscribeBand.astro';
 
-import { getEvents, upcomingEvents, pastEvents } from '../data/events';
+import { getEvents } from '../data/events';
+import { routes } from '../lib/links';
 import { photos, photoPaths } from '../data/photos';
 
-const events = await getEvents();
-const upcoming = upcomingEvents(events);
-const past = pastEvents(events);
+const upcoming = await getEvents();
 
-/**
- * Sections in document order, minus the ones that are not rendering. `n()`
- * then gives each its number, so the sequence is always contiguous.
- */
-const sections = [
-  'header',
-  upcoming.length > 0 && 'upcoming',
-  past.length > 0 && 'past',
-  'photos',
-  'how',
-  'subscribe',
-].filter(Boolean) as string[];
+/** Sections in document order. `n()` gives each its number, so the sequence is always contiguous. */
+const sections = ['header', 'upcoming', 'photos', 'how', 'subscribe'];
 
 const n = (key: string) => String(sections.indexOf(key) + 1).padStart(2, '0');
 
@@ -85,60 +78,45 @@ const rooms = [
 
   {/* ------------------------------------------------------------- upcoming */}
   {/*
-    Hidden entirely when there is nothing upcoming, the same rule the home page
-    uses. There is no empty state on this site: a section with nothing in it
-    does not render.
+    Always rendered. With events it is the table. With none, one short line in
+    its place with a way to hear about the next one, so the page does not feel
+    empty. Home hides its events section when empty; this page does not.
   */}
-  {
-    upcoming.length > 0 && (
-      <section
-        id="upcoming"
-        class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
-      >
-        <SectionHeader
-          number={n('upcoming')}
-          eyebrow="Upcoming"
-          title="What's next"
-          class="mb-3"
-        />
+  <section
+    id="upcoming"
+    class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
+  >
+    <SectionHeader
+      number={n('upcoming')}
+      eyebrow="Upcoming"
+      title="What's next"
+      class="mb-3"
+    />
 
-        <p class="mt-0 mb-[26px] text-body-sm text-ink-muted-aa">
-          Anyone can attend. RSVP to hold a spot.
+    {
+      upcoming.length > 0 ? (
+        <>
+          <p class="mt-0 mb-[26px] text-body-sm text-ink-muted-aa">
+            Anyone can attend. RSVP to hold a spot.
+          </p>
+
+          <EventsTable events={upcoming} accentFirst />
+
+          {/* Home has a "See all events" link here. This is that page, so the
+              note stands on its own. */}
+          <p class="t-mono mt-0 pt-[22px] text-mono-meta-lg text-ink-muted">
+            More dates added regularly
+          </p>
+        </>
+      ) : (
+        <p class="mt-0 mb-0 max-w-[52ch] pt-3 text-body text-ink-muted-aa">
+          Nothing on the calendar right now.{' '}
+          <a href={routes.subscribe} class="text-accent-step underline underline-offset-2">Subscribe</a>{' '}
+          and you'll hear about the next one first.
         </p>
-
-        <EventsTable events={upcoming} variant="upcoming" accentFirst />
-
-        {/* Home has a "See all events" link here. This is that page, so the
-            note stands on its own. */}
-        <p class="t-mono mt-0 pt-[22px] text-mono-meta-lg text-ink-muted">
-          More dates added regularly
-        </p>
-      </section>
-    )
-  }
-
-  {/* ----------------------------------------------------------------- past */}
-  {
-    past.length > 0 && (
-      <section
-        id="past"
-        class="mx-auto max-w-page px-gutter-sm pt-section-sm wide:px-gutter wide:pt-section"
-      >
-        <SectionHeader
-          number={n('past')}
-          eyebrow="Past"
-          title="Already run"
-          class="mb-3"
-        />
-
-        <p class="mt-0 mb-[26px] text-body-sm text-ink-muted-aa">
-          Recaps and photos from events that have happened.
-        </p>
-
-        <EventsTable events={past} variant="past" />
-      </section>
-    )
-  }
+      )
+    }
+  </section>
 
   {/* --------------------------------------------------------------- photos */}
   {/*

@@ -30,8 +30,9 @@ The build output in `dist/` is plain static files. Any static host will serve it
 ## Events come from the deal tracker
 
 Events are read from the deal tracker's Supabase at build time by `getEvents()` in
-`src/data/events.ts`. The site rebuilds daily from a deploy hook, so an event moves from Upcoming
-to Past on the first rebuild after its day ends (Pacific time). There is nothing to edit by hand.
+`src/data/events.ts`. Only upcoming events are shown: the query asks the tracker for featured events
+that have not ended, so past rows are never fetched. The site rebuilds daily from a deploy hook, so an
+event drops off on the first rebuild after it ends. There is nothing to edit by hand.
 
 Set two environment variables where the site builds (Vercel project settings, or a local `.env`,
 which is gitignored):
@@ -163,6 +164,3 @@ maintaining it. Nothing on the public site may import from `src/components/previ
 `/preview/` URL.
 
 Currently: `/preview/event-recap`.
-
-`EventsTable` already takes a variant, so the events page can render past events from the same
-component: `<EventsTable events={pastEvents(await getEvents())} variant="past" />`.

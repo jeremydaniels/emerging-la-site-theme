@@ -45,8 +45,8 @@ component, inline with no imports, so the build ships no `.js` file. Section num
 | Section eyebrow draw-in: the 26px eyebrow rule draws in and the `NN · Name` label lands after it, once, when a quarter in view | Every numbered section header: `/`, `/about`, `/archive`, `/events`, the Subscribe band on `/privacy` and `/terms`, and `/preview/*` | `DrawInScript`, rendered once by `SiteLayout`; hooks are `data-draw`, `data-draw-rule`, `data-draw-label` | §23 |
 | Subscribe role picker: single-select role chips that fill a hidden field; the form submits without it | The orange band on `/`, `/about`, `/archive`, `/events`, `/privacy`, `/terms`, and the form on `/subscribe` | `SubscribeForm` | §10 (role chips) |
 
-`/events` has **no** interactivity: Upcoming and Past render one after the other, and there is no
-toggle between them. `/thanks` and `/404` carry only what their layout brings.
+`/events` has **no** interactivity: it is one list of upcoming events, with no toggle and no tabs.
+`/thanks` and `/404` carry only what their layout brings.
 
 The rotating word, the hero map, the count-up and the draw-in are motion, not controls. All four do nothing
 under `prefers-reduced-motion`. The rotating word and the map also stop while the tab is hidden.
@@ -215,14 +215,10 @@ src/
                               thumbnails carry their own framing. An issue with
                               no image renders text only: category chip, title,
                               date and link, no frame and no gradient well.
-  components/EventsTable.astro    Ruled events table. variant="upcoming" | "past".
-                              Both variants share the layout completely: every
-                              difference lives in the VARIANTS table at the top
-                              and lands in the trailing cell, plus the year on
-                              a past row's date block. Below 900px each event
-                              is its own phone block (wide:hidden) and the
-                              desktop row is hidden there, so neither layout
-                              can leak into the other.
+  components/EventsTable.astro    Ruled table of upcoming events, one kind of row. Below
+                              900px each event is its own phone block
+                              (wide:hidden) and the desktop row is hidden
+                              there, so neither layout can leak into the other.
   components/RuledList.astro      Index + name + line rows. About values, Events steps.
   components/PhotoFrame.astro     Mat, well, warm multiply, corner crop marks, metadata bar.
   components/MetaBar.astro        Mono metadata bar.
@@ -236,8 +232,9 @@ src/
                               deliberately no `featured` flag: which card carries the
                               accent is a view decision, not a property of an issue.
   data/events.ts              Events. getEvents() is the one read point and the only code that
-                              talks to the tracker's Supabase, at build time. Upcoming and past
-                              come from the Pacific date. No manual flag.
+                              talks to the tracker's Supabase, at build time, and fetches only
+                              featured events that have not ended. There are no past
+                              events on the site.
   data/sectors.ts             The hero map's sectors, their places and the map's closing
                               caption. Edit the sectors here, never in SectorMap.
                               PLACEHOLDERS until Brandon confirms the final list.
@@ -297,17 +294,21 @@ Currently: `/preview/event-recap`.
 - **Events come from the deal tracker, and the site rebuilds daily.** `getEvents()` in
   `src/data/events.ts` reads the tracker's Supabase REST endpoint at build time, with plain `fetch`
   and no dependency. It takes the rows where `featured` is true (set by hand in the tracker's table
-  editor; the anon key's read policy already limits it to visible LA County events). Upcoming and
-  past are not stored: they come from each event's Pacific date at the moment of the build. A
-  deploy hook rebuilds the site once a day, so an event moves to Past on the first rebuild after its
-  day ends. There is no flag to flip and nothing to edit by hand. The two env vars,
-  `TRACKER_SUPABASE_URL` and `TRACKER_SUPABASE_ANON_KEY`, are read at build time only and must
-  never be given a `PUBLIC_` prefix. If either is missing, or the fetch fails or takes over 10
-  seconds, the build logs one `[events]` warning and renders with no events: every events section
-  hides. It never fails the build. Every build also logs one `[events]` summary: rows that came
-  back, how many were kept as upcoming and as past, and each dropped row with its title and reason.
-  Times print in Pacific Time with the zone written out, and as `PT` on the phone's one mono line. A row with no `cover_url` renders without
-  a photo, and there is no placeholder box on the live site.
+  editor; the anon key's read policy already limits it to visible LA County events) that have not
+  ended yet. That second filter is in the query itself, so past rows are never fetched: `end_at` is
+  now or later, or, when a row has no `end_at`, its start is today or later on the Pacific calendar.
+  **Only upcoming events are on the site. There is no past section and no past variant.** A deploy
+  hook rebuilds the site once a day, so an event drops off on the first rebuild after it ends. There
+  is no flag to flip and nothing to edit by hand. The two env vars, `TRACKER_SUPABASE_URL` and
+  `TRACKER_SUPABASE_ANON_KEY`, are read at build time only and must never be given a `PUBLIC_`
+  prefix. If either is missing, or the fetch fails or takes over 10 seconds, the build logs one
+  `[events]` warning and renders with no events. It never fails the build. With no events, home
+  hides its events section, and `/events` keeps its Upcoming section and shows one line in place of
+  the table ("Nothing on the calendar right now." with a link to `/subscribe`). Every build also
+  logs one `[events]` summary: rows that came back, how many were kept as upcoming, and each dropped
+  row with its title and reason. Times print in Pacific Time with the zone written out, and as `PT`
+  on the phone's one mono line. A row with no `cover_url` renders without a photo, and there is no
+  placeholder box on the live site.
 - **All external links are placeholders.** Real Luma, LinkedIn and Beehiiv URLs land in
   `src/lib/links.ts` later. Nothing else should hardcode an external URL.
 - **One breakpoint.** The design has exactly one, at 900px, exposed as the `wide:` variant. The

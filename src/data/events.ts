@@ -11,8 +11,15 @@
  *  Source: the `events` table defined in the tracker repo's db/events.sql. The
  *  anon key can only read rows that pass its "public read visible events"
  *  policy (LA County, not hidden, not a placeholder, not removed). This file
- *  adds one filter on top, `featured = true`, which is set by hand in the
- *  tracker's table editor.
+ *  adds two filters on top, both in the query itself:
+ *
+ *    featured = true     set by hand in the tracker's table editor
+ *    not ended yet       end_at is now or later. A row with no end_at is kept
+ *                        while its start is today or later on the Pacific
+ *                        calendar, since the feed only sometimes carries an end.
+ *
+ *  Only upcoming events are fetched. The site shows no past events, so past rows
+ *  never leave the database.
  *
  *  Two env vars, read at build time only. Neither is prefixed PUBLIC_, and
  *  nothing here puts either one in a page.
@@ -21,12 +28,11 @@
  *    TRACKER_SUPABASE_ANON_KEY   the anon (public) key
  *
  *  This can never fail a build. A missing var, a non 200, a timeout or a body
- *  that is not a list all log one warning and return no events, and the pages
- *  hide the empty sections.
+ *  that is not a list all log one warning and return no events. Home then hides
+ *  its events section, and /events shows a one line note in its place.
  *
- *  Upcoming and past are not stored. They come from each event's date at build
- *  time, in Pacific time. The site rebuilds daily from a deploy hook, so an
- *  event moves from Upcoming to Past on the first rebuild after its day ends.
+ *  The site rebuilds daily from a deploy hook, so an event drops off the first
+ *  rebuild after it ends.
  * ============================================================================
  */
 
@@ -88,6 +94,16 @@ export function pacificTime(when: Date): string {
 /** "6:30 PM PT", for the one mono line on a phone. */
 export function pacificTimeShort(when: Date): string {
   return `${timeFormat.format(when)} PT`;
+}
+
+/** The instant the Pacific calendar day of `when` began. Tries PDT, then PST. */
+export function pacificStartOfDay(when: Date): Date {
+  const day = pacificDate(when);
+  for (const offset of ['-07:00', '-08:00']) {
+    const start = new Date(`${day}T00:00:00${offset}`);
+    if (pacificDate(start) === day && pacificDate(new Date(start.getTime() - 1)) !== day) return start;
+  }
+  return new Date(when.getTime() - 24 * 60 * 60 * 1000);
 }
 
 // ---------------------------------------------------------------------------
@@ -286,20 +302,18 @@ export function mapRows(body: unknown[]): MappedRows {
  * key was used, since an empty list from a key that is not the anon role is the
  * quiet failure: the read policy is `to anon`, so any other role sees no rows.
  */
-export function summarize(rowsBack: number, mapped: MappedRows, now: Date, keyKind: string): string[] {
-  const upcoming = upcomingEvents(mapped.items, now);
-  const past = pastEvents(mapped.items, now);
+export function summarize(rowsBack: number, mapped: MappedRows, keyKind: string): string[] {
   const lines = [
-    `[events] ${rowsBack} row${rowsBack === 1 ? '' : 's'} came back, ${upcoming.length} kept as upcoming, ` +
-      `${past.length} kept as past, ${mapped.dropped.length} dropped.`,
+    `[events] ${rowsBack} row${rowsBack === 1 ? '' : 's'} came back, ${mapped.items.length} kept as upcoming, ` +
+      `${mapped.dropped.length} dropped.`,
   ];
-  for (const e of upcoming) lines.push(`[events]   upcoming  ${e.date}  ${e.name}`);
-  for (const e of past) lines.push(`[events]   past      ${e.date}  ${e.name}`);
+  for (const e of mapped.items) lines.push(`[events]   upcoming  ${e.date}  ${e.name}`);
   for (const d of mapped.dropped) lines.push(`[events]   dropped   ${d.title} (${d.reason})`);
   if (rowsBack === 0) {
     lines.push(
-      `[events] The tracker answered with an empty list. It only returns rows with featured = true that ` +
-        `pass its public read policy, and that policy is for the anon role. The key is ${keyKind}.`,
+      `[events] The tracker answered with an empty list. That is right when nothing featured is coming up. ` +
+        `If something should be showing, check the key: only rows with featured = true that pass the ` +
+        `public read policy come back, and that policy is for the anon role. The key is ${keyKind}.`,
     );
   }
   return lines;
@@ -386,7 +400,7 @@ type Endpoint = { ok: true; url: string; secrets: string[] } | { ok: false; reas
  * and a URL that already ends in /rest/v1 does not get it twice. Nothing in a
  * reason repeats the value.
  */
-function endpointFrom(rawUrl: string): Endpoint {
+function endpointFrom(rawUrl: string, now: Date): Endpoint {
   const trimmed = rawUrl.replace(/\/+$/, '');
   let parsed: URL;
   try {
@@ -404,8 +418,12 @@ function endpointFrom(rawUrl: string): Endpoint {
     };
   }
   const base = /\/rest\/v1$/i.test(trimmed) ? trimmed : `${trimmed}/rest/v1`;
+  // Not ended yet, in the query itself so past rows are never fetched. See the header.
+  const iso = (d: Date) => d.toISOString().replace(/\.\d{3}Z$/, 'Z');
+  const notEnded = `or=(end_at.gte.${iso(now)},and(end_at.is.null,start_at.gte.${iso(pacificStartOfDay(now))}))`;
   const url =
-    `${base}/events?select=${COLUMNS}&featured=eq.true&order=start_at.asc,luma_uid.asc&limit=${LIMIT}`;
+    `${base}/events?select=${COLUMNS}&featured=eq.true&${notEnded}` +
+    `&order=start_at.asc,luma_uid.asc&limit=${LIMIT}`;
   return { ok: true, url, secrets: [url, base, trimmed, parsed.host, parsed.hostname] };
 }
 
@@ -419,7 +437,8 @@ async function fetchEvents(): Promise<EventItem[]> {
     return [];
   }
 
-  const endpoint = endpointFrom(rawUrl);
+  const now = new Date();
+  const endpoint = endpointFrom(rawUrl, now);
   if (!endpoint.ok) {
     warn(endpoint.reason);
     return [];
@@ -445,7 +464,7 @@ async function fetchEvents(): Promise<EventItem[]> {
     }
 
     const mapped = mapRows(body);
-    for (const line of summarize(body.length, mapped, new Date(), describeKey(key))) console.log(line);
+    for (const line of summarize(body.length, mapped, describeKey(key))) console.log(line);
     return mapped.items;
   } catch (error) {
     const timedOut = error instanceof Error && (error.name === 'TimeoutError' || error.name === 'AbortError');
@@ -461,32 +480,8 @@ async function fetchEvents(): Promise<EventItem[]> {
 /** Home and /events both call getEvents(). One build, one request. */
 let pending: Promise<EventItem[]> | undefined;
 
-/** Every featured, visible event, soonest first. Never throws. */
+/** Every featured, visible event that has not ended, soonest first. Never throws. */
 export function getEvents(): Promise<EventItem[]> {
   pending ??= fetchEvents();
   return pending;
-}
-
-// ---------------------------------------------------------------------------
-// Upcoming and past
-// ---------------------------------------------------------------------------
-
-/**
- * Today and later on the Pacific calendar, soonest first. An event stays
- * upcoming until the end of its day, since the date is all the build knows
- * about when it ends.
- */
-export function upcomingEvents(list: EventItem[], now: Date = new Date()): EventItem[] {
-  const today = pacificDate(now);
-  return list
-    .filter((e) => e.date !== null && e.date >= today)
-    .sort((a, b) => a.date!.localeCompare(b.date!));
-}
-
-/** Before today on the Pacific calendar, most recent first. */
-export function pastEvents(list: EventItem[], now: Date = new Date()): EventItem[] {
-  const today = pacificDate(now);
-  return list
-    .filter((e) => e.date !== null && e.date < today)
-    .sort((a, b) => b.date!.localeCompare(a.date!));
 }

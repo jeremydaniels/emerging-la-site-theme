@@ -2,16 +2,10 @@
 /**
  * The ruled events table. See design-system.md §8.
  *
- * One component renders both views:
+ *   <EventsTable events={await getEvents()} accentFirst />
  *
- *   <EventsTable events={upcomingEvents(await getEvents())} variant="upcoming" />
- *   <EventsTable events={pastEvents(await getEvents())} variant="past" />
- *
- * The two variants share the layout completely. Every difference between them
- * lives in the VARIANTS table below. It lands in the trailing cell of each row
- * plus its column heading, and, for the year, in the date block of a past row. Nothing else in the markup
- * reads `variant`, so the row structure cannot drift between the two. If you
- * ever need a second branch, put it in VARIANTS rather than in the template.
+ * There is one kind of row: an upcoming event. Past events are not shown on the
+ * site, so there is no variant to switch.
  *
  * Two layouts, one component. Below 900px each event is the phone block: one mono line of
  * date, time and city, the title clamped to three lines, the host, a square cover on the right
@@ -27,47 +21,24 @@
  * empty list means "hide the whole section" or "show an empty state".
  */
 import PhotoFrame from './PhotoFrame.astro';
-import { monthShort, monthDayShort, dayOfMonth, machineDate, yearOf } from '../lib/format';
+import { monthShort, monthDayShort, dayOfMonth, machineDate } from '../lib/format';
 import { links } from '../lib/links';
 import type { EventItem } from '../data/events';
 // Callers pass data from getEvents() in src/data/events.ts.
 
 interface Props {
   events: EventItem[];
-  variant?: 'upcoming' | 'past';
   /** Tints the first row, the soonest event. A view decision, not a property of an event. */
   accentFirst?: boolean;
   class?: string;
 }
 
-const { events, variant = 'upcoming', accentFirst = false, class: className = '' }: Props = Astro.props;
+const { events, accentFirst = false, class: className = '' }: Props = Astro.props;
 
-/**
- * The whole of the difference between the two tables.
- *
- * `fallback` is where a row points when it has no url of its own: an upcoming
- * event can still send you to the Luma calendar, a past one has nowhere to go
- * until its recap exists.
- */
-const VARIANTS = {
-  upcoming: {
-    heading: 'RSVP',
-    cta: 'RSVP',
-    fallback: links.lumaCalendar as string | null,
-    pending: '[LINK]',
-    showYear: false,
-  },
-  past: {
-    heading: 'Recap',
-    cta: 'Photos',
-    fallback: null as string | null,
-    pending: '[SOON]',
-    // A past list spans years, so the date block says which one.
-    showYear: true,
-  },
-} as const;
-
-const v = VARIANTS[variant];
+/** Where a row points when it has no url of its own: the Luma calendar. */
+const FALLBACK = links.lumaCalendar as string | null;
+const CTA = 'RSVP';
+const PENDING = '[LINK]';
 ---
 
 {
@@ -79,15 +50,15 @@ const v = VARIANTS[variant];
         <span class="flex-[0_0_96px]">Photo</span>
         <span class="flex-auto">Event</span>
         <span class="flex-[0_0_200px]">Location</span>
-        <span class="flex-[0_0_96px] text-right">{v.heading}</span>
+        <span class="flex-[0_0_96px] text-right">{CTA}</span>
       </div>
 
       {events.map((event, i) => {
-        const href = event.url ?? v.fallback;
+        const href = event.url ?? FALLBACK;
         const index = String(i + 1).padStart(2, '0');
 
         const mobileLine = [
-          `${monthDayShort(event.date)}${v.showYear && event.date ? `, ${yearOf(event.date)}` : ''}`,
+          monthDayShort(event.date),
           event.timeShort,
           event.city,
         ].filter(Boolean);
@@ -137,11 +108,11 @@ const v = VARIANTS[variant];
                   target="_blank"
                   class="t-mono mt-2 flex min-h-11 w-full items-center text-mono-tab text-accent-step transition-opacity hover:opacity-70"
                 >
-                  {v.cta} →
+                  {CTA} →
                 </a>
               ) : (
                 <span class="t-mono mt-2 flex min-h-11 w-full items-center text-mono-tab text-ink-faint">
-                  {v.pending}
+                  {PENDING}
                 </span>
               )}
             </div>
@@ -154,7 +125,7 @@ const v = VARIANTS[variant];
 
             <div class="row-date flex-[0_0_92px]">
               <span class="t-mono text-mono-label text-accent-step">
-                {monthShort(event.date)}{v.showYear && ` ${yearOf(event.date)}`}
+                {monthShort(event.date)}
               </span>
               <time class="t-display text-day text-ink" datetime={machineDate(event.date)}>
                 {dayOfMonth(event.date)}
@@ -190,11 +161,11 @@ const v = VARIANTS[variant];
                 target="_blank"
                 class="t-mono ml-auto flex-[0_0_96px] text-right text-mono-tab text-accent-step transition-opacity hover:opacity-70"
               >
-                {v.cta} →
+                {CTA} →
               </a>
             ) : (
               <span class="t-mono ml-auto flex-[0_0_96px] text-right text-mono-tab text-ink-faint">
-                {v.pending}
+                {PENDING}
               </span>
             )}
           </div>

@@ -211,7 +211,7 @@ Body copy never goes below `13.5px`. Mono labels do; that is what mono is for.
 | `mono-footer-head` | `10px` | `0.20em` | Footer column headings |
 | `mono-meta` | `10.5px` | `0.13em` – `0.16em` | Photo metadata bar, top bar, footer legal |
 | `mono-meta-lg` | `11.5px` | `0.10em` – `0.12em` | Hero cadence note, location cell |
-| `mono-tab` | `11px` | `0.14em` | Events upcoming/past tabs |
+| `mono-tab` | `11px` | `0.14em` | Event row links (RSVP) |
 | `mono-role` | `12px` | `0.12em` | Subscribe role chips |
 | `mono-input` | `17px` | `0` | Email input value |
 
@@ -480,8 +480,9 @@ number in Riegal `26px` `-0.02em`.
 
 **Where event rows come from.** Events come from the deal tracker's Supabase, read at build time
 by `getEvents()`, and the site rebuilds daily from a deploy hook. Home shows the next three
-upcoming events and `/events` shows all of them, then the past ones, most recent first. Upcoming
-and past follow the event's date in Pacific time, so there is no manual status. A time prints in
+upcoming events and `/events` shows all of them, soonest first. Only upcoming events are on the site:
+the query asks for events that have not ended, so there is no past section and no past variant, and no
+manual status. A time prints in
 Pacific Time with the zone written out (`6:30 PM Pacific Time`) because readers may not be in LA.
 The photo cell holds the Luma cover image (Luma's CDN only), lazy loaded. A row with no cover
 renders without a photo: on wide screens the cell stays as a blank 96px spacer so the columns
@@ -496,7 +497,7 @@ then the RSVP link across the foot of the row.
 - **Text column:** one mono line (`10.5px`, `0.1em`, uppercase) of date, time and city, for example
   `OCT 15 · 5:00 PM PT · LOS ANGELES`, with the date in `--ela-accent-step` and the rest muted. The time
   is short here (`PT`) because the written out zone has no room on a phone; the desktop column keeps
-  `Pacific Time`. A past row adds the year to the date (`SEP 4, 2025`). Each part is `nowrap`, so at 320px
+  `Pacific Time`. Each part is `nowrap`, so at 320px
   the line wraps between parts and never inside one. Then the title in Riegal at the `body` step
   (`16px`), `line-height: 1.2`, clamped to three lines, then `Hosted by ...` at the `note` step, clamped
   to two.
@@ -619,7 +620,7 @@ Ranked by weight, so the budget is spendable in order:
    inside it (eyebrow rules, muted copy) shifts to `rgba(255,253,250,0.60–0.86)`.
 3. **Structural hairlines** — `26px` eyebrow rule, `2px` date-block left border, card top-border on
    hover. `#C2240F` in light, `#FF705D` in dark.
-4. **Directional text** — `Read →`, `RSVP →`, `Photos →`, tab labels. `#C2240F` in light, and at
+4. **Directional text** — `Read →`, `RSVP →`, tab labels. `#C2240F` in light, and at
    5.22:1 the 10.5–11.5px mono the mockup uses here now clears AA on its own. The old palette did
    not, and these were required to sit beside a non-orange sibling label. They still do, because
    the date reads better next to them, but it is a layout choice now and not a contrast fix.
@@ -888,40 +889,37 @@ of the menu, under a hairline, with a `Mode` mono label on the left and the swit
 
 Both came out of building the same pattern on a second and third page.
 
-**A variant must isolate its differences.** `EventsTable` renders the upcoming
-and past tables. Every difference between them lives in one `VARIANTS` object at
-the top of the component. It lands in the trailing cell of each row plus that
-column's heading, and in one more place: a past row's date block carries the
-year after the month (`OCT 2025`), because a past list spans years, while an
-upcoming row shows the month alone. Nothing else in the template reads
-`variant`. That is testable, and it is tested: the header signature, the row
-signature with the trailing cell and the year removed, and the rendered column geometry are
-all identical between the two. If a variant ever needs a second difference, it
-goes in `VARIANTS`, not in the markup.
+**A variant must isolate its differences.** A component that renders more than one kind of thing
+keeps every difference in one object at the top of the file, and nothing else in its template reads
+the variant, so the structure cannot drift between kinds. If a variant ever needs a second
+difference, it goes in that object, not in the markup. `EventsTable` used to be the example, with an
+upcoming and a past variant. Past events are gone from the site, so it has one kind of row and no
+variant. The same discipline holds for its two layouts: the phone block and the desktop row are
+separate elements, one `wide:hidden` and the other `hidden wide:flex`, so a change to one cannot
+reach the other.
 
 **Section numbers are computed, not typed.** A page whose sections can
-disappear cannot hardcode `01`, `02`, `03`. The Events page hides Upcoming when
-nothing is upcoming, and hides Past when nothing has run. So it builds the list
-of sections that are actually rendering and numbers from that:
+disappear cannot hardcode `01`, `02`, `03`. So it builds the list of sections that are actually
+rendering and numbers from that:
 
 ```ts
-const sections = [
-  'header',
-  upcoming.length > 0 && 'upcoming',
-  past.length > 0 && 'past',
-  'photos', 'how', 'subscribe',
-].filter(Boolean) as string[];
+const sections = ['header', 'upcoming', 'photos', 'how', 'subscribe'];
 
 const n = (key: string) => String(sections.indexOf(key) + 1).padStart(2, '0');
 ```
 
-With no upcoming events the page numbers 01, 02 Past, 03, 04, 05, with no hole
-where Upcoming used to be. Any page with a conditional section does this.
+A section that can drop out goes in that list conditionally, so no hole is left where it was.
+Any page with a conditional section does this. The Events page's Upcoming section never drops out
+(see below), so its list is fixed today, and the home page, whose Events section does hide when
+nothing is upcoming, numbers its Subscribe band from whether Events rendered.
 
-**There is no empty state anywhere on this site.** A section with nothing in it
-does not render. `EventsTable` returns nothing for an empty list, and the caller
-wraps the whole section in the same length check. Do not add an "assign an empty
-state" component; the absence is the design.
+**A section with nothing in it does not render, with one exception.** `EventsTable` returns nothing
+for an empty list and the caller wraps the whole section in the same length check. Home hides its
+Events section when nothing is upcoming. `/events` is the exception: it is the page that exists for
+events, so it keeps the Upcoming header and puts one short line in place of the table, "Nothing on
+the calendar right now. Subscribe and you'll hear about the next one first.", set in the body type
+with an orange underlined link to `/subscribe`. Do not add an "assign an empty state" component
+for anything else; the absence is the design.
 
 ---
 
@@ -1206,7 +1204,7 @@ the nav and footer hairlines and the crop marks do not.
 | `/` | `01 · Start here`, `02 · About`, `03 · Newsletter`, `04 · Events`, `05 · Subscribe` |
 | `/about` | `01 · About`, `02 · Purpose`, `03 · What we do`, `04 · By the numbers`, `05 · Note`, `06 · Subscribe` |
 | `/archive` | `01 · Newsletter`, `02 · Filter`, `03 · Subscribe` |
-| `/events` | `01 · Events`, then `Upcoming`, `Past`, `In the room`, `How it works`, `Subscribe`, numbered from what renders |
+| `/events` | `01 · Events`, `02 · Upcoming`, `03 · In the room`, `04 · How it works`, `05 · Subscribe` |
 | `/privacy`, `/terms` | the band's `NN · Subscribe`, numbered after the clauses |
 | `/preview/*` | whatever `SectionHeader`s the preview uses |
 

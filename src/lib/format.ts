@@ -36,12 +36,6 @@ export function monthDayShort(iso: string | null): string {
   return p ? `${MONTHS[p[1] - 1].toUpperCase()} ${p[2]}` : '[DATE]';
 }
 
-/** "2026", or "" when there is no date yet. */
-export function yearOf(iso: string | null): string {
-  const p = parts(iso);
-  return p ? String(p[0]) : '';
-}
-
 /** "04", or "[??]" when there is no date yet. */
 export function dayOfMonth(iso: string | null): string {
   const p = parts(iso);
