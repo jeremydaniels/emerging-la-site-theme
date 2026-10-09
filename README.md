@@ -122,9 +122,11 @@ To fill one, put the file under `public/` at the path the slot prints, then set 
 | Slot | Set this |
 | --- | --- |
 | Home hero | `src` in `src/data/photos.ts` |
-| Issue card | `image` on that row in `src/data/issues.ts` |
 
 One edit per slot. Set `imageAlt` at the same time.
+
+Issue cards are not slots. An issue with `image: null` renders as a text only card, and setting
+`image` on its row in `src/data/issues.ts` brings the 1200 x 630 thumbnail well back.
 
 ## Placeholder content
 

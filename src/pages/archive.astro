@@ -85,15 +85,7 @@ const categories = categoriesOf(issues);
       Showing {issues.length} of {issues.length}
     </p>
 
-    {/*
-      grid-showcase is what gives the accent card its gradient well. See
-      global.css: the archive is a page of nothing but issues and wants one card
-      to carry the section, where on home the chip alone is enough.
-    */}
-    <div
-      class="grid-showcase grid grid-cols-1 gap-4 wide:grid-cols-3 wide:gap-[26px]"
-      data-issue-grid
-    >
+    <div class="grid grid-cols-1 gap-4 wide:grid-cols-3 wide:gap-[26px]" data-issue-grid>
       {issues.map((issue, i) => <IssueCard issue={issue} accent={i === 0} />)}
     </div>
 

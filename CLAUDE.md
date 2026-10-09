@@ -212,7 +212,9 @@ src/
   components/IssueCard.astro      Issue card, shared by the archive grid and home's
                               latest issues. The well is 1200/630, Beehiiv's
                               thumbnail size, and draws no crop marks: the
-                              thumbnails carry their own framing.
+                              thumbnails carry their own framing. An issue with
+                              no image renders text only: category chip, title,
+                              date and link, no frame and no gradient well.
   components/EventsTable.astro    Ruled events table. variant="upcoming" | "past".
                               Both variants share the layout completely: every
                               difference lives in the VARIANTS table at the top

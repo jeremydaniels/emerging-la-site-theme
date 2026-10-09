@@ -18,12 +18,13 @@
  * ============================================================================
  *
  * The rows below are placeholders. Every one has `url: null`, which is the
- * marker: a real issue always has a Beehiiv URL. The first three carry real
- * thumbnail artwork and the headlines that go with it; the rest are bracketed
- * so nothing there can be mistaken for a real headline.
+ * marker: a real issue always has a Beehiiv URL. The headlines that are
+ * bracketed are bracketed so nothing there can be mistaken for a real one.
  *
- * Thumbnails live under `/images/issues/`, exported at Beehiiv's 1200 x 630 so
- * the card well holds them uncropped.
+ * Every `image` is null, so every card renders text only. A card with a real
+ * `image` renders the thumbnail in its 1200 x 630 well exactly as before.
+ * Thumbnails go under `/images/issues/`, exported at Beehiiv's 1200 x 630 so the
+ * well holds them uncropped.
  */
 
 export interface Issue {
@@ -47,7 +48,7 @@ const ISSUES: Issue[] = [
     category: 'Event recap',
     date: null,
     url: null,
-    image: '/images/issues/issue-1.jpg',
+    image: null,
   },
   {
     id: 'placeholder-issue-2',
@@ -55,7 +56,7 @@ const ISSUES: Issue[] = [
     category: 'Event recap',
     date: null,
     url: null,
-    image: '/images/issues/issue-2.jpg',
+    image: null,
   },
   {
     id: 'placeholder-issue-3',
@@ -63,7 +64,7 @@ const ISSUES: Issue[] = [
     category: 'Founder story',
     date: null,
     url: null,
-    image: '/images/issues/issue-3.jpg',
+    image: null,
   },
   {
     id: 'placeholder-01',

@@ -315,6 +315,13 @@ standing in for the missing bar.
 encodes, and it is what decides the count for any new frame. A frame that is not a standalone
 photo takes none.
 
+**Text only card.** An issue with no `image` draws no frame, no empty well, no dashed box and no
+file path. The category chip leads the body (`margin-bottom: 12px`, aligned left), then the
+headline, then the date and `Read →` row, which is pinned to the foot of the card so the dates line
+up across a row whatever the headlines do. Body padding is `4px 4px 18px`, since the card's own
+`12px` top padding is the only space above the chip. Today every issue is text only. Setting
+`image` on an issue is the single edit that brings the well back, with the chip over it.
+
 **CHANGED:** the issue card well was `4/3` with the two-mark diagonal. It is now `1200/630`,
 which is Beehiiv's thumbnail size, because the archive grid and the home page's latest issues are
 the two places a real Beehiiv thumbnail will land and the well has to hold one uncropped. Those
@@ -374,8 +381,9 @@ inside the well, on the photo's ground, not on the page's.
 
 Thumbs are too small for the text and show only the dashed box and the cross.
 
-Swapping a real photo in is one edit at the path the slot prints: an `image` field on a row in
-`src/data/issues.ts`, or an `src` in `src/data/photos.ts` for the slots that belong to no data row.
+Swapping a real photo in is one edit at the path the slot prints: an `src` in `src/data/photos.ts`
+for the slots that belong to no data row. Issue cards are not slots: an issue with no `image` renders
+text only (§9), and one with an `image` field on its row in `src/data/issues.ts` gets the well.
 Event rows are the exception: their photo is the event's Luma cover image from the tracker
 (`cover_url`), and a row with none renders without a photo cell and never shows this slot.
 
@@ -511,7 +519,8 @@ ruled ground shows through under the shorter one as a gray block.
 
 ## 9. Cards
 
-One card treatment. It is the photo frame with a body bolted on.
+One card treatment. With an image it is the photo frame with a body bolted on. Without one it is
+the body alone.
 
 ```
 background: var(--ela-paper)
@@ -521,8 +530,9 @@ border-radius: 0        /* the mat is square; only buttons/chips get 2px */
 transition: box-shadow .2s ease, border-color .2s ease
 ```
 
-- **Well:** `aspect-ratio: 1200/630`, no crop marks, optional category chip bottom-left. See §5
-  for why this one is the Beehiiv thumbnail ratio and why it is the one frame with no marks.
+- **Well:** only when the issue has an `image`. `aspect-ratio: 1200/630`, no crop marks, category chip
+  bottom-left. See §5 for why this one is the Beehiiv thumbnail ratio and why it is the one frame
+  with no marks. An issue with no image gets no well at all: the card is text only, described below.
 - **Body:** `padding: 16px 4px 18px`. Headline in Riegal `title-1`. Then `margin-top: 14px`,
   `padding-top: 11px`, `border-top: 1px solid var(--ela-hairline)`, and a mono `10.5px` `0.12em`
   uppercase row: date on the left, `Read →` in `--ela-accent-dark` pushed right.
@@ -896,43 +906,25 @@ state" component; the absence is the design.
 
 ---
 
-## 18. The showcase card
+## 18. The accent card
 
-A grid of issue cards can promote one of them. The promoted card gets an orange
-gradient well, **while its well is empty**. A well holding a thumbnail shows the
-thumbnail; there the chip carries the accent instead, exactly as it does on the
-home page. Every one of the rules below hangs off `.frame-well:has(.slot)` for
-that reason, so a card never ends up with no orange at all once its photo lands.
+A grid of issue cards can promote one of them. The promoted card carries **one orange
+element: its category chip.** Every other card's chip is near-black.
 
-```css
---ela-well-accent: linear-gradient(155deg,
-  var(--palette-accent-light) 0%, var(--palette-accent) 45%, var(--palette-accent-dark) 100%);
-```
+On a card with an image the chip sits over the image, bottom-left. On a card with no image,
+which is every card today, the chip leads the text body instead. Same element, same states, so
+the rules below hold for both and nothing else has to switch.
 
-**The empty slot takes its own ink, not the band's.** The ramp ends on `#C2240F`, and near-black
-against that stop is 2.88:1 at full strength, so the band's `rgba(28,28,28,0.9)` does not carry
-here. The slot's text is centered, which means it spans roughly **34-66%** of the ramp and never
-reaches the deep stop. At full-strength `--palette-ink` the path reads **5.35:1** at the near end
-of that span and **4.12:1** at the far end, against 4.49 and 3.64 at the band's alpha. Nothing
-near-black clears 4.5 across the whole span, so the slot takes the most contrast available
-instead of an alpha, and the secondary lines go to `0.78`. The dashed box and its diagonals do
-cross both ends of the ramp, but they are non-text scaffolding on an `aria-hidden` element.
+There is no gradient well and no showcase treatment. An earlier version gave the promoted card
+an orange gradient in its empty photo well. Cards with no image no longer draw a well at all (§9),
+so there is nothing to fill, and the gradient, its slot ink tokens and the `.grid-showcase` class
+are gone.
 
-Three rules go with it.
+Two rules go with it.
 
-**One orange element per accent card.** Where there is no gradient well, the
-category chip carries the accent (the home page, and any card with a photo in
-it). Where there is one, the well
-carries it and the chip inverts to near-black, because orange on orange is
-invisible and cream on this orange is 3.28:1. Same inversion as `.on-accent`.
-The empty slot's text and dashed box invert with it, and the warm multiply is
-switched off: that overlay is for photographs, and over a flat gradient it only
-muddies.
-
-**Opt in per grid, not per card.** The gradient is scoped to
-`.grid-showcase [data-accent]`. The archive is a page of nothing but issues and
-wants one card to carry the section; on the home page the issues are one section
-of five, where the chip alone is enough. One attribute drives both.
+**One orange element per accent card.** The chip carries the accent: `--ela-accent` fill with
+`--palette-paper` text. Everything else on the card stays ink, hairline and muted, apart from the
+`Read →` link, which is a text link and not a fill.
 
 **The accent is a view decision, never a data flag.** It belongs to the first
 card of the current view, so it recalculates whenever the view changes and
