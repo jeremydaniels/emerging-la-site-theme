@@ -179,32 +179,115 @@ function cleanHostedBy(value: string): string {
     .trim();
 }
 
+/** Why a row did not make it onto the page. Printed in the build log next to its title. */
+export type DropReason =
+  | 'not an object'
+  | 'no luma_uid'
+  | 'no title'
+  | 'no start_at'
+  | 'start_at does not parse'
+  | 'duplicate luma_uid';
+
 /**
- * Reads one row without trusting it. A row with no UID, no title or no
- * readable start is dropped. Everything else that is missing or the wrong type
- * becomes null.
+ * Reads one row without trusting it. A row with no UID, no title or no readable
+ * start is dropped, and the reason comes back with it. Everything else that is
+ * missing or the wrong type becomes null.
  */
-function toEventItem(row: unknown): EventItem | null {
-  if (typeof row !== 'object' || row === null) return null;
+function toEventItem(row: unknown): { item: EventItem } | { drop: DropReason; label: string } {
+  if (typeof row !== 'object' || row === null) return { drop: 'not an object', label: String(row) };
   const r = row as Record<string, unknown>;
 
   const uid = text(r.luma_uid);
   const title = text(r.title);
-  const start = new Date(text(r.start_at));
-  if (!uid || !title || Number.isNaN(start.getTime())) return null;
+  const label = title || uid || '(untitled row)';
+  const startRaw = text(r.start_at);
+  // PostgREST writes "+00:00". A bare "+00" offset is Postgres text output and V8 will not parse it.
+  const start = new Date(startRaw.replace(/([+-]\d{2})$/, '$1:00'));
+
+  if (!uid) return { drop: 'no luma_uid', label };
+  if (!title) return { drop: 'no title', label: uid };
+  if (!startRaw) return { drop: 'no start_at', label };
+  if (Number.isNaN(start.getTime())) return { drop: 'start_at does not parse', label };
 
   const hostedBy = cleanHostedBy(text(r.hosted_by));
 
   return {
-    slug: uid,
-    name: title,
-    date: pacificDate(start),
-    time: pacificTime(start),
-    location: placeFor(text(r.location), r.is_online === true),
-    note: hostedBy ? `Hosted by ${hostedBy}` : null,
-    url: safeHttpUrl(text(r.external_url)) ?? safeHttpUrl(text(r.event_url)),
-    image: safeCoverUrl(text(r.cover_url)),
+    item: {
+      slug: uid,
+      name: title,
+      date: pacificDate(start),
+      time: pacificTime(start),
+      location: placeFor(text(r.location), r.is_online === true),
+      note: hostedBy ? `Hosted by ${hostedBy}` : null,
+      url: safeHttpUrl(text(r.external_url)) ?? safeHttpUrl(text(r.event_url)),
+      image: safeCoverUrl(text(r.cover_url)),
+    },
   };
+}
+
+export interface MappedRows {
+  items: EventItem[];
+  dropped: { title: string; reason: DropReason }[];
+}
+
+/** The whole row-to-event step, with nothing silent: every row is either kept or dropped with a reason. */
+export function mapRows(body: unknown[]): MappedRows {
+  const seen = new Set<string>();
+  const items: EventItem[] = [];
+  const dropped: MappedRows['dropped'] = [];
+  for (const row of body) {
+    const result = toEventItem(row);
+    if ('drop' in result) {
+      dropped.push({ title: result.label, reason: result.drop });
+    } else if (seen.has(result.item.slug)) {
+      dropped.push({ title: result.item.name, reason: 'duplicate luma_uid' });
+    } else {
+      seen.add(result.item.slug);
+      items.push(result.item);
+    }
+  }
+  return { items, dropped };
+}
+
+/**
+ * The one line of build log that says what happened to the rows, titles only.
+ * Never the URL, never the key. When nothing came back it also says what kind of
+ * key was used, since an empty list from a key that is not the anon role is the
+ * quiet failure: the read policy is `to anon`, so any other role sees no rows.
+ */
+export function summarize(rowsBack: number, mapped: MappedRows, now: Date, keyKind: string): string[] {
+  const upcoming = upcomingEvents(mapped.items, now);
+  const past = pastEvents(mapped.items, now);
+  const lines = [
+    `[events] ${rowsBack} row${rowsBack === 1 ? '' : 's'} came back, ${upcoming.length} kept as upcoming, ` +
+      `${past.length} kept as past, ${mapped.dropped.length} dropped.`,
+  ];
+  for (const e of upcoming) lines.push(`[events]   upcoming  ${e.date}  ${e.name}`);
+  for (const e of past) lines.push(`[events]   past      ${e.date}  ${e.name}`);
+  for (const d of mapped.dropped) lines.push(`[events]   dropped   ${d.title} (${d.reason})`);
+  if (rowsBack === 0) {
+    lines.push(
+      `[events] The tracker answered with an empty list. It only returns rows with featured = true that ` +
+        `pass its public read policy, and that policy is for the anon role. The key is ${keyKind}.`,
+    );
+  }
+  return lines;
+}
+
+/** What kind of key this is, without printing any of it. A JWT key carries its role in the payload. */
+function describeKey(key: string): string {
+  if (key.startsWith('sb_publishable_')) return 'a publishable key';
+  if (key.startsWith('sb_secret_')) return 'a secret key, not the anon key';
+  const payload = key.split('.')[1];
+  if (key.split('.').length === 3 && payload) {
+    try {
+      const role = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')).role;
+      return typeof role === 'string' ? `a JWT with the role "${role}"` : 'a JWT with no role claim';
+    } catch {
+      return 'a JWT whose payload does not decode';
+    }
+  }
+  return 'in a format that is not recognized';
 }
 
 // ---------------------------------------------------------------------------
@@ -229,6 +312,7 @@ const TIMEOUT_MS = 10_000;
 
 // Only the type is declared, so the site needs no @types/node. At build time Node provides it.
 declare const process: { env: Record<string, string | undefined> } | undefined;
+declare const Buffer: { from(data: string, encoding: 'base64url'): { toString(encoding: 'utf8'): string } };
 
 function warn(reason: string): void {
   console.warn(`[events] ${reason.replace(/\.+$/, '')}. The site builds with no events.`);
@@ -329,16 +413,9 @@ async function fetchEvents(): Promise<EventItem[]> {
       return [];
     }
 
-    const seen = new Set<string>();
-    const items: EventItem[] = [];
-    for (const row of body) {
-      const item = toEventItem(row);
-      if (item && !seen.has(item.slug)) {
-        seen.add(item.slug);
-        items.push(item);
-      }
-    }
-    return items;
+    const mapped = mapRows(body);
+    for (const line of summarize(body.length, mapped, new Date(), describeKey(key))) console.log(line);
+    return mapped.items;
   } catch (error) {
     const timedOut = error instanceof Error && (error.name === 'TimeoutError' || error.name === 'AbortError');
     warn(

@@ -299,8 +299,10 @@ Currently: `/preview/event-recap`.
   `TRACKER_SUPABASE_URL` and `TRACKER_SUPABASE_ANON_KEY`, are read at build time only and must
   never be given a `PUBLIC_` prefix. If either is missing, or the fetch fails or takes over 10
   seconds, the build logs one `[events]` warning and renders with no events: every events section
-  hides. It never fails the build. Times print in Pacific Time with the zone written out. A row
-  with no `cover_url` renders without a photo, and there is no placeholder box on the live site.
+  hides. It never fails the build. Every build also logs one `[events]` summary: rows that came
+  back, how many were kept as upcoming and as past, and each dropped row with its title and reason.
+  Times print in Pacific Time with the zone written out. A row with no `cover_url` renders without
+  a photo, and there is no placeholder box on the live site.
 - **All external links are placeholders.** Real Luma, LinkedIn and Beehiiv URLs land in
   `src/lib/links.ts` later. Nothing else should hardcode an external URL.
 - **One breakpoint.** The design has exactly one, at 900px, exposed as the `wide:` variant. The
